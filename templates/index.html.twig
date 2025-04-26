@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+	<form id="search-form" method="get" action="{{ path('index') }}">
+		<div class="ui action input">
+			<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}">
+			<button class="ui button" type="submit">Išči</button>
+		</div>
+	</form>
+
+	<table id="product-list" class="ui sortable striped table compact">
+		<caption class>
+			{% if terms %}
+				Seznam izdelkov, ki vsebujejo izraze:
+				{{ '"' ~ terms|join('","') ~'"' }}
+			{% else %}
+				Seznam zadnjih znižanih izdelkov
+			{% endif %}
+		</caption>
+		<thead>
+			<tr>
+				<th scope="col" class="sortable" aria-label="Naziv izdelka, kliknite za razvrščanje">Naziv izdelka</th>
+				<th scope="col" class="sortable" aria-label="Cena, kliknite za razvrščanje">Cena</th>
+				<th scope="col" class="sortable" aria-label="Cena na enoto, kliknite za razvrščanje">Cena na enoto</th>
+				<th scope="col" data-sort-method='none'>Trgovina</th>
+			</tr>
+		</thead>
+		<tbody class="list">
+			{% if products %}
+				{% for product in products %}
+					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}) %}
+					{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}) %}
+					<tr>
+						<td>{{ product.title }}</td>
+						<td data-sort='{{ price }}'>{{ price }}
+							{%- if regularPrice != price -%}
+								<s style="margin-left: 0.75em; color: red;">{{ regularPrice }}</s>
+							{%- endif -%}
+						</td>
+						<td>{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
+							/
+							{{ product.unit }}</td>
+						<td>
+							<a href="{{ product.url }}" target='_blank' rel="noopener noreferrer" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}">
+								{{ product.trgovina }}
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="4" class="no-results">Ni izdelkov, ki ustrezajo kriterijem.</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
+{% endblock %}
