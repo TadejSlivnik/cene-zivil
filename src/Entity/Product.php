@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="unique_product_source", columns={"productId", "source"})})
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="unique_product_source", columns={"product_id", "source"})})
  */
 class Product
 {
+    use Timestampable;
+
     const SOURCE_HOFER = 'hofer';
     const SOURCE_LIDL = 'lidl';
     const SOURCE_MERCATOR = 'mercator';

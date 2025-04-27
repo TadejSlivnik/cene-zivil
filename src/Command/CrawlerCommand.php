@@ -44,7 +44,7 @@ class CrawlerCommand extends Command
         $this->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'The limit of pages to crawl.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 

@@ -6,11 +6,10 @@ use App\Entity\Product;
 
 class MercatorService extends AbstractShopService
 {
-    public function getProductsData(int $offset): array
+    public function getProductsData(string $category): array
     {
-        $itemsPerPage = 2000;
-        $offset = $offset * $itemsPerPage;
-        $url = "https://mercatoronline.si/products/browseProducts/getProducts?limit=$itemsPerPage&offset=$offset";
+        $itemsPerPage = 2500;
+        $url = "https://mercatoronline.si/products/browseProducts/getProducts?limit=$itemsPerPage&offset=0&filterData[categories]=$category";
 
         $items = $this->getJson($url);
         if (!$items) {
