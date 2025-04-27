@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // locale sorting fix for č, š, ž
         Tablesort.extend('text', function (item) {
-            return typeof item === 'string';
+            return !item.includes('€');
         }, function (a, b) {
             return a.localeCompare(b, 'sl');
         });
