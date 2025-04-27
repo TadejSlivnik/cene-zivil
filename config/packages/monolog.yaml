@@ -11,10 +11,9 @@ when@dev:
                 handler: streamed
                 channels: ["!event"]
             streamed:
-                type:  rotating_file
+                type: rotating_file
                 max_files: 3
-                path:  '%kernel.logs_dir%/%kernel.environment%.log'
-
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
             console:
                 type: console
                 process_psr_3_messages: false
@@ -38,17 +37,17 @@ when@prod:
     monolog:
         handlers:
             main:
-                type:         fingers_crossed
+                type: fingers_crossed
                 action_level: critical
-                handler:      streamed
+                handler: streamed
                 # handler:      grouped
             # grouped:
             #     type:    group
             #     members: [streamed, deduplication]
             streamed:
-                type:  rotating_file
+                type: rotating_file
                 max_files: 30
-                path:  '%kernel.logs_dir%/%kernel.environment%.log'
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
 
             # deduplication:
             #     type:    deduplication
