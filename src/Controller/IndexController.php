@@ -47,6 +47,7 @@ class IndexController extends AbstractController
         sort($terms);
 
         return $this->render('index.html.twig', [
+            'title' => 'Cene živil',
             'products' => $products,
             'terms' => $terms,
             'query' => $query,
