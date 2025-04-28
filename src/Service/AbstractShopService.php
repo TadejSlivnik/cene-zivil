@@ -32,14 +32,23 @@ abstract class AbstractShopService
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
     {
         switch ($unitBase) {
+            case 'ml':
+                $unit = 'l';
+                $unitQuantity = 1;
+                $unitPrice *= 1000;
+                break;
             case '100ml':
                 $unitPrice *= 10;
+            case 'l':
             case '1l':
                 $unit = 'l';
                 $unitQuantity = 1;
                 break;
+            case 'g':
+                $unitPrice *= 100;
             case '100g':
                 $unitPrice *= 10;
+            case 'kg':
             case '1kg':
                 $unit = 'kg';
                 $unitQuantity = 1;
@@ -53,6 +62,7 @@ abstract class AbstractShopService
                 $unitQuantity = 1;
                 $unitPrice = $price;
                 break;
+            case 'm':
             case '1m':
                 $unit = 'm';
                 $unitQuantity = 1;

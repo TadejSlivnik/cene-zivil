@@ -8,9 +8,10 @@ class SparService extends AbstractShopService
 {
     public function getProductsData(string $category): array
     {
+        $itemsPerPage = 6000;
         $category = strtoupper($category);
         
-        $url = 'https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_si?query=*&q=*&page=1&hitsPerPage=3000&filter=category-path:%s';
+        $url = "https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_si?query=*&q=*&page=1&hitsPerPage=$itemsPerPage&filter=category-path:%s";
 
         $items = $this->getJson(sprintf($url, $category));
         if (!$items) {
@@ -20,6 +21,10 @@ class SparService extends AbstractShopService
         $data = [];
         $items = $items['hits'];
         foreach ($items as $item) {
+            if (!isset($item['masterValues']['price'])) {
+                continue;
+            }
+
             $item = $item['masterValues'];
 
             $price = $item['price'];
