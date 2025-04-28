@@ -51,7 +51,11 @@ abstract class AbstractSyncCommand extends AbstractCommand
         $progressBar = $this->io->createProgressBar(count($items));
 
         $k = 0;
+        $handled = [];
         foreach ($items as $item) {
+            if (in_array($item['productId'], $handled)) {
+                continue;
+            }
 
             $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'productId' => $item['productId']]);
             if (!$product instanceof Product) {
@@ -60,6 +64,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setProductId($item['productId']);
                 $this->em->persist($product);
             }
+
+            $handled[] = $item['productId'];
             
             $product->setTitle($item['title']);
             $product->setPrice($item['price']);

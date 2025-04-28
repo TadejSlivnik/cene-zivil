@@ -11,9 +11,9 @@ class SparService extends AbstractShopService
         $itemsPerPage = 6000;
         $category = strtoupper($category);
         
-        $url = "https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_si?query=*&q=*&page=1&hitsPerPage=$itemsPerPage&filter=category-path:%s";
+        $url = "https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_si?query=*&q=*&page=1&hitsPerPage=$itemsPerPage&filter=category-path:$category";
 
-        $items = $this->getJson(sprintf($url, $category));
+        $items = $this->getJson($url);
         if (!$items) {
             throw new \Exception("No data found for category: $category");
         }

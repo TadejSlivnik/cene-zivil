@@ -32,11 +32,11 @@ abstract class AbstractShopService
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
     {
         switch ($unitBase) {
+            case '1ml':
             case 'ml':
-                $unit = 'l';
-                $unitQuantity = 1;
-                $unitPrice *= 1000;
-                break;
+                $unitPrice *= 10;
+            case '10ml':
+                $unitPrice *= 10;
             case '100ml':
                 $unitPrice *= 10;
             case 'l':
@@ -45,7 +45,9 @@ abstract class AbstractShopService
                 $unitQuantity = 1;
                 break;
             case 'g':
-                $unitPrice *= 100;
+                $unitPrice *= 10;
+            case '10g':
+                $unitPrice *= 10;
             case '100g':
                 $unitPrice *= 10;
             case 'kg':
@@ -53,6 +55,8 @@ abstract class AbstractShopService
                 $unit = 'kg';
                 $unitQuantity = 1;
                 break;
+            case '100list': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
+            case '10pranj': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
             case '10kos': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
             case '100kos': // DM - Namizno sladilo na osnovi stevie, v obliki tablet, 100 kos
             case '10vr': // DM - vrecke caja
@@ -66,6 +70,13 @@ abstract class AbstractShopService
             case '1m':
                 $unit = 'm';
                 $unitQuantity = 1;
+                break;
+            case '100m':
+                $unitPrice /= 10;
+            case '10m':
+                $unit = 'm';
+                $unitQuantity = 1;
+                $unitPrice /= 10;
                 break;
             default:
                 throw new \Exception("Invalid unit base: $unitBase");

@@ -8,9 +8,11 @@ class DmService extends AbstractShopService
 {
     public function getProductsData(string $category): array
     {
-        $url = 'https://product-search.services.dmtech.com/si/search/crawl?allCategories.id=%s&pageSize=3000&searchType=editorial-search&sort=editorial_relevance';
+        $itemsPerPage = 3000;
 
-        $items = $this->getJson(sprintf($url, $category));
+        $url = "https://product-search.services.dmtech.com/si/search/crawl?allCategories.id=$category&pageSize=$itemsPerPage&searchType=editorial-search&sort=editorial_relevance";
+
+        $items = $this->getJson($url);
         if (!$items) {
             throw new \Exception("No data found for category: $category");
         }
