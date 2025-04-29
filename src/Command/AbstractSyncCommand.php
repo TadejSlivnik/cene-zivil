@@ -38,6 +38,10 @@ abstract class AbstractSyncCommand extends AbstractCommand
             return false;
         }
 
+        if ($commandLog->getUpdatedAt() && $commandLog->getUpdatedAt()->format('Y-m-d') < (new \DateTime())->format('Y-m-d')) {
+            $commandLog->setDailyRun(0);
+        }
+
         if ($commandLog->getDailyRun() >= $commandLog->getMaxDailyRuns()) {
             $this->io->writeln($this->getName() . ': Daily run limit reached. Max daily runs: ' . $commandLog->getMaxDailyRuns());
             return false;
@@ -74,6 +78,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
             $product->setUnit($item['unit']);
             $product->setUnitPrice($item['unitPrice']);
             $product->setUnitQuantity($item['unitQuantity']);
+            $product->setDiscount($item['discount']);
 
             if (++$k % static::DB_BATCH === 0) {
                 $this->em->flush();

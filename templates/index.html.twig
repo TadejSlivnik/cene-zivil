@@ -25,7 +25,7 @@
 					Seznam izdelkov, ki vsebujejo izraze:
 					{{ '"' ~ terms|join('","') ~'"' }}
 				{% else %}
-					Seznam zadnjih znižanih izdelkov
+					Seznam najbolj znižanih izdelkov
 				{% endif %}
 			</caption>
 			<caption class></caption>
@@ -66,6 +66,7 @@
 							<td class="px-2 py-1" data-sort='{{ price }}'>
 								{%- if regularPrice != price -%}
 									<s class="text-red-600 text-xs">{{ regularPrice }}</s>
+									<span class="text-red-600 text-xs">(-{{ product.discount }}%)</span>
 									<br>
 								{%- endif -%}
 								{{ price }}

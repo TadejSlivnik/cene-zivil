@@ -40,6 +40,8 @@ class MercatorService extends AbstractShopService
             } catch (\Throwable $th) {
                 dd($item, $th);
             }
+
+            $regularPrice = (float)$item['data']['normal_price'] ?: $price;
             
             $data[] = [
                 'source' => Product::SOURCE_MERCATOR,
@@ -49,7 +51,8 @@ class MercatorService extends AbstractShopService
                 'unitQuantity' => $unitQuantity,
                 'unitPrice' => $unitPrice,
                 'price' => $price,
-                'regularPrice' => (float)$item['data']['normal_price'] ?: $price,
+                'regularPrice' => $regularPrice,
+                'discount' => $this->getDiscount($price, $regularPrice),
                 // 'ean' => implode(',', array_column($item['data']['gtins'], 'gtin')),
                 'productId' => $item['itemId'],
             ];

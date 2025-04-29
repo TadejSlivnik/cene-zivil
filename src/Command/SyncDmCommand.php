@@ -43,6 +43,7 @@ class SyncDmCommand extends AbstractSyncCommand
         }
 
         $k = $commandLog->getDailyRun();
+        $this->io->text('Daily run: ' . $k);
         if (!array_key_exists($k, $this->categories)) {
             $this->io->writeln($this->getName() . ': All categories have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
@@ -61,9 +62,9 @@ class SyncDmCommand extends AbstractSyncCommand
             return Command::SUCCESS;
         }
 
+        $commandLog->incrementDailyRun();
         $this->updateProducts($items);
 
-        $commandLog->incrementDailyRun();
         $this->em->flush();
 
         $this->io->newLine();

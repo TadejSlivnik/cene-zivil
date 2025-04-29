@@ -67,7 +67,6 @@ class SyncMercatorCommand extends AbstractSyncCommand
         }
 
         $this->io->text('Processing category: ' . $this->categories[$k], "(Batch " . ($k + 1) . "/" . count($this->categories) . ")");
-        $commandLog->incrementDailyRun();
 
         $items = $this->mercatorService->getProductsData($this->categories[$k]);
 
@@ -78,6 +77,7 @@ class SyncMercatorCommand extends AbstractSyncCommand
             return Command::SUCCESS;
         }
 
+        $commandLog->incrementDailyRun();
         $this->updateProducts($items);
 
         $this->io->newLine();

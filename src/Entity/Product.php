@@ -6,7 +6,7 @@ use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
  * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="unique_product_source", columns={"product_id", "source"})})
  */
 class Product
@@ -52,6 +52,11 @@ class Product
      * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     protected $regularPrice;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $discount;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2)
@@ -187,6 +192,16 @@ class Product
     public function setUnitQuantity(string $unitQuantity): self
     {
         $this->unitQuantity = $unitQuantity;
+        return $this;
+    }
+    
+    public function getDiscount(): ?int
+    {
+        return $this->discount;
+    }
+    public function setDiscount(?int $discount): self
+    {
+        $this->discount = $discount;
         return $this;
     }
 

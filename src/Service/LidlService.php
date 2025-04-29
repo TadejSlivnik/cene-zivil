@@ -46,14 +46,14 @@ class LidlService extends AbstractShopService
         $price = $price->textContent;
         $price = $this->parsePrice($price);
 
-        if ($priceRegular = $xpath->query('//span[@class="strikethrough m-price__rrp m-price__text"]')->item(0)) {
-            if ($priceRegular = $priceRegular->textContent) {
-                $priceRegular = $this->parsePrice($priceRegular);
+        if ($regularPrice = $xpath->query('//span[@class="strikethrough m-price__rrp m-price__text"]')->item(0)) {
+            if ($regularPrice = $regularPrice->textContent) {
+                $regularPrice = $this->parsePrice($regularPrice);
             }
         }
 
-        if (!$priceRegular || $priceRegular <= 0) {
-            $priceRegular = $price;
+        if (!$regularPrice || $regularPrice <= 0) {
+            $regularPrice = $price;
         }
 
         $unit = null;
@@ -80,7 +80,8 @@ class LidlService extends AbstractShopService
             'unitQuantity' => $unitQuantity,
             'unitPrice' => $unitPrice,
             'price' => $price,
-            'regularPrice' => $priceRegular,
+            'regularPrice' => $regularPrice,
+            'discount' => $this->getDiscount($price, $regularPrice),
             // 'ean' => null,
             'productId' => $internalId,
         ];

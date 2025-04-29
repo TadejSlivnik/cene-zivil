@@ -17,17 +17,18 @@ class IndexController extends AbstractController
     {
         $query = $request->query->get('q', '');
 
-        $qb = $em->createQueryBuilder()
-            ->select('p')
-            ->from(Product::class, 'p')
-            ->orderBy('p.id', 'DESC')
-            ->setMaxResults(100);
-
         $terms = array_unique(array_map('trim', explode(' ', $query)));
         $terms = array_filter($terms, function ($term) {
             return strlen($term) >= 3;
         });
+
         if ($terms) {
+            $qb = $em->createQueryBuilder()
+                ->select('p')
+                ->from(Product::class, 'p')
+                ->orderBy('p.id', 'DESC')
+                ->setMaxResults(1000);
+
             foreach ($terms as $k => $term) {
                 if (strlen($term) < 3) {
                     continue;
@@ -36,13 +37,12 @@ class IndexController extends AbstractController
                     ->setParameter("$term$k", "%$term%");
             }
 
-            $qb->setMaxResults(1000)
-                ->orderBy('p.unitPrice', 'ASC');
-        } else {
-            $qb->andWhere('p.price != p.regularPrice');
-        }
+            $qb->orderBy('p.unitPrice', 'ASC');
 
-        $products = $qb->getQuery()->getResult();
+            $products = $qb->getQuery()->getResult();
+        } else {
+            $products = $em->getRepository(Product::class)->findMostDiscountedProducts();
+        }
 
         sort($terms);
 

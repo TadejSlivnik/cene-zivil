@@ -57,7 +57,6 @@ class SyncSparCommand extends AbstractSyncCommand
         }
 
         $this->io->text('Processing category: ' . $this->categories[$k], "(Batch " . ($k + 1) . "/" . count($this->categories) . ")");
-        $commandLog->incrementDailyRun();
 
         $items = $this->sparService->getProductsData($this->categories[$k]);
 
@@ -68,6 +67,7 @@ class SyncSparCommand extends AbstractSyncCommand
             return Command::SUCCESS;
         }
 
+        $commandLog->incrementDailyRun();
         $this->updateProducts($items);
 
         $this->io->newLine();

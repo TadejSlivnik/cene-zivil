@@ -29,6 +29,11 @@ abstract class AbstractShopService
         return $price;
     }
 
+    public function getDiscount(float $price, float $regularPrice): ?int
+    {
+        return $regularPrice > $price ? (int)round(100 - ($price * 100 / $regularPrice)) : null;
+    }
+
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
     {
         switch ($unitBase) {

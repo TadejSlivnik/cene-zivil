@@ -30,6 +30,8 @@ class DmService extends AbstractShopService
                 dump($item);
                 throw $th;
             }
+
+            $regularPrice = $item['price']['value'];
             
             $data[] = [
                 'source' => Product::SOURCE_DM,
@@ -39,7 +41,8 @@ class DmService extends AbstractShopService
                 'unitQuantity' => $unitQuantity,
                 'unitPrice' => $unitPrice,
                 'price' => $price,
-                'regularPrice' => $item['price']['value'],
+                'regularPrice' => $regularPrice,
+                'discount' => $this->getDiscount($price, $regularPrice),
                 // 'ean' => $item['gtin'],
                 'productId' => $item['dan'],
             ];

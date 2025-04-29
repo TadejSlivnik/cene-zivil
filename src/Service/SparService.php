@@ -32,6 +32,8 @@ class SparService extends AbstractShopService
             $unitPrice = $item['price-per-unit-number'];
             [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
 
+            $regularPrice = $item['regular-price'] ?: $price;
+
             $data[] = [
                 'source' => Product::SOURCE_SPAR,
                 'url' => 'https://www.spar.si/online/' . ltrim($item['url'], '/'),
@@ -40,7 +42,8 @@ class SparService extends AbstractShopService
                 'unitQuantity' => $unitQuantity,
                 'unitPrice' => $item['price-per-unit-number'],
                 'price' => $price,
-                'regularPrice' => $item['regular-price'] ?: $price,
+                'regularPrice' => $regularPrice,
+                'discount' => $this->getDiscount($price, $regularPrice),
                 // 'ean' => $item['code-internal'],
                 'productId' => $item['product-number'],
             ];
