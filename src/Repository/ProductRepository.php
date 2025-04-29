@@ -6,7 +6,21 @@ use Doctrine\ORM\EntityRepository;
 
 class ProductRepository extends EntityRepository
 {
-    public function findMostDiscountedProducts(int $limit = 1000)
+    public function findByTerms(array $terms)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.unitPrice', 'ASC')
+            ->setMaxResults(1000);
+
+        foreach ($terms as $k => $term) {
+            $qb->andWhere("p.title LIKE :term$k OR p.productId LIKE :term$k")
+                ->setParameter("term$k", "%$term%");
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findMostDiscountedProducts()
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.discount IS NOT NULL')
@@ -15,7 +29,7 @@ class ProductRepository extends EntityRepository
             ->addOrderBy('p.regularPrice', 'ASC')
             ->addOrderBy('p.price', 'ASC')
             ->addOrderBy('p.unitPrice', 'ASC')
-            ->setMaxResults($limit)
+            ->setMaxResults(1000)
             ->getQuery()
             ->getResult();
     }
