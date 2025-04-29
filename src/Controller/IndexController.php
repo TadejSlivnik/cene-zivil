@@ -33,8 +33,8 @@ class IndexController extends AbstractController
                 if (strlen($term) < 3) {
                     continue;
                 }
-                $qb->andWhere("p.title LIKE :$term$k OR p.productId LIKE :$term$k")
-                    ->setParameter("$term$k", "%$term%");
+                $qb->andWhere("p.title LIKE :term$k OR p.productId LIKE :term$k")
+                    ->setParameter("term$k", "%$term%");
             }
 
             $qb->orderBy('p.unitPrice', 'ASC');
