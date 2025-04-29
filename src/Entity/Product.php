@@ -222,4 +222,9 @@ class Product
         }
         return $trgovina;
     }
+
+    public function isUpToDate(): bool
+    {
+        return $this->getUpdatedAt()->diff(new \DateTime())->days < 30;
+    }
 }

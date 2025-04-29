@@ -10,15 +10,19 @@
 
 		<form id="search-form" method="get" action="{{ path('index') }}" class="my-5 mx-2 max-w-200">
 			<div class="relative">
-				<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-				<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+				<div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+					<svg class="w-5 h-5 text-gray-500" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+						<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+					</svg>
+				</div>
+				<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="ps-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+				<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
 					<svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 20 20">
 						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
 					</svg>
 				</button>
 			</div>
 		</form>
-
 		<table id="product-list" class="w-full text-sm text-left rtl:text-right text-gray-500">
 			<caption class="py-5 px-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
 				{% if terms %}
@@ -28,13 +32,11 @@
 					Seznam najbolj znižanih izdelkov
 				{% endif %}
 			</caption>
-			<caption class></caption>
-
-			{% set headers = ['Naziv izdelka', 'Cena na enoto', 'Cena'] %}
+			{% set headers = ['Naziv izdelka', 'Cena na enoto', 'Cena', 'Posodobljeno'] %}
 			<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100">
 				<tr>
 					{% for item in headers %}
-						<th scope="col" class="cursor-pointer px-2 py-3" aria-label="{{ item }}, kliknite za razvrščanje">
+						<th scope="col" class="cursor-pointer px-2 py-3 {% if item == 'Posodobljeno'%}hidden sm:table-cell{% endif %}" aria-label="{{ item }}, kliknite za razvrščanje">
 							<div class="flex items-center">
 								{{ item }}
 								<a href="#">
@@ -58,11 +60,6 @@
 								<br>
 								<span class="text-xs text-gray-500 tracking-normal">{{ product.trgovina }}</span>
 							</td>
-							<td class="px-2 py-1">
-								{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
-								<span class="text-xs text-gray-500">/
-									{{ product.unit }}</span>
-							</td>
 							<td class="px-2 py-1" data-sort='{{ price }}'>
 								{%- if regularPrice != price -%}
 									<s class="text-red-600 text-xs">{{ regularPrice }}</s>
@@ -70,6 +67,19 @@
 									<br>
 								{%- endif -%}
 								{{ price }}
+							</td>
+							<td class="px-2 py-1">
+								{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
+								<span class="text-xs text-gray-500">/
+									{{ product.unit }}</span>
+							</td>
+							<td class="px-2 py-1 hidden sm:table-cell">
+								<span class="flex items-center justify-center {% if not product.isUpToDate %}text-red-600{% endif %}">
+									<svg class="hidden lg:block w-4 h-4 me-1 {% if product.isUpToDate %}text-gray-700{% endif %}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 20 20">
+										<path fill="currentColor" d="M6 1a1 1 0 0 0-2 0h2ZM4 4a1 1 0 0 0 2 0H4Zm7-3a1 1 0 1 0-2 0h2ZM9 4a1 1 0 1 0 2 0H9Zm7-3a1 1 0 1 0-2 0h2Zm-2 3a1 1 0 1 0 2 0h-2ZM1 6a1 1 0 0 0 0 2V6Zm18 2a1 1 0 1 0 0-2v2ZM5 11v-1H4v1h1Zm0 .01H4v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM10 11v-1H9v1h1Zm0 .01H9v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM10 15v-1H9v1h1Zm0 .01H9v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM15 15v-1h-1v1h1Zm0 .01h-1v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM15 11v-1h-1v1h1Zm0 .01h-1v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM5 15v-1H4v1h1Zm0 .01H4v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM2 4h16V2H2v2Zm16 0h2a2 2 0 0 0-2-2v2Zm0 0v14h2V4h-2Zm0 14v2a2 2 0 0 0 2-2h-2Zm0 0H2v2h16v-2ZM2 18H0a2 2 0 0 0 2 2v-2Zm0 0V4H0v14h2ZM2 4V2a2 2 0 0 0-2 2h2Zm2-3v3h2V1H4Zm5 0v3h2V1H9Zm5 0v3h2V1h-2ZM1 8h18V6H1v2Zm3 3v.01h2V11H4Zm1 1.01h.01v-2H5v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H5v2h.01v-2ZM9 11v.01h2V11H9Zm1 1.01h.01v-2H10v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H10v2h.01v-2ZM9 15v.01h2V15H9Zm1 1.01h.01v-2H10v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H10v2h.01v-2ZM14 15v.01h2V15h-2Zm1 1.01h.01v-2H15v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H15v2h.01v-2ZM14 11v.01h2V11h-2Zm1 1.01h.01v-2H15v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H15v2h.01v-2ZM4 15v.01h2V15H4Zm1 1.01h.01v-2H5v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H5v2h.01v-2Z"/>
+									</svg>
+									{{ product.updatedAt|date('d.m.Y') }}
+								</span>
 							</td>
 						</tr>
 					{% endfor %}
