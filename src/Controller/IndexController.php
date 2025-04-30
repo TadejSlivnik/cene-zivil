@@ -18,9 +18,10 @@ class IndexController extends AbstractController
         $query = $request->query->get('q', '');
 
         $terms = array_unique(array_map('trim', explode(' ', $query)));
-        $terms = array_filter($terms, function ($term) {
-            return strlen($term) >= 2;
-        });
+
+        if (strlen(implode(' ', $terms)) <= 2) {
+            $terms = [];
+        }
 
         if ($terms) {
             $products = $em->getRepository(Product::class)->findByTerms($terms);

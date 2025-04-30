@@ -13,8 +13,9 @@ class ProductRepository extends EntityRepository
             ->setMaxResults(1000);
 
         foreach ($terms as $k => $term) {
-            $qb->andWhere("p.title LIKE :term$k OR p.productId LIKE :term$k")
-                ->setParameter("term$k", "%$term%");
+            $qb->andWhere("p.title LIKE :termA$k OR p.productId = :termB$k")
+                ->setParameter("termA$k", "%$term%")
+                ->setParameter("termB$k", "$term");
         }
 
         return $qb->getQuery()->getResult();

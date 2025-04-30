@@ -65,11 +65,11 @@ abstract class AbstractShopService
             case '10kos': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
             case '100kos': // DM - Namizno sladilo na osnovi stevie, v obliki tablet, 100 kos
             case '10vr': // DM - vrecke caja
+                $unitPrice = $price;
             case '1kos': // DM
             case 'kos':
                 $unit = 'kos';
                 $unitQuantity = 1;
-                $unitPrice = $price;
                 break;
             case 'm':
             case '1m':

@@ -15,15 +15,15 @@
 						<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
 					</svg>
 				</div>
-				<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="ps-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-				<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+				<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="ps-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm sm:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+				<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm sm:text-base font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
 					<svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 20 20">
 						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
 					</svg>
 				</button>
 			</div>
 		</form>
-		<table id="product-list" class="w-full text-sm text-left rtl:text-right text-gray-500">
+		<table id="product-list" class="w-full text-sm sm:text-base text-left rtl:text-right text-gray-500">
 			<caption class="py-5 px-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
 				{% if terms %}
 					Seznam izdelkov, ki vsebujejo izraze:
@@ -55,22 +55,22 @@
 						{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}) %}
 						{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}) %}
 						<tr role="link" tabindex="0" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}" onclick="window.open('{{ product.url }}', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { window.open('{{ product.url }}', '_blank'); }" class="cursor-pointer odd:bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-200">
-							<td class="px-2 py-1">
+							<td class="px-2 py-1 text-sm/4 sm:text-base/5">
 								{{ product.title }}
 								<br>
-								<span class="text-xs text-gray-500 tracking-normal">{{ product.trgovina }}</span>
+								<span class="text-xs sm:text-sm text-gray-500 tracking-normal">{{ product.trgovina }}</span>
 							</td>
 							<td class="px-2 py-1" data-sort='{{ price }}'>
 								{%- if regularPrice != price -%}
-									<s class="text-red-600 text-xs">{{ regularPrice }}</s>
-									<span class="text-red-600 text-xs">(-{{ product.discount }}%)</span>
+									<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>
+									<span class="text-red-600 text-xs sm:text-sm">(-{{ product.discount }}%)</span>
 									<br>
 								{%- endif -%}
 								{{ price }}
 							</td>
 							<td class="px-2 py-1">
 								{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
-								<span class="text-xs text-gray-500">/
+								<span class="text-xs sm:text-sm text-gray-500">/
 									{{ product.unit }}</span>
 							</td>
 							<td class="px-2 py-1 hidden sm:table-cell">
