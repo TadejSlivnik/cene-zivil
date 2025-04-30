@@ -27,7 +27,7 @@ class SparService extends AbstractShopService
 
             $item = $item['masterValues'];
 
-            $price = $item['price'];
+            $price = $item['best-price'] ?? $item['price'];
             $unit = trim(explode('/', $item['price-per-unit'])[1]);
             $unitPrice = $item['price-per-unit-number'];
             [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
