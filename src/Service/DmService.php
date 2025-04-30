@@ -36,7 +36,7 @@ class DmService extends AbstractShopService
             $data[] = [
                 'source' => Product::SOURCE_DM,
                 'url' => 'https://www.dm.si/' . ltrim($item['relativeProductUrl'], '/'),
-                'title' => $item['brandName'] ?? '' . $item['title'],
+                'title' => ($item['brandName'] ?? '') . $item['title'],
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,
                 'unitPrice' => $unitPrice,
