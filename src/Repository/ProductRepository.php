@@ -9,7 +9,10 @@ class ProductRepository extends EntityRepository
     public function findByTerms(array $terms)
     {
         $qb = $this->createQueryBuilder('p')
-            ->orderBy('p.unitPrice', 'ASC')
+            ->orderBy('p.discount', 'DESC')
+            ->addOrderBy('p.regularPrice', 'ASC')
+            ->addOrderBy('p.price', 'ASC')
+            ->addOrderBy('p.unitPrice', 'ASC')
             ->setMaxResults(1000);
 
         foreach ($terms as $k => $term) {

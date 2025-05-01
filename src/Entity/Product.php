@@ -225,6 +225,9 @@ class Product
 
     public function isUpToDate(): bool
     {
+        if ($this->getUpdatedAt() === null) {
+            return false;
+        }
         return $this->getUpdatedAt()->diff(new \DateTime())->days < 30;
     }
 }

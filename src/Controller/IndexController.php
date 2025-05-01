@@ -17,7 +17,10 @@ class IndexController extends AbstractController
     {
         $query = $request->query->get('q', '');
 
-        $terms = array_unique(array_map('trim', explode(' ', $query)));
+        $terms = explode(' ', $query);
+        $terms = array_map('trim', $terms);
+        $terms = array_map('strtolower', $terms);
+        $terms = array_unique($terms);
 
         if (strlen(implode(' ', $terms)) <= 2) {
             $terms = [];

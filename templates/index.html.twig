@@ -75,7 +75,11 @@
 							</td>
 							<td class="px-2 py-1 hidden sm:table-cell">
 								<span class="flex items-center justify-end {% if not product.isUpToDate %}text-red-600 font-semibold{% endif %}">
-									{{ product.updatedAt|date('d.m.Y') }}
+									{% if product.updatedAt %}
+										{{ product.updatedAt|date('d.m.Y') }}
+									{% else %}
+										??
+									{% endif %}
 								</span>
 							</td>
 						</tr>
