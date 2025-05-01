@@ -17,7 +17,10 @@ class ProductRepository extends EntityRepository
         if ($discountedOnly) {
             $qb->andWhere('p.discount IS NOT NULL')
                 ->andWhere('p.discount > 0')
-                ->orderBy('p.discount', 'DESC');
+                ->orderBy('p.discount', 'DESC')
+                ->addOrderBy('p.regularPrice', 'DESC')
+                ->addOrderBy('p.unitPrice', 'DESC')
+                ->addOrderBy('p.price', 'DESC');
         }
 
         if (!empty($sources)) {
