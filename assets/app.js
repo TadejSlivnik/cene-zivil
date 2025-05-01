@@ -25,18 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // locale sorting fix for č, š, ž
         Tablesort.extend('text', function (item) {
-            return !item.includes('€');
+            return !item.includes('€') && !item.includes('%');
         }, function (a, b) {
             return a.localeCompare(b, 'sl');
         });
 
         // Add a custom sorter for numeric columns
         Tablesort.extend('number', (item) => {
-            return item.includes('€');
+            return item.includes('€') || item.includes('%');
         }, (a, b) => {
             // Parse the numeric values and compare them
-            const numA = parseFloat(a.replace(/[^\d.-]/g, ''));
-            const numB = parseFloat(b.replace(/[^\d.-]/g, ''));
+            const numA = parseFloat(a.replace(/[^\d.-]/g, '')) || 0;
+            const numB = parseFloat(b.replace(/[^\d.-]/g, '')) || 0;
             return numB - numA;
         });
 

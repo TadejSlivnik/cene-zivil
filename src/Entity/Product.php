@@ -19,11 +19,11 @@ class Product
     const SOURCE_SPAR = 'spar';
     const SOURCE_DM = 'dm';
     const SOURCES = [
-        self::SOURCE_HOFER,
-        self::SOURCE_LIDL,
-        self::SOURCE_MERCATOR,
-        self::SOURCE_SPAR,
-        self::SOURCE_DM,
+        self::SOURCE_DM => 'dm',
+        self::SOURCE_HOFER => 'HOFER',
+        self::SOURCE_LIDL => 'Lidl',
+        self::SOURCE_MERCATOR => 'Mercator',
+        self::SOURCE_SPAR => 'SPAR',
     ];
 
     /**
@@ -144,8 +144,8 @@ class Product
 
     public function setSource(string $source): self
     {
-        if (!in_array($source, self::SOURCES)) {
-            throw new \InvalidArgumentException("Invalid source: $source. Valid sources are: " . implode(', ', self::SOURCES));
+        if (!array_key_exists($source, self::SOURCES)) {
+            throw new \InvalidArgumentException("Invalid source: $source. Valid sources are: " . implode(', ', array_keys(self::SOURCES)));
         }
         $this->source = $source;
         return $this;
@@ -207,20 +207,7 @@ class Product
 
     public function getTrgovina(): ?string
     {
-        $trgovina = $this->source;
-        switch ($trgovina) {
-            case self::SOURCE_LIDL:
-            case self::SOURCE_MERCATOR:
-                $trgovina = ucfirst($trgovina);
-                break;
-            case self::SOURCE_HOFER:
-            case self::SOURCE_SPAR:
-                $trgovina = strtoupper($trgovina);
-                break;
-            default:
-                break;
-        }
-        return $trgovina;
+        return self::SOURCES[$this->source] ?? null;
     }
 
     public function isUpToDate(): bool
@@ -228,6 +215,14 @@ class Product
         if ($this->getUpdatedAt() === null) {
             return false;
         }
-        return $this->getUpdatedAt()->diff(new \DateTime())->days < 30;
+        return $this->getUpdatedAt()->diff(new \DateTime())->days < 7;
+    }
+
+    public function updatedToday(): bool
+    {
+        if ($this->getUpdatedAt() === null) {
+            return false;
+        }
+        return $this->getUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
     }
 }

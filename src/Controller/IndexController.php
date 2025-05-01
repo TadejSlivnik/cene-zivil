@@ -16,6 +16,8 @@ class IndexController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em)
     {
         $query = $request->query->get('q', '');
+        $discountedOnly = (bool)$request->query->get('d', '');
+        $sources = $request->query->get('sources', []);
 
         $terms = explode(' ', $query);
         $terms = array_map('trim', $terms);
@@ -24,20 +26,20 @@ class IndexController extends AbstractController
 
         if (strlen(implode(' ', $terms)) <= 2) {
             $terms = [];
+            $discountedOnly = true;
         }
-
-        if ($terms) {
-            $products = $em->getRepository(Product::class)->findByTerms($terms);
-            sort($terms);
-        } else {
-            $products = $em->getRepository(Product::class)->findMostDiscountedProducts();
-        }
+        
+        $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources);
+        sort($terms);
 
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
             'products' => $products,
             'terms' => $terms,
             'query' => $query,
+            'discountedOnly' => $discountedOnly,
+            'sources' => Product::SOURCES,
+            'selectedSources' => $sources,
         ]);
     }
 }

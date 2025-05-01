@@ -49,8 +49,8 @@ class CrawlerCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
 
         $source = $input->getOption('source');
-        if ($source && !in_array($source, Product::SOURCES)) {
-            $this->io->error("Invalid source: $source. Valid sources are: " . implode(', ', Product::SOURCES));
+        if ($source && !array_key_exists($source, Product::SOURCES)) {
+            $this->io->error("Invalid source: $source. Valid sources are: " . implode(', ', array_keys(Product::SOURCES)));
             return Command::FAILURE;
         }
 

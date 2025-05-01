@@ -6,14 +6,24 @@ use Doctrine\ORM\EntityRepository;
 
 class ProductRepository extends EntityRepository
 {
-    public function findByTerms(array $terms)
+    public function findByTerms(array $terms, bool $discountedOnly = false, array $sources = []): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->orderBy('p.discount', 'DESC')
             ->addOrderBy('p.regularPrice', 'ASC')
             ->addOrderBy('p.price', 'ASC')
             ->addOrderBy('p.unitPrice', 'ASC')
             ->setMaxResults(1000);
+
+        if ($discountedOnly) {
+            $qb->andWhere('p.discount IS NOT NULL')
+                ->andWhere('p.discount > 0')
+                ->orderBy('p.discount', 'DESC');
+        }
+
+        if (!empty($sources)) {
+            $qb->andWhere('p.source IN (:sources)')
+                ->setParameter('sources', $sources);
+        }
 
         foreach ($terms as $k => $term) {
             $qb->andWhere("p.title LIKE :termA$k OR p.productId = :termB$k")
@@ -22,19 +32,5 @@ class ProductRepository extends EntityRepository
         }
 
         return $qb->getQuery()->getResult();
-    }
-
-    public function findMostDiscountedProducts()
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.discount IS NOT NULL')
-            ->andWhere('p.discount > 0')
-            ->orderBy('p.discount', 'DESC')
-            ->addOrderBy('p.regularPrice', 'ASC')
-            ->addOrderBy('p.price', 'ASC')
-            ->addOrderBy('p.unitPrice', 'ASC')
-            ->setMaxResults(1000)
-            ->getQuery()
-            ->getResult();
     }
 }
