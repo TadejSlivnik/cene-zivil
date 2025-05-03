@@ -28,18 +28,44 @@ class IndexController extends AbstractController
             $terms = [];
             $discountedOnly = true;
         }
-        
+
         $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources);
         sort($terms);
 
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
+            'description' => 'Cene živil - primerjaj cene živil v trgovinah',
+            'keywords' => 'cene živil, primerjaj cene, trgovine, akcije',
             'products' => $products,
             'terms' => $terms,
             'query' => $query,
             'discountedOnly' => $discountedOnly,
             'sources' => Product::SOURCES,
             'selectedSources' => $sources,
+        ]);
+    }
+
+    /**
+     * @Route("/pravno-obvestilo", name="disclaimer", methods={"GET"})
+     */
+    public function disclaimer()
+    {
+        return $this->render('disclaimer.html.twig', [
+            'title' => 'Pravno obvestilo',
+            'description' => 'Pravno obvestilo spletne strani Cene živil',
+            'keywords' => 'pravno obvestilo, cene živil, pogoji',
+        ]);
+    }
+
+    /**
+     * @Route("/pogoji-uporabe", name="terms_of_use", methods={"GET"})
+     */
+    public function termsOfUse()
+    {
+        return $this->render('termsOfUse.html.twig', [
+            'title' => 'Pogoji uporabe',
+            'description' => 'Pogoji uporabe spletne strani Cene živil',
+            'keywords' => 'pogoji uporabe, cene živil, pogoji',
         ]);
     }
 }

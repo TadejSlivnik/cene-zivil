@@ -2,136 +2,137 @@
 
 {% block body %}
 
-	<div class="max-w-300 centered mx-auto mt-10 mb-20">
+	<h1 class="sr-only" {# class="mb-4 mx-2 text-5xl tracking-tight sm:text-6xl text-pretty" #}>{{ title }}</h1>
 
-		<h1 class="sr-only" {# class="mb-4 mx-2 text-5xl tracking-tight sm:text-6xl text-pretty" #}>{{ title }}</h1>
-		<img src="{{ asset("images/cenezivil.png") }}" alt="Cene živil" class="mx-auto w-1/2 sm:w-1/3 lg:w-1/4">
+	<p class="mx-auto py-5 mb-3 text-lg text-gray-500 md:text-xl text-center">Dobrodošli na primerjalniku cen živil, kjer lahko sprejemate premišljene nakupovalne odločitve.</p>
 
-		<p class="mx-auto py-5 mb-3 text-lg text-gray-500 md:text-xl text-center">Dobrodošli na primerjalniku cen živil, kjer lahko sprejemate premišljene nakupovalne odločitve.</p>
-
-		<form id="search-form" method="get" action="{{ path('index') }}" class="mx-2 sm:mx-auto mt-12 mb-20 max-w-200">
-			<div class="relative">
-				<div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-					<svg class="w-5 h-5 text-gray-500" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-					</svg>
-				</div>
-				<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="ps-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm sm:text-base rounded-t-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
-				<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm sm:text-base font-medium text-white bg-red-600 rounded-tr-lg border border-red-700 hover:bg-red-800 focus:ring-4">
-					<svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 20 20">
-						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-					</svg>
-				</button>
+	<form id="search-form" method="get" action="{{ path('index') }}" class="mx-2 sm:mx-auto my-20 max-w-200">
+		<div class="relative">
+			<div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+				<svg class="w-5 h-5 text-gray-500" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+				</svg>
 			</div>
-			<ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-t-0 border-gray-200 rounded-b-lg sm:flex">
-				{% for key, item in sources %}
-					<li class="w-full {% if not loop.last %} border-b border-gray-200 sm:border-b-0 sm:border-r {% endif %}">
-						<div class="flex items-center ps-3">
-							<input {% if key in selectedSources %} checked {% endif %} {% if key in ['hofer','lidl'] %} disabled {% endif %} id="source-{{ key }}" name="sources[]" type="checkbox" value="{{ key }}" class="w-5 h-5 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
-							<label for="source-{{ key }}" class="w-full ms-2 py-3 text-sm font-medium {% if key in ['hofer','lidl'] %} text-gray-400 {% else %} text-gray-900 {% endif %}">{{ item }}</label>
+			<input type="text" name="q" placeholder="Vnesite iskalne izraze..." value="{{ query }}" class="ps-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm sm:text-base rounded-t-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
+			<button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm sm:text-base font-medium text-white bg-red-600 rounded-tr-lg border border-red-700 hover:bg-red-800 focus:ring-4">
+				<svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 20 20">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+				</svg>
+			</button>
+		</div>
+		<ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-t-0 border-gray-200 rounded-b-lg sm:flex">
+			{% for key, item in sources %}
+				<li class="w-full {% if not loop.last %} border-b border-gray-200 sm:border-b-0 sm:border-r {% endif %}">
+					<div class="flex items-center ps-3">
+						<input {% if key in selectedSources %} checked {% endif %} {% if key in ['hofer','lidl'] %} disabled {% endif %} id="source-{{ key }}" name="sources[]" type="checkbox" value="{{ key }}" class="w-5 h-5 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
+						<label for="source-{{ key }}" class="w-full ms-2 py-3 text-sm font-medium {% if key in ['hofer','lidl'] %} text-gray-400 {% else %} text-gray-900 {% endif %}">{{ item }}</label>
+					</div>
+				</li>
+			{% endfor %}
+		</ul>
+
+		<div class="flex items-center mt-4 ms-2">
+			<input {% if discountedOnly and terms %} checked {% endif %} id="discounted-only" name="d" type="checkbox" value="1" class="w-4 h-4 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
+			<label for="discounted-only" class="ms-2 text-sm font-medium text-gray-900">Samo znižana živila</label>
+		</div>
+	</form>
+	<table id="product-list" class="w-full text-sm sm:text-base text-left rtl:text-right text-gray-500">
+		<caption class="py-5 px-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
+			{% if terms %}
+				Seznam izdelkov, ki vsebujejo izraze:
+				{{ '"' ~ terms|join('","') ~'"' }}
+			{% else %}
+				Seznam najbolj znižanih izdelkov
+			{% endif %}
+		</caption>
+		{% set headers = ['Naziv izdelka', 'Cena', 'Popust', 'Enota'] %}
+		<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100">
+			<tr>
+				{% for item in headers %}
+					<th scope="col" class="cursor-pointer px-2 py-3 {% if item in ['Popust'] %}hidden sm:table-cell{% endif %}" aria-label="{{ item }}, kliknite za razvrščanje">
+						<div class="flex items-center">
+							{{ item }}
+							<a href="#">
+								<svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 24 24">
+									<path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+								</svg>
+							</a>
 						</div>
-					</li>
+					</th>
 				{% endfor %}
-			</ul>
+			</tr>
+		</thead>
+		<tbody class="text-gray-900 tracking-tighter sm:tracking-normal">
+			{% if products %}
+				{% for product in products %}
 
-			<div class="flex items-center mt-4 ms-2">
-				<input {% if discountedOnly and terms %} checked {% endif %} id="discounted-only" name="d" type="checkbox" value="1" class="w-4 h-4 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
-				<label for="discounted-only" class="ms-2 text-sm font-medium text-gray-900">Samo znižana živila</label>
-			</div>
-		</form>
-		<table id="product-list" class="w-full text-sm sm:text-base text-left rtl:text-right text-gray-500">
-			<caption class="py-5 px-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-				{% if terms %}
-					Seznam izdelkov, ki vsebujejo izraze:
-					{{ '"' ~ terms|join('","') ~'"' }}
-				{% else %}
-					Seznam najbolj znižanih izdelkov
-				{% endif %}
-			</caption>
-			{% set headers = ['Naziv izdelka', 'Cena', 'Popust', 'Enota'] %}
-			<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100">
-				<tr>
-					{% for item in headers %}
-						<th scope="col" class="cursor-pointer px-2 py-3 {% if item in ['Popust'] %}hidden sm:table-cell{% endif %}" aria-label="{{ item }}, kliknite za razvrščanje">
+					{% set daysAgo = null %}
+					{% if not product.updatedToday %}
+						{% set daysAgo = (("now"|date("U") - product.updatedAt|date("U")) / 86400) | round %}
+					{% endif %}
+
+					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}) %}
+					{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}) %}
+					<tr role="link" tabindex="0" class="{% if daysAgo %}bg-red-100{% else %}odd:bg-white even:bg-gray-50{% endif %} border-b border-gray-200 hover:bg-gray-200">
+						<td class="px-2 py-1 text-sm/4 sm:text-base/5 cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}" onclick="window.open('{{ product.url }}', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { window.open('{{ product.url }}', '_blank'); }" >
 							<div class="flex items-center">
-								{{ item }}
-								<a href="#">
-									<svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 24 24">
-										<path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-									</svg>
-								</a>
-							</div>
-						</th>
-					{% endfor %}
-				</tr>
-			</thead>
-			<tbody class="text-gray-900 tracking-tighter sm:tracking-normal">
-				{% if products %}
-					{% for product in products %}
-						{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}) %}
-						{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}) %}
-						<tr role="link" tabindex="0" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}" onclick="window.open('{{ product.url }}', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { window.open('{{ product.url }}', '_blank'); }" class="cursor-pointer odd:bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-200">
-							<td class="px-2 py-1 text-sm/4 sm:text-base/5">
-								<div class="flex items-center">
-									{% if not product.updatedToday %}
-										<div data-tooltip-target="{{ product.id }}-updated-at">
-											<svg class="fill-current h-4 w-4 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
-										</div>
-										{% set daysAgo = (("now"|date("U") - product.updatedAt|date("U")) / 86400) | round %}
-										<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
-											Cena je bila nazadnje osvežena pred
-											{{ daysAgo }}
-											dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
-										</div>
-									{% endif %}
-									<div>
-										{{ product.title }}
-										<br>
-										<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
-											{{ product.trgovina }}
-											<span>
-												{% if not product.updatedToday %}
-													(osveženo pred {{ daysAgo }} dnevi)
-												{% endif %}
-											</span>
-										</span>
-										
+								{% if daysAgo %}
+									<div data-tooltip-target="{{ product.id }}-updated-at">
+										<svg class="fill-current h-4 w-4 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
 									</div>
+									<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+										Cena je bila nazadnje osvežena pred
+										{{ daysAgo }}
+										dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
+									</div>
+								{% endif %}
+								<div>
+									{{ product.title }}
+									<br>
+									<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
+										{{ product.trgovina }}
+										<span>
+											{% if daysAgo %}
+												(osveženo pred {{ daysAgo }} dnevi)
+											{% endif %}
+										</span>
+									</span>
+									
 								</div>
-							</td>
-							<td class="px-2 py-1" data-sort='{{ price }}'>
-								{%- if regularPrice != price -%}
-									<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>	
-									<br class="sm:hidden">								
-									<span class="inline-flex items-center rounded-md bg-red-200 px-1 text-xs font-medium text-red-700 sm:hidden">
+							</div>
+						</td>
+						<td class="px-2 py-1" data-sort='{{ price }}'>
+							{%- if regularPrice != price -%}
+								<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>	
+								<br class="sm:hidden">								
+								<span class="inline-flex items-center rounded-md bg-red-200 px-1 text-xs font-medium text-red-700 sm:hidden">
+									-{{ product.discount }}%
+								</span>
+								<br>
+							{%- endif -%}
+							{{ price }}
+						</td>
+						<td class="px-2 py-1 hidden sm:table-cell">
+							<span class="flex items-center text-red-600">
+								{% if product.discount %}
+									<span class="inline-flex items-center rounded-md bg-red-200 px-2 py-1 text-xs font-medium text-red-700">
 										-{{ product.discount }}%
 									</span>
-									<br>
-								{%- endif -%}
-								{{ price }}
-							</td>
-							<td class="px-2 py-1 hidden sm:table-cell">
-								<span class="flex items-center text-red-600">
-									{% if product.discount %}
-										<span class="inline-flex items-center rounded-md bg-red-200 px-2 py-1 text-xs font-medium text-red-700">
-											-{{ product.discount }}%
-										</span>
-									{% endif %}
-								</span>
-							</td>
-							<td class="px-2 py-1">
-								{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
-								<span class="text-xs sm:text-sm text-gray-500">/
-									{{ product.unit }}</span>
-							</td>
-						</tr>
-					{% endfor %}
-				{% else %}
-					<tr>
-						<td colspan="4" class="no-results">Ni izdelkov, ki ustrezajo kriterijem.</td>
+								{% endif %}
+							</span>
+						</td>
+						<td class="px-2 py-1">
+							{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
+							<span class="text-xs sm:text-sm text-gray-500">/
+								{{ product.unit }}</span>
+						</td>
 					</tr>
-				{% endif %}
-			</tbody>
-		</table>
-	</div>
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="4" class="no-results">Ni izdelkov, ki ustrezajo kriterijem.</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
 {% endblock %}
