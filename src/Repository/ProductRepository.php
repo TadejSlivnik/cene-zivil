@@ -12,7 +12,7 @@ class ProductRepository extends EntityRepository
             ->addOrderBy('p.regularPrice', 'ASC')
             ->addOrderBy('p.price', 'ASC')
             ->addOrderBy('p.unitPrice', 'ASC')
-            ->setMaxResults(1000);
+            ->setMaxResults(500);
 
         if ($discountedOnly) {
             $qb->andWhere('p.discount IS NOT NULL')
