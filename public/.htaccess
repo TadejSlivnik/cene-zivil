@@ -25,16 +25,22 @@ DirectoryIndex index.php
 	AddOutputFilterByType DEFLATE application/javascript application/x-javascript
 	AddOutputFilterByType DEFLATE image/svg+xml
 </ifModule>
-<ifModule mod_expires.c>
-	ExpiresActive On
-	<filesMatch "\.(ico|jpg|jpeg|png|gif|js|css|woff|ttf|svg)$">
-		ExpiresDefault "access plus 1 month"
-	</filesMatch>
-</ifModule>
-<filesMatch "\.(ico|jpg|jpeg|png|gif|js|css|woff|ttf|ics|svg)$">
+<IfModule mod_expires.c>
+    ExpiresActive On
+    <FilesMatch "\.(js|css|webp|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$">
+        ExpiresDefault "access plus 1 year"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|webp|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+<FilesMatch "\.(ico|webp|jpg|jpeg|png|gif|js|css|woff|ttf|ics|svg)$">
 	Header unset ETag
 	FileETag None
-</filesMatch>
+</FilesMatch>
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
