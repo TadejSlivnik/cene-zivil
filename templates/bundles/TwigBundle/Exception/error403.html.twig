@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="text-lg space-y-4 mx-2">
+		<h1 class="mb-8 mt-16 text-4xl tracking-tight sm:text-5xl text-pretty mx-auto">403 Dostop zavrnjen</h1>
+		<p>Do te strani nimate dostopa.</p>
+		<p>
+			<a href="{{ path('index') }}" class="font-medium text-blue-600 underline">Vrni se na začetno stran</a>
+		</p>
+	</div>
+{% endblock %}
