@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Product;
 use App\Service\DmService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -43,11 +44,15 @@ class SyncDmCommand extends AbstractSyncCommand
         }
 
         $k = $commandLog->getDailyRun();
-        $this->io->text('Daily run: ' . $k);
         if (!array_key_exists($k, $this->categories)) {
+
             $this->io->writeln($this->getName() . ': All categories have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
+
+            $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
+            $this->markProductsAsDeletedIfOlderThanDays(3, Product::SOURCE_DM);
+
             return Command::SUCCESS;
         }
 

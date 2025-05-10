@@ -50,8 +50,24 @@ abstract class AbstractSyncCommand extends AbstractCommand
         return true;
     }
 
-	protected function updateProducts(array $items): void
-	{
+    protected function markProductsAsDeletedIfOlderThanDays(int $days, string $source): void
+    {
+        $date = new \DateTime('midnight');
+        $date->setTimezone(new \DateTimeZone('Europe/Ljubljana'));
+        $date->modify('-' . $days . ' days');
+        $this->io->writeln('Marking products as deleted if older than ' . $days . ' days. Date: ' . $date->format('Y-m-d H:i:s'));
+
+        $this->em->createQueryBuilder()
+            ->update(Product::class, 'p')
+            ->set('p.deletedAt', ':deletedAt')->setParameter('deletedAt', new \DateTime())
+            ->andWhere('p.updatedAt < :date')->setParameter('date', $date)
+            ->andWhere('p.source = :source')->setParameter('source', $source)
+            ->getQuery()
+            ->execute();
+    }
+
+    protected function updateProducts(array $items): void
+    {
         $progressBar = $this->io->createProgressBar(count($items));
 
         $k = 0;
@@ -61,6 +77,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 continue;
             }
 
+            $handled[] = $item['productId'];
+
             $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'productId' => $item['productId']]);
             if (!$product instanceof Product) {
                 $product = new Product();
@@ -69,8 +87,6 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $this->em->persist($product);
             }
 
-            $handled[] = $item['productId'];
-            
             $product->setTitle($item['title']);
             $product->setPrice($item['price']);
             $product->setRegularPrice($item['regularPrice']);
@@ -79,6 +95,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
             $product->setUnitPrice($item['unitPrice']);
             $product->setUnitQuantity($item['unitQuantity']);
             $product->setDiscount($item['discount']);
+            $product->setDeletedAt(null);
 
             if (++$k % static::DB_BATCH === 0) {
                 $this->em->flush();
@@ -89,8 +106,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
         }
 
         $progressBar->finish();
-        
+
         $this->em->flush();
         $this->em->clear();
-	}
+    }
 }

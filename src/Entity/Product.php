@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\GedmoSoftDeletable;
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
  * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="unique_product_source", columns={"product_id", "source"})})
+ * @Gedmo\SoftDeleteable()
  */
 class Product
 {
-    use Timestampable;
+    use Timestampable, GedmoSoftDeletable;
 
     const SOURCE_HOFER = 'hofer';
     const SOURCE_LIDL = 'lidl';

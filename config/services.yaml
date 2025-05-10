@@ -26,3 +26,8 @@ services:
     Gedmo\Timestampable\TimestampableListener:
         tags:
             - { name: doctrine.event_listener, event: onFlush }
+
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
