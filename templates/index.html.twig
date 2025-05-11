@@ -71,8 +71,8 @@
 						{% set daysAgo = (("now"|date("U") - product.updatedAt|date("U")) / 86400) | round %}
 					{% endif %}
 
-					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}) %}
-					{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}) %}
+					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}, 'sl') %}
+					{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}, 'sl') %}
 					<tr role="link" tabindex="0" class="{% if daysAgo %}bg-red-100{% else %}odd:bg-white even:bg-gray-50{% endif %} border-b border-gray-200 hover:bg-gray-200">
 						<td class="px-2 py-1 text-sm/4 sm:text-base/5 cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}" onclick="window.open('{{ product.url }}', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { window.open('{{ product.url }}', '_blank'); }" >
 							<div class="flex items-center">
@@ -122,7 +122,7 @@
 							</span>
 						</td>
 						<td class="px-2 py-1">
-							{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}) }}
+							{{ product.unitPrice|format_currency('EUR', {decimal_always_shown:true}, 'sl') }}
 							<span class="text-xs sm:text-sm text-gray-500">/
 								{{ product.unit }}</span>
 						</td>
