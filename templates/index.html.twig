@@ -37,34 +37,54 @@
 		</div>
 	</form>
 	<table id="product-list" class="w-full text-sm sm:text-base text-left rtl:text-right text-gray-500">
-		<caption class="py-5 px-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-			Seznam
-			{% if not terms %}
-				najbolj znižanih
-			{% endif %}
-			izdelkov
-			{%- if selectedSources -%}
-				{% if selectedSources|length > 1 %}
-					v trgovinah:
-				{% else %}
-					v trgovini
+		<caption class="pt-5 pb-2 px-2 text-lg text-left rtl:text-right text-gray-900">
+			<p>Seznam
+				{% if not terms %}
+					najbolj znižanih
+				{% elseif discountedOnly %}
+					<span class="font-semibold">znižanih</span>
 				{% endif %}
-
-				{% for key in selectedSources %}
-					{{ sources[key] }}
-					{%- if not loop.last -%}
-						,
-					{%- endif -%}
-				{%- endfor -%}
-			{%- endif -%}
-			{%- if terms -%}
-				, ki
-				{% if discountedOnly %}
-					so znižani in
+				izdelkov
+				{%- if terms -%}
+					{% if terms|length == 1 %}
+						z izrazom
+					{% elseif terms|length == 2 %}
+						z izrazoma
+					{% else %}
+						z izrazi
+					{% endif %}
+					{% for term in terms %}
+						{% if terms|length > 1 and loop.last %}
+							in
+						{% endif %}
+						<span class="font-semibold">»{{ term }}«</span>
+						{%- if loop.length - 1 > loop.index -%}
+							,
+						{%- endif -%}
+					{% endfor %}
 				{% endif %}
-				vsebujejo izraze:
-				{{ '"' ~ terms|join('","') ~'"' }}
-			{% endif %}
+				{%- if selectedSources -%}
+					{% if selectedSources|length == 1 %}
+						v trgovini
+					{% else %}
+						v trgovinah
+					{% endif %}
+					{% for key in selectedSources %}
+						{% if selectedSources|length > 1 and loop.last %}
+							in
+						{% endif %}
+						<span class="font-semibold">{{ sources[key] }}</span>
+						{%- if loop.length - 1 > loop.index -%}
+							,
+						{%- endif -%}
+					{%- endfor -%}
+				{%- endif -%}
+				.
+			</p>
+			<p>
+				Prikazani zapisi:
+				<span class="font-semibold">{{ products|length }}</span>
+			</p>
 		</caption>
 		{% set headers = ['Naziv izdelka', 'Cena', 'Popust', 'Enota'] %}
 		<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100">
