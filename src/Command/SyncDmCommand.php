@@ -50,8 +50,9 @@ class SyncDmCommand extends AbstractSyncCommand
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
 
-            $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
-            $this->markProductsAsDeletedIfOlderThanDays(3, Product::SOURCE_DM);
+            // dm doesnt remove pages of products...
+            // $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
+            // $this->markProductsAsDeletedIfOlderThanDays(3, Product::SOURCE_DM);
 
             return Command::SUCCESS;
         }
