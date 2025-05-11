@@ -178,3 +178,14 @@
 		</tbody>
 	</table>
 {% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{% if terms or selectedSources %}
+		<script>
+			window.onload = function () {
+document.getElementById("product-list").scrollIntoView({behavior: "smooth"});
+};
+		</script>
+	{% endif %}
+{% endblock %}
