@@ -6,33 +6,55 @@ use Doctrine\ORM\EntityRepository;
 
 class ProductRepository extends EntityRepository
 {
-    public function findByTerms(array $terms, bool $discountedOnly = false, array $sources = []): array
+    public function findByTerms(array $terms, bool $discountedOnly = false, array $sources = [], array $pins = []): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->addOrderBy('p.regularPrice', 'ASC')
-            ->addOrderBy('p.price', 'ASC')
-            ->addOrderBy('p.unitPrice', 'ASC')
             ->setMaxResults(500);
 
+        $or = $qb->expr()->orX();
+        $and = $qb->expr()->andX();
+
+        if ($pins) {
+            $or->add($qb->expr()->in('p.id', ':pins'));
+            $qb->setParameter('pins', $pins);
+
+            $caseExpr = 'CASE';
+            foreach ($pins as $i => $id) {
+                $id = (int)$id; // Ensure safety
+                $caseExpr .= " WHEN p.id = $id THEN $i";
+            }
+            $caseExpr .= ' ELSE 1000 END';
+
+            // Select hidden pin_order and order by it
+            $qb->addSelect("($caseExpr) AS HIDDEN pin_order");
+            $qb->addOrderBy('pin_order', 'ASC');
+        }
+
         if ($discountedOnly) {
-            $qb->andWhere('p.discount IS NOT NULL')
-                ->andWhere('p.discount > 0')
-                ->orderBy('p.discount', 'DESC')
-                ->addOrderBy('p.regularPrice', 'DESC')
-                ->addOrderBy('p.unitPrice', 'DESC')
-                ->addOrderBy('p.price', 'DESC');
+            $and->add($qb->expr()->gt('p.discount', 0));
+            $and->add($qb->expr()->isNotNull('p.discount'));
+
+            $qb->addOrderBy('p.discount', 'DESC');
         }
 
         if (!empty($sources)) {
-            $qb->andWhere('p.source IN (:sources)')
-                ->setParameter('sources', $sources);
+            $and->add($qb->expr()->in('p.source', ':sources'));
+            $qb->setParameter('sources', $sources);
         }
 
         foreach ($terms as $k => $term) {
-            $qb->andWhere("p.title LIKE :termA$k OR p.productId = :termB$k")
-                ->setParameter("termA$k", "%$term%")
-                ->setParameter("termB$k", "$term");
+            $and->add($qb->expr()->orX(
+                $qb->expr()->like('p.title', ":termA$k"),
+                $qb->expr()->eq('p.productId', ":termB$k")
+            ));
+            $qb->setParameter("termA$k", "%$term%")->setParameter("termB$k", "$term");
         }
+
+        $or->add($and);
+        $qb->where($or)
+            ->addOrderBy('p.regularPrice', 'ASC')
+            ->addOrderBy('p.price', 'ASC')
+            ->addOrderBy('p.unitPrice', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

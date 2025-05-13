@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
@@ -28,8 +30,10 @@ class IndexController extends AbstractController
             $terms = [];
             $discountedOnly = true;
         }
+        
+        $pins = $this->getPinsValue($request);
 
-        $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources);
+        $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources, $terms ? $pins : []);
         sort($terms);
 
         return $this->render('index.html.twig', [
@@ -42,6 +46,7 @@ class IndexController extends AbstractController
             'discountedOnly' => $discountedOnly,
             'sources' => Product::SOURCES,
             'selectedSources' => $sources,
+            'pins' => $pins,
         ]);
     }
 
@@ -67,5 +72,33 @@ class IndexController extends AbstractController
             'description' => 'Pogoji uporabe spletne strani Cene živil',
             'keywords' => 'pogoji uporabe, cene živil, pogoji',
         ]);
+    }
+
+    /**
+     * @Route("/pin/{id}", name="pin", methods={"GET"})
+     */
+    public function pin($id, Request $request)
+    {
+        $pins = $this->getPinsValue($request);
+
+        if (in_array($id, $pins)) {
+            unset($pins[array_search($id, $pins)]);
+        } else {
+            $pins[] = $id;
+        }
+
+        $response = new Response();
+        $response->headers->setCookie(new Cookie('zivila-pin', json_encode($pins), time() + 3600 * 24 * 30));
+        return $response;
+    }
+
+    private function getPinsValue(Request $request)
+    {
+        $pins = $request->cookies->get('zivila-pin', '');
+        $pins = json_decode($pins, true);
+        if (!is_array($pins)) {
+            $pins = [];
+        }
+        return $pins;
     }
 }

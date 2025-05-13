@@ -58,4 +58,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // bind the click event to the fetch buttons
+    const fetchButtons = document.querySelectorAll('.fetch-button');
+    fetchButtons.forEach((fetchButton) => {
+        fetchButton.addEventListener('click', () => {
+            const dataId = fetchButton.getAttribute('data-id');
+            if (dataId) {
+                fetch(`pin/${dataId}`)
+                    .then((data) => {
+                        const svg = fetchButton.querySelector('svg');
+                        if (svg.classList.contains('fill-red-700')) {
+                            svg.classList.remove('fill-red-700');
+                            svg.setAttribute('stroke-width', '1');
+                        } else {
+                            svg.classList.add('fill-red-700');
+                            svg.setAttribute('stroke-width', '0');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching pin:', error);
+                    });
+            }
+        });
+    })
 });
