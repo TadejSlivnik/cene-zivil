@@ -21,12 +21,14 @@ class Product
     const SOURCE_MERCATOR = 'mercator';
     const SOURCE_SPAR = 'spar';
     const SOURCE_DM = 'dm';
+    const SOURCE_TUS = 'tus';
     const SOURCES = [
         self::SOURCE_DM => 'dm',
         self::SOURCE_HOFER => 'HOFER',
         self::SOURCE_LIDL => 'Lidl',
         self::SOURCE_MERCATOR => 'Mercator',
         self::SOURCE_SPAR => 'SPAR',
+        self::SOURCE_TUS => 'Tuš',
     ];
 
     /**
