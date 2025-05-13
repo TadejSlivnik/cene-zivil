@@ -34,7 +34,14 @@ class ProductRepository extends EntityRepository
             $and->add($qb->expr()->gt('p.discount', 0));
             $and->add($qb->expr()->isNotNull('p.discount'));
 
-            $qb->addOrderBy('p.discount', 'DESC');
+            $qb->addOrderBy('p.discount', 'DESC')
+                ->addOrderBy('p.regularPrice', 'DESC')
+                ->addOrderBy('p.price', 'ASC')
+                ->addOrderBy('p.unitPrice', 'ASC');
+        } else {
+            $qb->addOrderBy('p.regularPrice', 'ASC')
+                ->addOrderBy('p.price', 'ASC')
+                ->addOrderBy('p.unitPrice', 'ASC');
         }
 
         if (!empty($sources)) {
@@ -51,10 +58,7 @@ class ProductRepository extends EntityRepository
         }
 
         $or->add($and);
-        $qb->where($or)
-            ->addOrderBy('p.regularPrice', 'ASC')
-            ->addOrderBy('p.price', 'ASC')
-            ->addOrderBy('p.unitPrice', 'ASC');
+        $qb->where($or);
 
         return $qb->getQuery()->getResult();
     }
