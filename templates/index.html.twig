@@ -141,16 +141,6 @@
 						</td>
 						<td class="px-2 py-1" data-sort='{{ price }}'>
 							<div class="flex items-center">
-								{% if daysAgo %}
-									<div data-tooltip-target="{{ product.id }}-updated-at">
-										<svg class="fill-current h-4 w-4 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
-									</div>
-									<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
-										Cena je bila nazadnje osvežena pred
-										{{ daysAgo }}
-										dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
-									</div>
-								{% endif %}
 								<div>
 									{%- if regularPrice != price -%}
 										<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>
@@ -162,6 +152,16 @@
 									{%- endif -%}
 									{{ price }}
 								</div>
+								{% if daysAgo %}
+									<div data-tooltip-target="{{ product.id }}-updated-at">
+										<svg class="fill-current h-4 w-4 text-red-500 ml-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
+									</div>
+									<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+										Cena je bila nazadnje osvežena pred
+										{{ daysAgo }}
+										dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
+									</div>
+								{% endif %}
 							</div>
 						</td>
 						<td class="px-2 py-1 hidden sm:table-cell">
