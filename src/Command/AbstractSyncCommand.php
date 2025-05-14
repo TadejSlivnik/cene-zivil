@@ -73,36 +73,54 @@ abstract class AbstractSyncCommand extends AbstractCommand
         $k = 0;
         $handled = [];
         foreach ($items as $item) {
-            if (in_array($item['productId'], $handled)) {
-                continue;
+
+            try {
+                if (in_array($item['productId'], $handled)) {
+                    continue;
+                }
+
+                if ($item['productId']) {
+                    $handled[] = $item['productId'];
+                    $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'productId' => $item['productId']]);
+                } else {
+                    $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'title' => $item['title']]);
+                }
+
+                if (!$product instanceof Product) {
+                    $product = new Product();
+                    $product->setSource($item['source']);
+                    $product->setProductId($item['productId']);
+                    $this->em->persist($product);
+                }
+
+                $product->setTitle($item['title']);
+                $product->setPrice($item['price']);
+                $product->setRegularPrice($item['regularPrice']);
+                $product->setUrl($item['url']);
+                $product->setUnit($item['unit']);
+                $product->setUnitPrice($item['unitPrice']);
+                $product->setUnitQuantity($item['unitQuantity']);
+                $product->setDiscount($item['discount']);
+                $product->setDeletedAt(null);
+
+                if (++$k % static::DB_BATCH === 0) {
+                    $this->em->flush();
+                    $this->em->clear();
+                }
+
+                $progressBar->advance();
+            } catch (\Throwable $th) {
+                if ($this->parameterBag->get('kernel.environment') === 'dev') {
+                    dump($item);
+                    throw $th;
+                }
+
+                $this->logger->error($th->getMessage(), [
+                    'command' => $this->getName(),
+                    'item' => $item,
+                    'exception' => $th,
+                ]);
             }
-
-            $handled[] = $item['productId'];
-
-            $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'productId' => $item['productId']]);
-            if (!$product instanceof Product) {
-                $product = new Product();
-                $product->setSource($item['source']);
-                $product->setProductId($item['productId']);
-                $this->em->persist($product);
-            }
-
-            $product->setTitle($item['title']);
-            $product->setPrice($item['price']);
-            $product->setRegularPrice($item['regularPrice']);
-            $product->setUrl($item['url']);
-            $product->setUnit($item['unit']);
-            $product->setUnitPrice($item['unitPrice']);
-            $product->setUnitQuantity($item['unitQuantity']);
-            $product->setDiscount($item['discount']);
-            $product->setDeletedAt(null);
-
-            if (++$k % static::DB_BATCH === 0) {
-                $this->em->flush();
-                $this->em->clear();
-            }
-
-            $progressBar->advance();
         }
 
         $progressBar->finish();

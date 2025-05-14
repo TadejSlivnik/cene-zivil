@@ -24,7 +24,7 @@ abstract class AbstractShopService
 
     public function parsePrice(string $price): float
     {
-        $price = str_replace(['€', ' '], '', $price);
+        $price = str_replace(['€', ' ', 'prej'], '', $price);
         $price = (float)str_replace([','], '.', trim($price));
         return $price;
     }
@@ -36,6 +36,9 @@ abstract class AbstractShopService
 
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
     {
+        $unitBase = str_replace([' '], '', $unitBase);
+
+        $unitQuantity = 1;
         switch ($unitBase) {
             case '1ml':
             case 'ml':
@@ -47,7 +50,6 @@ abstract class AbstractShopService
             case 'l':
             case '1l':
                 $unit = 'l';
-                $unitQuantity = 1;
                 break;
             case 'g':
                 $unitPrice *= 10;
@@ -58,10 +60,9 @@ abstract class AbstractShopService
             case 'kg':
             case '1kg':
                 $unit = 'kg';
-                $unitQuantity = 1;
                 break;
-            case '100list': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
-            case '10pranj': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
+            case '100list': // DM
+            case '10pranj': // DM
             case '10kos': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
             case '100kos': // DM - Namizno sladilo na osnovi stevie, v obliki tablet, 100 kos
             case '10vr': // DM - vrecke caja
@@ -69,19 +70,20 @@ abstract class AbstractShopService
             case '1kos': // DM
             case 'kos':
                 $unit = 'kos';
-                $unitQuantity = 1;
                 break;
             case 'm':
             case '1m':
                 $unit = 'm';
-                $unitQuantity = 1;
                 break;
             case '100m':
                 $unitPrice /= 10;
             case '10m':
                 $unit = 'm';
-                $unitQuantity = 1;
                 $unitPrice /= 10;
+                break;
+            case 'polnovedro':
+                $unit = 'kos';
+                $unitPrice = $price;
                 break;
             default:
                 throw new \Exception("Invalid unit base: $unitBase");

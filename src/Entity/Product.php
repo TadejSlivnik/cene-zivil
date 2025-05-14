@@ -39,7 +39,7 @@ class Product
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $productId;
 
@@ -79,7 +79,7 @@ class Product
     protected $unitQuantity;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $url;
 
@@ -87,6 +87,11 @@ class Product
      * @ORM\Column(type="string", length=255)
      */
     protected $source;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $promotionEndsDate;
 
     public function __toString(): string
     {
@@ -136,7 +141,7 @@ class Product
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl(?string $url): self
     {
         $this->url = $url;
         return $this;
@@ -229,5 +234,16 @@ class Product
             return false;
         }
         return $this->getUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+    }
+
+    public function getPromotionEndsDate(): ?\DateTimeInterface
+    {
+        return $this->promotionEndsDate;
+    }
+
+    public function setPromotionEndsDate(?\DateTimeInterface $promotionEndsDate): self
+    {
+        $this->promotionEndsDate = $promotionEndsDate;
+        return $this;
     }
 }

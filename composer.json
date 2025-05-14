@@ -14,6 +14,8 @@
         "doctrine/orm": "*",
         "gedmo/doctrine-extensions": "^3.20",
         "symfony/console": "5.4.*",
+        "symfony/css-selector": "5.4.*",
+        "symfony/dom-crawler": "5.4.*",
         "symfony/dotenv": "5.4.*",
         "symfony/flex": "^1.17|^2",
         "symfony/framework-bundle": "5.4.*",

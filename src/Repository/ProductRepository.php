@@ -9,6 +9,7 @@ class ProductRepository extends EntityRepository
     public function findByTerms(array $terms, bool $discountedOnly = false, array $sources = [], array $pins = []): array
     {
         $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.deletedAt IS NULL')
             ->setMaxResults(500);
 
         $or = $qb->expr()->orX();
@@ -58,7 +59,7 @@ class ProductRepository extends EntityRepository
         }
 
         $or->add($and);
-        $qb->where($or);
+        $qb->andWhere($or);
 
         return $qb->getQuery()->getResult();
     }
