@@ -58,7 +58,7 @@ class SyncSparCommand extends AbstractSyncCommand
             $this->em->flush();
 
             $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
-            $this->markProductsAsDeletedIfOlderThanDays(3, Product::SOURCE_SPAR);
+            $this->markProductsAsDeletedIfOlderThanDays(10, Product::SOURCE_SPAR);
 
             return Command::SUCCESS;
         }
