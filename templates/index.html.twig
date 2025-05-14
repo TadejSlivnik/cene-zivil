@@ -115,19 +115,12 @@
 					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}, 'sl') %}
 					{% set regularPrice = product.regularPrice|format_currency('EUR', {decimal_always_shown:true}, 'sl') %}
 					<tr role="link" tabindex="0" class="odd:bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-200 group relative">
-						<td class="px-2 py-1 text-sm/4 sm:text-base/5 cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}" onclick="window.open('{{ product.url }}', '_blank');" onkeydown="if(event.key === 'Enter' || event.key === ' ') { window.open('{{ product.url }}', '_blank'); }">
-							<div class="flex items-center">
-								{% if daysAgo %}
-									<div data-tooltip-target="{{ product.id }}-updated-at">
-										<svg class="fill-current h-4 w-4 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
-									</div>
-									<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
-										Cena je bila nazadnje osvežena pred
-										{{ daysAgo }}
-										dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
-									</div>
-								{% endif %}
-								<div>
+						<td class="px-2 py-1 text-sm/4 sm:text-base/5">
+							{% if product.url %}
+								<a href="{{ product.url }}" target="_blank" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}">
+								{% else %}
+									<div>
+									{% endif %}
 									{{ product.title }}
 									<br>
 									<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
@@ -140,19 +133,36 @@
 											{% endif %}
 										</span>
 									</span>
+									{% if product.url %}
+									</a>
+							{% else %}
 								</div>
-							</div>
+							{% endif %}
 						</td>
 						<td class="px-2 py-1" data-sort='{{ price }}'>
-							{%- if regularPrice != price -%}
-								<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>
-								<br class="sm:hidden">
-								<span class="inline-flex items-center rounded-md bg-red-100 px-1 text-xs font-medium text-red-700 sm:hidden">
-									-{{ product.discount }}%
-								</span>
-								<br>
-							{%- endif -%}
-							{{ price }}
+							<div class="flex items-center">
+								{% if daysAgo %}
+									<div data-tooltip-target="{{ product.id }}-updated-at">
+										<svg class="fill-current h-4 w-4 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg>
+									</div>
+									<div id="{{ product.id }}-updated-at" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip">
+										Cena je bila nazadnje osvežena pred
+										{{ daysAgo }}
+										dnevi.<br>To lahko pomeni, da je podatek o ceni zastarel<br>ali pa izdelek ni več na voljo.
+									</div>
+								{% endif %}
+								<div>
+									{%- if regularPrice != price -%}
+										<s class="text-red-600 text-xs sm:text-sm">{{ regularPrice }}</s>
+										<br class="sm:hidden">
+										<span class="inline-flex items-center rounded-md bg-red-100 px-1 text-xs font-medium text-red-700 sm:hidden">
+											-{{ product.discount }}%
+										</span>
+										<br>
+									{%- endif -%}
+									{{ price }}
+								</div>
+							</div>
 						</td>
 						<td class="px-2 py-1 hidden sm:table-cell">
 							<span class="flex items-center text-red-600">
@@ -168,10 +178,10 @@
 							<span class="text-xs sm:text-sm text-gray-500">/
 								{{ product.unit }}</span>
 						</td>
-						<td class="absolute right-0 top-1/2 -translate-y-1/2">
+						<td class="absolute right-0 top-1/5 sm:top-1/4 -translate-y-1/2">
 							<div class="flex items-center justify-end text-xs">
-								<button aria-label="Pripni izdelek {{ product.title }}" data-id="{{ product.id }}" class="fetch-button rounded-full focus:ring-4">
-									<svg class="w-4 h-4 {% if product.id in pins %}fill-red-700{% endif %}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="#374151" stroke-width="{% if product.id in pins %}0{% else %}1{% endif %}">
+								<button aria-label="Pripni izdelek {{ product.title }}" data-id="{{ product.id }}" class="cursor-pointer fetch-button rounded-full focus:ring-4">
+									<svg class="w-5 h-5 {% if product.id in pins %}fill-red-700{% endif %}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="#a7b1c1" stroke-width="{% if product.id in pins %}0{% else %}1{% endif %}">
 										<path d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z"/>
 									</svg>
 								</button>
