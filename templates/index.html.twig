@@ -93,7 +93,7 @@
 					<th scope="col" class="cursor-pointer px-2 py-3 {% if item in ['Popust'] %}hidden sm:table-cell{% endif %}" aria-label="{{ item }}, kliknite za razvrščanje">
 						<div class="flex items-center">
 							{{ item }}
-							<a href="#" aria-label="Sortiraj po {{ item }}">
+							<a href="#" rel="nofollow" aria-label="Sortiraj po {{ item }}">
 								<svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 24 24">
 									<path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
 								</svg>
@@ -117,7 +117,7 @@
 					<tr role="link" tabindex="0" class="odd:bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-200 group relative">
 						<td class="px-2 py-1 text-sm/4 sm:text-base/5">
 							{% if product.url %}
-								<a href="{{ product.url }}" target="_blank" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}">
+								<a href="{{ product.url }}" target="_blank" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}">
 								{% else %}
 									<div>
 									{% endif %}
