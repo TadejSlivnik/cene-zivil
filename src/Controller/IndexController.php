@@ -39,7 +39,7 @@ class IndexController extends AbstractController
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
             'metaTitle' => 'Cene živil v slovenskih trgovinah – primerjaj Mercator, Hofer, Lidl, Spar, Tuš, DM',
-            'metaDescription' => 'Primerjaj sveže cene živil v trgovinah Mercator, Hofer, Lidl, Spar, Tuš in DM. Preglej akcije, popuste, cene na enoto in hitro poišči želene izdelke.',
+            'metaDescription' => 'Primerjaj aktualne cene živil v trgovinah Mercator, Hofer, Lidl, Spar, Tuš in DM. Preglej akcije, popuste, cene na enoto in hitro poišči želene izdelke.',
             'metaKeywords' => 'cene živil, primerjava cen, trgovine Slovenija, Mercator, Hofer, Lidl, Spar, Tuš, DM, akcije, popusti, prehrambeni izdelki, živila',
             'products' => $products,
             'terms' => $terms,
