@@ -45,6 +45,9 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteCond %{HTTP_HOST} ^cene-zivil\.si$ [NC]
+    RewriteRule ^(.*)$ https://www.cene-zivil.si/$1 [R=301,L]
+
     # Microsoft Outlook spam
     RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover.xml [NC]
     RewriteRule .* - [F,L]
