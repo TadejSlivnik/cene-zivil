@@ -2,14 +2,14 @@
 <html lang="sl" class="min-h-screen">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}{{ title }}{% if title != 'Cene živil' %} | Cene živil{% endif %}{% endblock %}</title>
+        <title>{% block title %}{% if metaTitle is defined %}{{ metaTitle }}{% else %}{{ title }} | Cene živil{% endif %}{% endblock %}</title>
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-icon-180x180.png') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon/favicon-32x32.png') }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon/favicon-16x16.png') }}">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="{{ description }}">
-        <meta name="keywords" content="{{ keywords }}">
+        {% if metaDescription is defined %}<meta name="description" content="{{ metaDescription }}">{% endif %}
+        {% if metaKeywords is defined %}<meta name="keywords" content="{{ metaKeywords }}">{% endif %}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}

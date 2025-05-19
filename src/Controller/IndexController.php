@@ -38,8 +38,9 @@ class IndexController extends AbstractController
 
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
-            'description' => 'Cene živil - primerjaj cene živil v trgovinah',
-            'keywords' => 'cene živil, primerjaj cene, trgovine, akcije',
+            'metaTitle' => 'Cene živil v slovenskih trgovinah – primerjaj Mercator, Hofer, Lidl, Spar, Tuš, DM',
+            'metaDescription' => 'Primerjaj sveže cene živil v trgovinah Mercator, Hofer, Lidl, Spar, Tuš in DM. Preglej akcije, popuste, cene na enoto in hitro poišči želene izdelke.',
+            'metaKeywords' => 'cene živil, primerjava cen, trgovine Slovenija, Mercator, Hofer, Lidl, Spar, Tuš, DM, akcije, popusti, prehrambeni izdelki, živila',
             'products' => $products,
             'terms' => $terms,
             'query' => $query,
@@ -57,8 +58,6 @@ class IndexController extends AbstractController
     {
         return $this->render('disclaimer.html.twig', [
             'title' => 'Pravno obvestilo',
-            'description' => 'Pravno obvestilo spletne strani Cene živil',
-            'keywords' => 'pravno obvestilo, cene živil, pogoji',
         ]);
     }
 
@@ -69,8 +68,6 @@ class IndexController extends AbstractController
     {
         return $this->render('termsOfUse.html.twig', [
             'title' => 'Pogoji uporabe',
-            'description' => 'Pogoji uporabe spletne strani Cene živil',
-            'keywords' => 'pogoji uporabe, cene živil, pogoji',
         ]);
     }
 
