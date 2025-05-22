@@ -41,6 +41,7 @@ class IndexController extends AbstractController
             'metaTitle' => 'Cene živil v slovenskih trgovinah – primerjaj Mercator, Hofer, Lidl, Spar, Tuš, DM',
             'metaDescription' => 'Primerjaj aktualne cene živil v trgovinah Mercator, Hofer, Lidl, Spar, Tuš in DM. Preglej akcije, popuste, cene na enoto in hitro poišči želene izdelke.',
             'metaKeywords' => 'cene živil, primerjava cen, trgovine Slovenija, Mercator, Hofer, Lidl, Spar, Tuš, DM, akcije, popusti, prehrambeni izdelki, živila',
+            'canonical' => 'https://www.cene-zivil.si',
             'products' => $products,
             'terms' => $terms,
             'query' => $query,
