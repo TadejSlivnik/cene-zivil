@@ -117,27 +117,35 @@
 					<tr role="link" tabindex="0" class="odd:bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-200 group relative">
 						<td class="px-2 py-1 text-sm/4 sm:text-base/5">
 							{% if product.url %}
-								<a href="{{ product.url }}" target="_blank" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}">
-								{% else %}
-									<div>
-									{% endif %}
-									{{ product.title }}
-									<br>
-									<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
-										{{ product.trgovina }}
-										<span>
-											{% if daysAgo %}
-												(osveženo pred
-												{{ daysAgo }}
-												dnevi)
-											{% endif %}
-										</span>
-									</span>
-									{% if product.url %}
-									</a>
-							{% else %}
-								</div>
+								<a href="{{ product.url }}" target="_blank" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}.">
 							{% endif %}
+
+							{{ product.title }}
+							<br>
+							<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
+								{{ product.trgovina }}
+							</span>
+
+							{% if product.url %}
+								</a>
+							{% endif %}
+
+							{% set eanArray = product.eanArray %}
+							{% if eanArray %}
+								<br>
+								<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
+									EAN:
+									{% for ean in eanArray %}
+										<a href="?q={{ ean }}" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Iskanje EAN {{ ean }} v vseh trgovinah.">
+											{{- ean -}}
+										</a>
+										{%- if not loop.last -%}
+											,
+										{%- endif -%}
+									{% endfor %}
+								</span>
+							{% endif %}
+							
 						</td>
 						<td class="px-2 py-1" data-sort='{{ price }}'>
 							<div class="flex items-center">

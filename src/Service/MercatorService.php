@@ -53,7 +53,7 @@ class MercatorService extends AbstractShopService
                 'price' => $price,
                 'regularPrice' => $regularPrice,
                 'discount' => $this->getDiscount($price, $regularPrice),
-                // 'ean' => implode(',', array_column($item['data']['gtins'], 'gtin')),
+                'ean' => $this->parseEan(implode(',', array_column($item['data']['gtins'], 'gtin'))),
                 'productId' => $item['itemId'],
             ];
         }

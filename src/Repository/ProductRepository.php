@@ -53,9 +53,9 @@ class ProductRepository extends EntityRepository
         foreach ($terms as $k => $term) {
             $and->add($qb->expr()->orX(
                 $qb->expr()->like('p.title', ":termA$k"),
-                $qb->expr()->eq('p.productId', ":termB$k")
+                $qb->expr()->like('p.ean', ":termB$k")
             ));
-            $qb->setParameter("termA$k", "%$term%")->setParameter("termB$k", "$term");
+            $qb->setParameter("termA$k", "%$term%")->setParameter("termB$k", "%,$term,%");
         }
 
         $or->add($and);

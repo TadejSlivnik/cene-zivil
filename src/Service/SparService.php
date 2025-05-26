@@ -44,7 +44,7 @@ class SparService extends AbstractShopService
                 'price' => $price,
                 'regularPrice' => $regularPrice,
                 'discount' => $this->getDiscount($price, $regularPrice),
-                // 'ean' => $item['code-internal'],
+                'ean' => $this->parseEan($item['code-internal']),
                 'productId' => $item['product-number'],
             ];
         }

@@ -29,6 +29,27 @@ abstract class AbstractShopService
         return $price;
     }
 
+    public function parseEan(?string $ean): ?string
+    {
+        if (!$ean) {
+            return null;
+        }
+
+        $ean = explode(',', $ean);
+        $ean = array_map('trim', $ean);
+        $ean = array_filter($ean, function ($value) {
+            return preg_match('/^\d{8,13}$/', $value);
+        });
+
+        if (!$ean) {
+            return null;
+        }
+
+        $ean = ',' . implode(',', $ean) . ',';
+        return $ean;
+    }
+    
+
     public function getDiscount(float $price, float $regularPrice): ?int
     {
         return $regularPrice > $price ? (int)round(100 - ($price * 100 / $regularPrice)) : null;

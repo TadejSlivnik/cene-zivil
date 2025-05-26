@@ -44,6 +44,11 @@ class Product
     protected $productId;
 
     /**
+     * @ORM\Column(type="string", length=1024, nullable=true)
+     */
+    protected $ean;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     protected $title;
@@ -111,6 +116,25 @@ class Product
     public function setProductId(string $productId): self
     {
         $this->productId = $productId;
+        return $this;
+    }
+
+    public function getEanArray(): array
+    {
+        if (!$this->ean) {
+            return [];
+        }
+        return array_filter(explode(',', $this->ean));
+    }
+
+    public function getEan(): ?string
+    {
+        return $this->ean;
+    }
+
+    public function setEan(?string $ean): self
+    {
+        $this->ean = $ean;
         return $this;
     }
 

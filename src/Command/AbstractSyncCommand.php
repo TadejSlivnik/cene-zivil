@@ -101,6 +101,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setUnitPrice($item['unitPrice']);
                 $product->setUnitQuantity($item['unitQuantity']);
                 $product->setDiscount($item['discount']);
+                $product->setEan($item['ean']);
                 $product->setDeletedAt(null);
 
                 if (++$k % static::DB_BATCH === 0) {

@@ -43,7 +43,7 @@ class DmService extends AbstractShopService
                 'price' => $price,
                 'regularPrice' => $regularPrice,
                 'discount' => $this->getDiscount($price, $regularPrice),
-                // 'ean' => $item['gtin'],
+                'ean' => $this->parseEan($item['gtin']),
                 'productId' => $item['dan'],
             ];
         }
