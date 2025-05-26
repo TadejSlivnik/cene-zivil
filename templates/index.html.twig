@@ -87,7 +87,7 @@
 			</p>
 		</caption>
 		{% set headers = ['Naziv izdelka', 'Cena', 'Popust', 'Enota'] %}
-		<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100">
+		<thead class="sticky top-0 text-gray-700 uppercase bg-gray-100 z-5">
 			<tr>
 				{% for item in headers %}
 					<th scope="col" class="cursor-pointer px-2 py-3 {% if item in ['Popust'] %}hidden sm:table-cell{% endif %}" aria-label="{{ item }}, kliknite za razvrščanje">
