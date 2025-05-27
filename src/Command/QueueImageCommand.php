@@ -41,7 +41,7 @@ class QueueImageCommand extends AbstractCommand
 
         $this->removeCompletedQueueItems();
 
-        $queueItems = $this->em->getRepository(CommandQueueImage::class)->findBy(['completedAt' => null], ['tries' => 'ASC', 'id' => 'ASC'], $limit);
+        $queueItems = $this->em->getRepository(CommandQueueImage::class)->getNextInQueue($limit);
         if (!$queueItems) {
             $this->io->writeln($this->getName() . ': No items in the queue.');
             return Command::SUCCESS;

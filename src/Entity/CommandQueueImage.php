@@ -7,7 +7,7 @@ use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\CommandQueueImageRepository")
  * @ORM\Table()
  */
 class CommandQueueImage
