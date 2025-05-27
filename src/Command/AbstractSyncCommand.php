@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\CommandLog;
+use App\Entity\CommandQueueImage;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -101,8 +102,27 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setUnitPrice($item['unitPrice']);
                 $product->setUnitQuantity($item['unitQuantity']);
                 $product->setDiscount($item['discount']);
-                // $product->setEan($item['ean']);
                 $product->setDeletedAt(null);
+
+                if (isset($item['ean']) && $item['ean']) {
+                    $product->setEan($item['ean']);
+                } elseif (!$product->getEan() && isset($item['eanImage']) && $item['eanImage']) {
+                    $this->em->flush();
+
+                    $commandQueueImage = $this->em->getRepository(CommandQueueImage::class)->findOneBy(['product' => $product, 'completedAt' => null]);
+                    if (!$commandQueueImage instanceof CommandQueueImage) {
+                        $commandQueueImage = new CommandQueueImage();
+                        $commandQueueImage->setProduct($product);
+                        $commandQueueImage->setImageUrl($item['eanImage']);
+                        $this->em->persist($commandQueueImage);
+                    } else {
+                        $commandQueueImage->setImageUrl($item['eanImage']);
+                    }
+
+                    $this->em->flush();
+                    $this->em->clear();
+                    $k = 0;
+                }
 
                 if (++$k % static::DB_BATCH === 0) {
                     $this->em->flush();

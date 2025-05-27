@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\GedmoSoftDeletable;
+use App\Entity\Traits\Id;
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -14,7 +15,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 class Product
 {
-    use Timestampable, GedmoSoftDeletable;
+    use Id, Timestampable, GedmoSoftDeletable;
 
     const SOURCE_HOFER = 'hofer';
     const SOURCE_LIDL = 'lidl';
@@ -30,13 +31,6 @@ class Product
         self::SOURCE_SPAR => 'SPAR',
         self::SOURCE_TUS => 'Tuš',
     ];
-
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    protected $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -101,11 +95,6 @@ class Product
     public function __toString(): string
     {
         return $this->title;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getProductId(): ?string

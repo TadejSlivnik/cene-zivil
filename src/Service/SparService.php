@@ -10,7 +10,7 @@ class SparService extends AbstractShopService
     {
         $itemsPerPage = 6000;
         $category = strtoupper($category);
-        
+
         $url = "https://search-spar.spar-ics.com/fact-finder/rest/v4/search/products_lmos_si?query=*&q=*&page=1&hitsPerPage=$itemsPerPage&filter=category-path:$category";
 
         $items = $this->getJson($url);
@@ -44,7 +44,8 @@ class SparService extends AbstractShopService
                 'price' => $price,
                 'regularPrice' => $regularPrice,
                 'discount' => $this->getDiscount($price, $regularPrice),
-                'ean' => $this->parseEan($item['code-internal']),
+                'ean' => null,
+                'eanImage' => $item['image-url'] ?? null,
                 'productId' => $item['product-number'],
             ];
         }
