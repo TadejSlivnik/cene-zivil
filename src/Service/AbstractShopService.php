@@ -4,6 +4,41 @@ namespace App\Service;
 
 abstract class AbstractShopService
 {
+    public function curlRequest(string $url, array $data = [], array $headers = []): ?array
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+        $headers[] = 'Content-Type: application/json';
+
+        if ($data) {
+            curl_setopt($ch, CURLOPT_POST, true);
+
+            $jsonData = json_encode($data);
+            $jsonData = str_replace('"variables":[]', '"variables":{}', $jsonData); // Fix empty variables array -> convert to object
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            $headers[] = 'content-length: ' . strlen($jsonData);
+        }
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception("Curl error: $error");
+        }
+
+        curl_close($ch);
+
+        $response = json_decode($response, true);
+
+        return $response;
+    }
+
     public function getHtml(string $url): string
     {
         $html = file_get_contents($url);
@@ -57,7 +92,7 @@ abstract class AbstractShopService
 
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
     {
-        $unitBase = str_replace([' '], '', $unitBase);
+        $unitBase = strtolower(str_replace([' '], '', $unitBase));
 
         $unitQuantity = 1;
         switch ($unitBase) {

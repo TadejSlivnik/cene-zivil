@@ -27,6 +27,9 @@ abstract class AbstractSyncCommand extends AbstractCommand
         if (!$commandLog instanceof CommandLog) {
             $commandLog = new CommandLog();
             $commandLog->setCommand($this->getName());
+            if ($this->getName() === 'app:sync:tus') {
+                $commandLog->setMaxDailyRuns(200);
+            }
             $this->em->persist($commandLog);
         }
         return $commandLog;

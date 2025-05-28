@@ -2,22 +2,80 @@
 
 namespace App\Service\Api;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class GeminiApi
 {
-    protected $apiKey;
+    const MODEL_CACHE_KEY = 'gemini_model';
 
+    const MODELS = [
+        'gemini-2.5-flash-preview-05-20',
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-lite',
+        'gemini-1.5-flash',
+        'gemini-1.5-flash-8b',
+    ];
+
+    protected $apiKey;
+    protected $model = null;
     protected $lastImageBase64 = null;
 
-    public function __construct($apiKey)
+    protected CacheItemPoolInterface $cache;
+
+    public function __construct($apiKey, CacheItemPoolInterface $cache)
     {
         $this->apiKey = $apiKey;
+        $this->cache = $cache;
     }
 
-    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageUrl = null, string $model = 'gemini-2.0-flash')
+    protected function getModel()
     {
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent?key=' . $this->apiKey;
+        if ($this->model) {
+            return $this->model;
+        }
+
+        $item = $this->cache->getItem(self::MODEL_CACHE_KEY);
+        if ($item->isHit()) {
+            $this->model = $item->get();
+            return $this->model;
+        }
+
+        return $this->model === null ? self::MODELS[0] : $this->model;
+    }
+
+    protected function incrementModel()
+    {
+        if ($this->model === false) {
+            return $this->model;
+        }
+
+        $item = $this->cache->getItem(self::MODEL_CACHE_KEY);
+        if ($item->isHit()) {
+            $currentModel = $item->get();
+            $currentIndex = array_search($currentModel, self::MODELS);
+            $currentIndex = $currentIndex !== false ? $currentIndex : -1;
+
+            if ($currentIndex >= count(self::MODELS) - 1) {
+                // If we reached the end of the models, set model to false
+                $this->model = false;
+            } else {
+                $this->model = self::MODELS[$currentIndex + 1];
+            }
+        } else {
+            $this->model = self::MODELS[0];
+        }
+
+        $item->set($this->model);
+        $item->expiresAfter(86400); // 1 day
+        $this->cache->save($item);
+
+        return $this->model;
+    }
+
+    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageUrl = null)
+    {
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->getModel() . ':generateContent?key=' . $this->apiKey;
         $headers = [
             'Content-Type: application/json',
         ];
@@ -69,7 +127,10 @@ class GeminiApi
 
         $response = json_decode($response, true);
         if (isset($response['error'])) {
-            throw new ServiceUnavailableHttpException( null, $response['error']['message'], null, $response['error']['code'] ?? 0);
+            if ($this->incrementModel() === false) {
+                throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
+            }
+            return $this->apiRequest($query, $jsonResponseStructure, $imageUrl);
         }
 
         $response = $response['candidates'][0]['content']['parts'][0]['text'] ?? '';

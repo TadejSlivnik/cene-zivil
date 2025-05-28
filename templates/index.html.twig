@@ -24,8 +24,8 @@
 			{% for key, item in sources %}
 				<li class="w-full {% if not loop.last %} border-b border-gray-200 sm:border-b-0 sm:border-r {% endif %}">
 					<div class="flex items-center ps-3">
-						<input {% if key in selectedSources %} checked {% endif %} {% if key in ['hofer','lidl','tus'] %} disabled {% endif %} id="source-{{ key }}" name="sources[]" type="checkbox" value="{{ key }}" class="w-5 h-5 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
-						<label for="source-{{ key }}" class="w-full ms-2 py-3 text-sm font-medium {% if key in ['hofer','lidl','tus'] %} text-gray-400 {% else %} text-gray-900 {% endif %}">{{ item }}</label>
+						<input {% if key in selectedSources %} checked {% endif %} {% if key in ['hofer','lidl'] %} disabled {% endif %} id="source-{{ key }}" name="sources[]" type="checkbox" value="{{ key }}" class="w-5 h-5 accent-red-600 bg-red-700 rounded-sm focus:ring-2">
+						<label for="source-{{ key }}" class="w-full ms-2 py-3 text-sm font-medium {% if key in ['hofer','lidl'] %} text-gray-400 {% else %} text-gray-900 {% endif %}">{{ item }}</label>
 					</div>
 				</li>
 			{% endfor %}
