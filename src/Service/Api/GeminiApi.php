@@ -46,22 +46,12 @@ class GeminiApi
 
     protected function incrementModel()
     {
-        if ($this->model === false) {
-            return $this->model;
-        }
-
         $item = $this->cache->getItem(self::MODEL_CACHE_KEY);
         if ($item->isHit()) {
             $currentModel = $item->get();
             $currentIndex = array_search($currentModel, self::MODELS);
             $currentIndex = $currentIndex !== false ? $currentIndex : -1;
-
-            if ($currentIndex >= count(self::MODELS) - 1) {
-                // If we reached the end of the models, set model to false
-                $this->model = false;
-            } else {
-                $this->model = self::MODELS[$currentIndex + 1];
-            }
+            $this->model = self::MODELS[($currentIndex + 1) % count(self::MODELS)];
         } else {
             $this->model = self::MODELS[0];
         }
@@ -73,7 +63,7 @@ class GeminiApi
         return $this->model;
     }
 
-    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageUrl = null)
+    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageUrl = null, int $tries = 0)
     {
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->getModel() . ':generateContent?key=' . $this->apiKey;
         $headers = [
@@ -127,10 +117,10 @@ class GeminiApi
 
         $response = json_decode($response, true);
         if (isset($response['error'])) {
-            if ($this->incrementModel() === false) {
+            if ($tries > 1) {
                 throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
             }
-            return $this->apiRequest($query, $jsonResponseStructure, $imageUrl);
+            return $this->apiRequest($query, $jsonResponseStructure, $imageUrl, $tries + 1);
         }
 
         $response = $response['candidates'][0]['content']['parts'][0]['text'] ?? '';
