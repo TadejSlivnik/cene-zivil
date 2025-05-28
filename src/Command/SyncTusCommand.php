@@ -24,7 +24,7 @@ class SyncTusCommand extends AbstractSyncCommand
 
     protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
-        $this->io->title('Syncing Spar Products');
+        $this->io->title('Syncing Tus Products');
 
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
