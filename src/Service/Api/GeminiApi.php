@@ -71,7 +71,7 @@ class GeminiApi
 
         $data = ['contents' => [['parts' => [['text' => $query]]]]];
 
-        // Add image as a part if $imageUrl is provided
+        // Add image as a part if $imageBase64 is provided
         if ($imageBase64) {
             $data['contents'][0]['parts'][] = [
                 'inline_data' => [
@@ -109,7 +109,7 @@ class GeminiApi
             if ($tries > 1) {
                 throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
             }
-            return $this->apiRequest($query, $jsonResponseStructure, $imageUrl, $tries + 1);
+            return $this->apiRequest($query, $jsonResponseStructure, $imageBase64, $tries + 1);
         }
 
         $response = $response['candidates'][0]['content']['parts'][0]['text'] ?? '';
