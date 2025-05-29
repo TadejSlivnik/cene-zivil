@@ -124,6 +124,7 @@ abstract class AbstractShopService
             case '10vr': // DM - vrecke caja
                 $unitPrice = $price;
             case '1kos': // DM
+            case '1pakiranje': // lidl
             case 'kos':
                 $unit = 'kos';
                 break;

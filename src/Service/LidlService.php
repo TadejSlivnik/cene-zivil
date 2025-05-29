@@ -6,6 +6,97 @@ use App\Entity\Product;
 
 class LidlService extends AbstractShopService
 {
+    // Lidl API supports fetching a maximum of 100 items per request
+    const ITEMS_PER_PAGE = 100;
+
+    public function getProductsData(int $offset): array
+    {
+        $itemsPerPage = self::ITEMS_PER_PAGE;
+        $offset *= $itemsPerPage;
+        $url = "https://www.lidl.de/q/api/search?offset=$offset&fetchsize=$itemsPerPage&locale=sl_SI&assortment=SI&version=2.1.0";
+
+        $items = $this->getJson($url);
+        $items = $items['items'] ?? [];
+        if (!$items) {
+            throw new \Exception("No data found.");
+        }
+
+        $items = array_map(function ($item) {
+            $item = $item['gridbox'] ?? null;
+            foreach (['ageRestriction', 'awards', 'brand', 'cutoutimage', 'dealOfDay', 'designTheme', 'disclaimers', 'image', 'image_V1', 'imageList', 'imageList_V1', 'regions', 'ribbons', 'keyfacts'] as $i) {
+                unset($item['data'][$i]);
+            }
+            foreach (['categoryPaths', 'campaignPaths', 'retailLists', 'lists', 'wonCategoryBreadcrumbs', 'worldOfNeeds', 'preview'] as $i) {
+                unset($item['meta'][$i]);
+            }
+            return $item;
+        }, $items);
+
+
+        $data = [];
+        foreach ($items as $item) {
+
+            $productId = $item['id'] ?? null;
+            $title = $item['meta']['fullTitle'] ?? null;
+            $item = $item['data'] ?? null;
+            if (!$productId || !$title || !$item) {
+                continue;
+            }
+            $title = trim($title);
+
+            $url = "https://www.lidl.si/" . ltrim($item['canonicalPath'], '/');
+            
+
+            if ($item['lidlPlus']) {
+                if (sizeof($item['lidlPlus']) > 1) {
+                    dd($item['lidlPlus']);
+                }
+                $priceData = $item['lidlPlus'][0]['price'];
+            } else {
+                $priceData = $item['price'];
+            }
+
+            $price = $priceData['price'];
+            $regularPrice = isset($priceData['oldPrice']) && $priceData['oldPrice'] ? $priceData['oldPrice'] : $price;
+
+            if (isset($priceData['basePrice']['text'])) {
+                $unit = $priceData['basePrice']['text'];
+                $unit = explode('=', $unit);
+                $unitPrice = $this->parsePrice(trim($unit[1]));
+                $unit = trim($unit[0]);
+            } else {
+                $unit = 'kos';
+                $unitPrice = $price;
+            }
+
+            $discount = $priceData['discount']['percentageDiscount'] ?? $this->getDiscount($price, $regularPrice);
+
+            try {
+                [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
+
+            // TODO ADD PROMOTION ENDS DATE
+
+            $data[] = [
+                'source' => Product::SOURCE_LIDL,
+                'url' => $url,
+                'title' => $title,
+                'unit' => $unit,
+                'unitQuantity' => $unitQuantity,
+                'unitPrice' => $unitPrice,
+                'price' => $price,
+                'regularPrice' => $regularPrice,
+                'discount' => $discount,
+                'ean' => null,
+                'productId' => $productId,
+            ];
+        }
+
+        return $data;
+    }
+
     public function getProductLinks(): array
     {
         $sitemap = file_get_contents('https://www.lidl.si/p/export/SI/sl/product_sitemap.xml.gz');
