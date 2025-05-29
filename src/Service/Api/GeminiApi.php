@@ -19,7 +19,6 @@ class GeminiApi
 
     protected $apiKey;
     protected $model = null;
-    protected $lastImageBase64 = null;
 
     protected CacheItemPoolInterface $cache;
 
@@ -63,7 +62,7 @@ class GeminiApi
         return $this->model;
     }
 
-    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageUrl = null, int $tries = 0)
+    public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageBase64 = null, int $tries = 0)
     {
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->getModel() . ':generateContent?key=' . $this->apiKey;
         $headers = [
@@ -73,17 +72,7 @@ class GeminiApi
         $data = ['contents' => [['parts' => [['text' => $query]]]]];
 
         // Add image as a part if $imageUrl is provided
-        if ($imageUrl) {
-            $imageBase64 = base64_encode(file_get_contents($imageUrl));
-            if ($this->lastImageBase64 === $imageBase64) {
-                throw new \Exception('Image has not changed since last request... throwing exception to stop loop');
-            } else {
-                $this->lastImageBase64 = $imageBase64;
-            }
-            if ($imageBase64 === false) {
-                throw new \Exception('Failed to read image file');
-            }
-
+        if ($imageBase64) {
             $data['contents'][0]['parts'][] = [
                 'inline_data' => [
                     'mime_type' => 'image/jpeg',

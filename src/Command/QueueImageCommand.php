@@ -51,7 +51,6 @@ class QueueImageCommand extends AbstractCommand
             try {
                 $success = true;
                 $this->handleQueueItem($queueItem);
-                $this->em->flush();
             } catch (ServiceUnavailableHttpException $th) {
                 $this->io->warning($th->getMessage());
                 break;
@@ -60,6 +59,7 @@ class QueueImageCommand extends AbstractCommand
                 $queueItem->setLastError($th->getMessage());
                 $success = false;
             }
+            $this->em->flush();
         }
 
         return $success ? Command::SUCCESS : Command::FAILURE;
@@ -95,12 +95,25 @@ class QueueImageCommand extends AbstractCommand
 
                 $eanNumbers = [];
 
+                $lastImageBase64 = null;
                 for ($i = 0; $i <= 10; $i++) {
                     try {
                         $imageUrl = str_ireplace('dt_main.jpg', "dt_sub" . ($i == 0 ? '' : $i) . ".jpg", $queueItem->getImageUrl());
                         $this->io->writeln('Processing image URL: ' . $imageUrl);
+
+                        $imageBase64 = base64_encode(file_get_contents($imageUrl));
+                        if ($imageBase64 === false) {
+                            throw new \Exception('Failed to read image file');
+                        }
+
+                        if ($lastImageBase64 == $imageBase64) {
+                            throw new \Exception('Image has not changed since last request... throwing exception to stop loop');
+                        }
+
+                        $lastImageBase64 = $imageBase64;
+
                         $response = 'Extract the EAN code from the image of the product if it exists, otherwise return an empty string.';
-                        $response = $this->geminiApi->apiRequest($response, $jsonStructure, $imageUrl);
+                        $response = $this->geminiApi->apiRequest($response, $jsonStructure, $imageBase64);
                         $response = $response ? current($response) : null;
                         if (isset($response['ean']) && $response['ean']) {
                             $eanNumbers[] = $response['ean'];
