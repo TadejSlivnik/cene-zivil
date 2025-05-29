@@ -45,8 +45,8 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    RewriteCond %{HTTP_HOST} ^cene-zivil\.si$ [NC]
-    RewriteRule ^(.*)$ https://www.cene-zivil.si/$1 [R=301,L]
+    # RewriteCond %{HTTP_HOST} ^cene-zivil\.si$ [NC]
+    # RewriteRule ^(.*)$ https://www.cene-zivil.si/$1 [R=301,L]
 
     RewriteCond %{HTTP_HOST} ^cene\-zivil\.si\.thedarkfable\.com$ [OR]
     RewriteCond %{HTTP_HOST} ^www\.cene\-zivil\.si\.thedarkfable\.com$
