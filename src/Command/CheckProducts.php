@@ -56,8 +56,9 @@ class CheckProducts extends AbstractSyncCommand
             ->createQueryBuilder('p')
             ->andWhere('p.deletedAt IS NULL')
             ->andWhere('p.url IS NOT NULL')
-            ->andWhere('p.updatedAt < :threshold')
-            ->setParameter('threshold', new \DateTime('midnight'))
+            ->andWhere('p.updatedAt < :midnight')
+            ->andWhere('p.check404 IS NULL OR p.check404 < :midnight')
+            ->setParameter('midnight', new \DateTime('midnight'))
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
