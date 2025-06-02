@@ -106,7 +106,7 @@ class GeminiApi
 
         $response = json_decode($response, true);
         if (isset($response['error'])) {
-            if ($tries > 2) {
+            if ($tries > 1) {
                 throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
             }
             $this->incrementModel();
