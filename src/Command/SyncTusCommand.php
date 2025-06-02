@@ -26,9 +26,21 @@ class SyncTusCommand extends AbstractSyncCommand
     {
         $this->io->title('Syncing Tus Products');
 
+        $this->syncProductData();
+
+        return Command::SUCCESS;
+    }
+
+    protected function syncProductData(int $run = 0): void
+    {
+        if ($run >= 4) {
+            return;
+        }
+        
+        $this->em->clear();
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
-            return Command::SUCCESS;
+            return;
         }
 
         $k = $commandLog->getDailyRun();
@@ -44,7 +56,7 @@ class SyncTusCommand extends AbstractSyncCommand
             $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
             $this->markProductsAsDeletedIfOlderThanDays(10, Product::SOURCE_TUS);
 
-            return Command::SUCCESS;
+            return;
         }
 
         $this->io->text("Processing category: $category / $subCategory");
@@ -60,10 +72,13 @@ class SyncTusCommand extends AbstractSyncCommand
             $this->updateProducts($items);
             $this->io->newLine();
             $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
+
+            if (sizeof($items) < 20) {
+                $this->syncProductData($run + 1);
+            }
         } else {
             $this->em->flush();
+            $this->syncProductData($run + 1);
         }
-
-        return Command::SUCCESS;
     }
 }
