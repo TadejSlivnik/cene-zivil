@@ -241,4 +241,10 @@ class TusService extends AbstractShopService
 
         return ['', ''];
     }
+
+    public function getProductData(string $url): array
+    {
+        dd("TODO");
+        return [];
+    }
 }

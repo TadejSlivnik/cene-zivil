@@ -4,6 +4,8 @@ namespace App\Service;
 
 abstract class AbstractShopService
 {
+    public abstract function getProductData(string $url): array;
+
     public function curlRequest(string $url, array $data = [], array $headers = []): ?array
     {
         $ch = curl_init($url);

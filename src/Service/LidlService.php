@@ -123,6 +123,7 @@ class LidlService extends AbstractShopService
 
     public function getProductData(string $url): array
     {
+        dd("TODO");
         $html = $this->getHtml($url);
         $dom = new \DOMDocument();
         @$dom->loadHTML($html);

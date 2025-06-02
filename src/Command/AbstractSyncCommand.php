@@ -106,6 +106,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setUnitQuantity($item['unitQuantity']);
                 $product->setDiscount($item['discount']);
                 $product->setDeletedAt(null);
+                $product->setPriceUpdatedAt(new \DateTime());
 
                 if (isset($item['ean']) && $item['ean']) {
                     $product->setEan($item['ean']);
@@ -151,5 +152,18 @@ abstract class AbstractSyncCommand extends AbstractCommand
 
         $this->em->flush();
         $this->em->clear();
+    }
+
+    protected function updateProductPrice(Product $product, array $item): void
+    {
+        $product->setPrice($item['price']);
+        $product->setRegularPrice($item['regularPrice']);
+        $product->setUnit($item['unit']);
+        $product->setUnitPrice($item['unitPrice']);
+        $product->setUnitQuantity($item['unitQuantity']);
+        $product->setDiscount($item['discount']);
+        $product->setPriceUpdatedAt(new \DateTime());
+
+        $this->em->flush();
     }
 }

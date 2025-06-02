@@ -92,6 +92,16 @@ class Product
      */
     protected $promotionEndsDate;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $check404;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $priceUpdatedAt;
+
     public function __toString(): string
     {
         return $this->title;
@@ -235,18 +245,18 @@ class Product
 
     public function isUpToDate(): bool
     {
-        if ($this->getUpdatedAt() === null) {
+        if ($this->getPriceUpdatedAt() === null) {
             return false;
         }
-        return $this->getUpdatedAt()->diff(new \DateTime())->days < 7;
+        return $this->getPriceUpdatedAt()->diff(new \DateTime())->days < 7;
     }
 
     public function updatedToday(): bool
     {
-        if ($this->getUpdatedAt() === null) {
+        if ($this->getPriceUpdatedAt() === null) {
             return false;
         }
-        return $this->getUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
+        return $this->getPriceUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
     }
 
     public function getPromotionEndsDate(): ?\DateTimeInterface
@@ -257,6 +267,28 @@ class Product
     public function setPromotionEndsDate(?\DateTimeInterface $promotionEndsDate): self
     {
         $this->promotionEndsDate = $promotionEndsDate;
+        return $this;
+    }
+
+    public function getCheck404(): ?\DateTimeInterface
+    {
+        return $this->check404;
+    }
+
+    public function setCheck404(?\DateTimeInterface $check404): self
+    {
+        $this->check404 = $check404;
+        return $this;
+    }
+
+    public function getPriceUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->priceUpdatedAt;
+    }
+
+    public function setPriceUpdatedAt(?\DateTimeInterface $priceUpdatedAt): self
+    {
+        $this->priceUpdatedAt = $priceUpdatedAt;
         return $this;
     }
 }

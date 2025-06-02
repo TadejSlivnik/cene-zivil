@@ -186,4 +186,10 @@ class HoferService extends AbstractShopService
 
         return $items;
     }
+
+    public function getProductData(string $url): array
+    {
+        dd("TODO");
+        return [];
+    }
 }
