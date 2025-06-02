@@ -109,7 +109,7 @@
 
 					{% set daysAgo = null %}
 					{% if not product.updatedToday %}
-						{% set daysAgo = (("now"|date("U") - product.updatedAt|date("U")) / 86400) | round %}
+						{% set daysAgo = (("now"|date("U") - product.priceUpdatedAt|date("U")) / 86400) | round %}
 					{% endif %}
 
 					{% set price = product.price|format_currency('EUR', {decimal_always_shown:true}, 'sl') %}
