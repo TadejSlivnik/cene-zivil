@@ -109,6 +109,8 @@ class GeminiApi
             if ($tries > 1) {
                 throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
             }
+            $this->incrementModel();
+            // Retry the request with the next model
             return $this->apiRequest($query, $jsonResponseStructure, $imageBase64, $tries + 1);
         }
 
