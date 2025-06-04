@@ -59,6 +59,7 @@ class IndexController extends AbstractController
     {
         return $this->render('disclaimer.html.twig', [
             'title' => 'Pravno obvestilo',
+            'canonical' => 'https://www.cene-zivil.si/pravno-obvestilo',
         ]);
     }
 
@@ -69,6 +70,7 @@ class IndexController extends AbstractController
     {
         return $this->render('termsOfUse.html.twig', [
             'title' => 'Pogoji uporabe',
+            'canonical' => 'https://www.cene-zivil.si/pogoji-uporabe',
         ]);
     }
 
