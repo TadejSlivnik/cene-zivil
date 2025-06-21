@@ -10,7 +10,7 @@ class CommandQueueImageRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('q')
             ->andWhere('q.completedAt IS NULL')
-            ->andWhere('q.tries < 4')
+            ->andWhere('q.tries < 3')
             ->addOrderBy('q.tries', 'ASC')
             ->addOrderBy('q.id', 'ASC');
 
