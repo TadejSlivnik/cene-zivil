@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\CommandLog;
 use App\Entity\CommandQueueImage;
 use App\Entity\Product;
+use App\Entity\ProductPriceHistory;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -90,6 +91,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
                     $product = $this->em->getRepository(Product::class)->findOneBy(['source' => $item['source'], 'title' => $item['title']]);
                 }
 
+                // product price changed or is new product
+                $productPriceChanged = $this->productPriceChanged($product, $item);
                 if (!$product instanceof Product) {
                     $product = new Product();
                     $product->setSource($item['source']);
@@ -107,6 +110,10 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setDiscount($item['discount']);
                 $product->setDeletedAt(null);
                 $product->setPriceUpdatedAt(new \DateTime());
+
+                if ($productPriceChanged) {
+                    $this->createProductPriceHistory($product);
+                }
 
                 if (isset($item['ean']) && $item['ean']) {
                     $product->setEan($item['ean']);
@@ -165,5 +172,38 @@ abstract class AbstractSyncCommand extends AbstractCommand
         $product->setPriceUpdatedAt(new \DateTime());
 
         $this->em->flush();
+    }
+
+    /**
+     * Create a new ProductPriceHistory entry for the given product.
+     * This method is called when the product price changes or when a new product is created.
+     */
+    protected function createProductPriceHistory(Product $product): void
+    {
+        $productPriceHistory = new ProductPriceHistory();
+        $productPriceHistory->setProduct($product);
+        $productPriceHistory->setPrice($product->getPrice());
+        $productPriceHistory->setRegularPrice($product->getRegularPrice());
+        $productPriceHistory->setDiscount($product->getDiscount());
+        $productPriceHistory->setUnitPrice($product->getUnitPrice());
+        $productPriceHistory->setUnit($product->getUnit());
+        $productPriceHistory->setUnitQuantity($product->getUnitQuantity());
+        $productPriceHistory->setSource($product->getSource());
+
+        $this->em->persist($productPriceHistory);
+    }
+
+    /**
+     * Check if product price has changed based on the provided item data or if the product is new.
+     */
+    protected function productPriceChanged(?Product $product, array $item): bool
+    {
+        return !$product instanceof Product ||
+            $product->getPrice() !== $item['price'] ||
+            $product->getRegularPrice() !== $item['regularPrice'] ||
+            $product->getUnit() !== $item['unit'] ||
+            $product->getUnitPrice() !== $item['unitPrice'] ||
+            $product->getDiscount() !== $item['discount']
+        ;
     }
 }

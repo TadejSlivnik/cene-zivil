@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Traits\GedmoSoftDeletable;
 use App\Entity\Traits\Id;
 use App\Entity\Traits\Timestampable;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -101,6 +102,17 @@ class Product
      * @ORM\Column(type="datetime")
      */
     protected $priceUpdatedAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductPriceHistory", mappedBy="product", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    protected $priceHistories;
+
+    public function __construct()
+    {
+        $this->priceHistories = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
@@ -217,12 +229,12 @@ class Product
         return $this;
     }
 
-    public function getUnitQuantity(): ?string
+    public function getUnitQuantity(): ?int
     {
         return $this->unitQuantity;
     }
 
-    public function setUnitQuantity(string $unitQuantity): self
+    public function setUnitQuantity(int $unitQuantity): self
     {
         $this->unitQuantity = $unitQuantity;
         return $this;
@@ -289,6 +301,32 @@ class Product
     public function setPriceUpdatedAt(?\DateTimeInterface $priceUpdatedAt): self
     {
         $this->priceUpdatedAt = $priceUpdatedAt;
+        return $this;
+    }
+
+    public function getPriceHistories()
+    {
+        return $this->priceHistories;
+    }
+
+    public function addPriceHistory(ProductPriceHistory $priceHistory): self
+    {
+        if (!$this->priceHistories->contains($priceHistory)) {
+            $this->priceHistories[] = $priceHistory;
+            $priceHistory->setProduct($this);
+        }
+        return $this;
+    }
+
+    public function removePriceHistory(ProductPriceHistory $priceHistory): self
+    {
+        if ($this->priceHistories->contains($priceHistory)) {
+            $this->priceHistories->removeElement($priceHistory);
+            // set the owning side to null (unless already changed)
+            if ($priceHistory->getProduct() === $this) {
+                $priceHistory->setProduct(null);
+            }
+        }
         return $this;
     }
 }
