@@ -33,7 +33,7 @@ class SyncTusCommand extends AbstractSyncCommand
 
     protected function syncProductData(int $run = 0): void
     {
-        if ($run >= 4) {
+        if ($run >= 6) {
             return;
         }
         
@@ -73,12 +73,12 @@ class SyncTusCommand extends AbstractSyncCommand
             $this->io->newLine();
             $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
 
-            if (sizeof($items) < 30) {
+            if (sizeof($items) < 100) {
                 $this->syncProductData($run + 1);
             }
         } else {
             $this->em->flush();
-            $this->syncProductData($run + 1);
+            $this->syncProductData($run);
         }
     }
 }
