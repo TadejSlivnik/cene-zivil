@@ -22,12 +22,12 @@ class ProductPriceHistory
     protected $product;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @ORM\Column(type="decimal", precision=20, scale=6)
      */
     protected $price;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @ORM\Column(type="decimal", precision=20, scale=6)
      */
     protected $regularPrice;
 
@@ -37,7 +37,7 @@ class ProductPriceHistory
     protected $discount;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @ORM\Column(type="decimal", precision=20, scale=6)
      */
     protected $unitPrice;
 

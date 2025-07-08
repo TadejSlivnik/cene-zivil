@@ -73,7 +73,7 @@ class SyncTusCommand extends AbstractSyncCommand
             $this->io->newLine();
             $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
 
-            if (sizeof($items) < 20) {
+            if (sizeof($items) < 30) {
                 $this->syncProductData($run + 1);
             }
         } else {

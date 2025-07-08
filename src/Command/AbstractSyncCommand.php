@@ -199,11 +199,25 @@ abstract class AbstractSyncCommand extends AbstractCommand
     protected function productPriceChanged(?Product $product, array $item): bool
     {
         return !$product instanceof Product ||
-            $product->getPrice() !== $item['price'] ||
-            $product->getRegularPrice() !== $item['regularPrice'] ||
+            $this->normalizePrice($product->getPrice()) !== $this->normalizePrice($item['price']) ||
+            $this->normalizePrice($product->getRegularPrice()) !== $this->normalizePrice($item['regularPrice']) ||
             $product->getUnit() !== $item['unit'] ||
-            $product->getUnitPrice() !== $item['unitPrice'] ||
+            $this->normalizePrice($product->getUnitPrice()) !== $this->normalizePrice($item['unitPrice']) ||
             $product->getDiscount() !== $item['discount']
         ;
+    }
+
+    public function normalizePrice($price)
+    {
+        # 6 decimal places for price
+        if (is_numeric($price)) {
+            $price = number_format((float)$price, 6, '.', '');
+        } elseif (is_string($price)) {
+            $price = str_replace(',', '.', $price);
+            $price = number_format((float)$price, 6, '.', '');
+        } else {
+            throw new \InvalidArgumentException('Price must be a numeric value or a string representing a number.');
+        }
+        return $price;
     }
 }
