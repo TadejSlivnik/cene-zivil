@@ -158,7 +158,7 @@
 										</span>
 										<br>
 									{%- endif -%}
-									{% if product.getPriceHistoriesCount > 1 %}
+									{% if product.getPriceHistoriesCount > 2 %}
 										<button class="open-chart cursor-pointer fetch-button text-gray-900 font-semibold" data-id="{{ product.id }}" data-modal-target="chartModal" data-modal-toggle="chartModal">
 											<span class="inline-flex items-center">
 												{{ price }}
