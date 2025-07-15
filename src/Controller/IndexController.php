@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\ProductPriceHistory;
 use App\Entity\SearchTermCount;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -119,5 +120,57 @@ class IndexController extends AbstractController
             $pins = [];
         }
         return $pins;
+    }
+
+    /**
+     * @Route("/chart/{productId}", name="chart", methods={"GET"})
+     */
+    public function chart($productId)
+    {
+        $product = $this->getDoctrine()->getRepository(Product::class)->find($productId);
+        if (!$product instanceof Product) {
+            return $this->json(['error' => 'Product not found.'], 404);
+        }
+
+        $productPrices = $this->getDoctrine()->getRepository(ProductPriceHistory::class)->findBy(['product' => $productId], ['createdAt' => 'ASC']);
+        if (!$productPrices) {
+            return $this->json(['error' => 'No price history found for this product.'], 404);
+        }
+
+        $labels = [];
+        $data = [];
+        $data2 = [];
+        $dataFormatted = [];
+        $data2Formatted = [];
+        $formatter = new \NumberFormatter('sl_SI', \NumberFormatter::CURRENCY);
+        
+        foreach ($productPrices as $priceHistory) {
+            $labels[] = $priceHistory->getCreatedAt()->format('d.m.Y');
+            // Store raw values for chart calculations
+            $data[] = $priceHistory->getPrice();
+            $data2[] = $priceHistory->getRegularPrice();
+            
+            // Store formatted values for tooltips
+            $dataFormatted[] = $formatter->formatCurrency($priceHistory->getPrice(), 'EUR');
+            $data2Formatted[] = $formatter->formatCurrency($priceHistory->getRegularPrice(), 'EUR');
+        }
+
+        // Fetch chart data based on ID
+        return $this->json([
+            'title' => $product->getTitle(),
+            'trgovina' => $product->getTrgovina(),
+            'labels' => $labels,
+            'datasets' => [[
+                'label' => 'Redna cena',
+                'data' => $data2,
+                'stepped' => 'before',
+                'formattedData' => $data2Formatted,
+            ], [
+                'label' => 'Trenutna cena',
+                'data' => $data,
+                'stepped' => 'before',
+                'formattedData' => $dataFormatted,
+            ],]
+        ]);
     }
 }

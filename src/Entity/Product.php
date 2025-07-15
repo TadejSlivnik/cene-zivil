@@ -309,6 +309,11 @@ class Product
         return $this->priceHistories;
     }
 
+    public function getPriceHistoriesCount(): int
+    {
+        return $this->priceHistories->count();
+    }
+
     public function addPriceHistory(ProductPriceHistory $priceHistory): self
     {
         if (!$this->priceHistories->contains($priceHistory)) {

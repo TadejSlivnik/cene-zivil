@@ -16,6 +16,8 @@ import './styles/app.css';
 // enable the interactive UI components from Flowbite
 import 'flowbite';
 
+import Chart from 'chart.js/auto';
+
 import Tablesort from 'tablesort';
 document.addEventListener('DOMContentLoaded', () => {
     const table = document.getElementById('product-list');
@@ -82,4 +84,77 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     })
+
+    // Store the chart instance globally
+    let priceChart = null;
+
+    document.querySelectorAll('.open-chart').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            fetch(`/chart/${id}`).then(res => res.json()).then(data => {
+                const ctx = document.getElementById('myChart');
+
+                // Create chart title from product name and store
+                const chartTitle = data.title + ' - ' + data.trgovina;
+
+                // Destroy the previous chart if it exists
+                if (priceChart) {
+                    priceChart.destroy();
+                }
+
+                // Create a new chart
+                priceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartTitle,
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    bottom: 20
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const datasetIndex = context.datasetIndex;
+                                        const dataIndex = context.dataIndex;
+                                        const dataset = context.chart.data.datasets[datasetIndex];
+                                        
+                                        // Use formatted currency values if available
+                                        if (dataset.formattedData && dataset.formattedData[dataIndex]) {
+                                            return dataset.label + ': ' + dataset.formattedData[dataIndex];
+                                        }
+                                        // Fallback to raw values
+                                        return dataset.label + ': ' + context.parsed.y + ' €';
+                                    }
+                                }
+                            }
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    });
 });

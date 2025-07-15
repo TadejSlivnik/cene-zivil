@@ -7,7 +7,7 @@ use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ProductPriceHistoryRepository")
+ * @ORM\Entity()
  * @ORM\Table()
  */
 class ProductPriceHistory

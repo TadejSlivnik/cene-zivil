@@ -24,6 +24,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "chart.js": "^4.5.0",
         "flowbite": "^3.1.2",
         "tablesort": "^5.6.0"
     }

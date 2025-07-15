@@ -118,34 +118,34 @@
 						<td class="px-2 py-1 text-sm/4 sm:text-base/5">
 							{% if product.url %}
 								<a href="{{ product.url }}" target="_blank" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Povezava na izdelek {{ product.title }} v trgovini {{ product.trgovina }}.">
-							{% endif %}
+								{% endif %}
 
-							{{ product.title }}
-							<br>
-							<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
-								{{ product.trgovina }}
-							</span>
+								{{ product.title }}
+								<br>
+								<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
+									{{ product.trgovina }}
+								</span>
 
-							{% if product.url %}
+								{% if product.url %}
 								</a>
 							{% endif %}
 
 							{# {% set eanArray = product.eanArray %}
-							{% if eanArray %}
-								<br>
-								<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
-									EAN:
-									{% for ean in eanArray %}
-										<a href="?q={{ ean }}" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Iskanje EAN {{ ean }} v vseh trgovinah.">
-											{{- ean -}}
-										</a>
-										{%- if not loop.last -%}
-											,
-										{%- endif -%}
-									{% endfor %}
-								</span>
-							{% endif %} #}
-							
+																																										{% if eanArray %}
+																																											<br>
+																																											<span class="text-xs sm:text-sm text-gray-500 tracking-normal">
+																																												EAN:
+																																												{% for ean in eanArray %}
+																																													<a href="?q={{ ean }}" rel="nofollow" class="cursor-pointer hover:underline" aria-label="Iskanje EAN {{ ean }} v vseh trgovinah.">
+																																														{{- ean -}}
+																																													</a>
+																																													{%- if not loop.last -%}
+																																														,
+																																													{%- endif -%}
+																																												{% endfor %}
+																																											</span>
+																																										{% endif %} #}
+
 						</td>
 						<td class="px-2 py-1" data-sort='{{ price }}'>
 							<div class="flex items-center">
@@ -158,7 +158,19 @@
 										</span>
 										<br>
 									{%- endif -%}
-									{{ price }}
+									{% if product.getPriceHistoriesCount > 1 %}
+										<button class="open-chart cursor-pointer fetch-button text-gray-900 font-semibold" data-id="{{ product.id }}" data-modal-target="chartModal" data-modal-toggle="chartModal">
+											<span class="inline-flex items-center">
+												{{ price }}
+												<svg class="w-4 h-4 ml-1 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+													<path d="M4 17l6-6 4 4 6-6"/>
+												</svg>
+											</span>
+										</button>
+									{% else %}
+										{{ price }}
+									{% endif %}
+
 								</div>
 								{% if daysAgo %}
 									<div data-tooltip-target="{{ product.id }}-updated-at">
@@ -204,6 +216,32 @@
 			{% endif %}
 		</tbody>
 	</table>
+	<!-- Main modal -->
+	<div id="chartModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%)] max-h-full">
+		<div class="relative w-full h-full md:h-auto max-w-2xl mx-auto">
+			<!-- Modal content -->
+			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700 h-full md:h-auto">
+				<!-- Modal header -->
+				<div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+					<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+						Zgodovina cen
+					</h3>
+					<button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="chartModal">
+						<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+						</svg>
+						<span class="sr-only">Zapri</span>
+					</button>
+				</div>
+				<!-- Modal body -->
+				<div class="p-2 md:p-6">
+					<div class="h-[60vh] md:h-[50vh]">
+						<canvas id="myChart" class="w-full h-full"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
 
 {% block javascripts %}
