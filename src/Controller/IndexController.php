@@ -39,7 +39,11 @@ class IndexController extends AbstractController
                 $allTerms = array_unique(array_merge($previousTerms, $terms));
                 $session->set('search_terms', $allTerms);
 
-                if ($searchTerms = array_diff($terms, $previousTerms)) {
+                $searchTerms = array_diff($terms, $previousTerms);
+                $searchTerms = array_filter($searchTerms, function ($term) {
+                    return strlen($term) > 2; // Only track terms longer than 2 characters
+                });
+                if ($searchTerms) {
                     $em->getRepository(SearchTermCount::class)->addSearchTerms($searchTerms);
                     $em->clear();
                 }
