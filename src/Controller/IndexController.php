@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\SearchTermCount;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,7 +17,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/", name="index", methods={"GET"}, defaults={"query"=""})
      */
-    public function index(Request $request, EntityManagerInterface $em)
+    public function index(Request $request, EntityManagerInterface $em, RequestStack $requestStack)
     {
         $query = $request->query->get('q', '');
         $discountedOnly = (bool)$request->query->get('d', '');
@@ -30,7 +32,20 @@ class IndexController extends AbstractController
             $terms = [];
             $discountedOnly = true;
         }
-        
+
+        if ($terms) {
+            if ($session = $requestStack->getSession()) {
+                $previousTerms = $session->get('search_terms', []);
+                $allTerms = array_unique(array_merge($previousTerms, $terms));
+                $session->set('search_terms', $allTerms);
+
+                if ($searchTerms = array_diff($terms, $previousTerms)) {
+                    $em->getRepository(SearchTermCount::class)->addSearchTerms($searchTerms);
+                    $em->clear();
+                }
+            }
+        }
+
         $pins = $this->getPinsValue($request);
 
         $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources, $terms ? $pins : []);
