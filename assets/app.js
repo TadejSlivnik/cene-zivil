@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).catch(err => {
                         // console.error("Error getting cameras:", err);
                         if (readerElement) {
-                            readerElement.innerHTML = '<div class="text-center text-red-500 p-4">Napaka pri iskanju kamer.</div>';
+                            readerElement.innerHTML = '<div class="text-center text-red-500 p-4">Napaka pri iskanju kamere. Preverite dovoljenja.</div>';
                         }
                     });
                 }
