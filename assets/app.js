@@ -18,6 +18,13 @@ import 'flowbite';
 
 import Chart from 'chart.js/auto';
 
+// https://scanapp.org/html5-qrcode-docs/docs/intro
+// To use Html5QrcodeScanner (more info below)
+import { Html5QrcodeScanner } from "html5-qrcode";
+
+// To use Html5Qrcode (more info below)
+import { Html5Qrcode } from "html5-qrcode";
+
 import Tablesort from 'tablesort';
 document.addEventListener('DOMContentLoaded', () => {
     const table = document.getElementById('product-list');
@@ -128,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 mode: 'index',
                                 intersect: false,
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const datasetIndex = context.datasetIndex;
                                         const dataIndex = context.dataIndex;
                                         const dataset = context.chart.data.datasets[datasetIndex];
-                                        
+
                                         // Use formatted currency values if available
                                         if (dataset.formattedData && dataset.formattedData[dataIndex]) {
                                             return dataset.label + ': ' + dataset.formattedData[dataIndex];
@@ -156,5 +163,84 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         });
+    });
+
+    // QR Code scanner implementation
+    let html5QrScanner = null;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // handle the scanned code - set as search term and submit the form
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+        
+        // Close the QR scanner modal
+        const qrScannerModal = document.getElementById('qrScannerModal');
+        if (qrScannerModal && window.Flowbite) {
+            window.Flowbite.Modal.getOrCreateInstance(document.getElementById('qrScannerModal')).hide();
+        }
+        
+        // Stop the scanner
+        if (html5QrScanner) {
+            html5QrScanner.clear();
+        }
+        
+        // Set the scanned text as search term and submit the form
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.value = decodedText;
+            const searchForm = document.getElementById('search-form');
+            if (searchForm) {
+                searchForm.submit();
+            }
+        }
+    }
+
+    function onScanFailure(error) {
+        // handle scan failure, usually better to ignore and keep scanning.
+        console.warn(`Code scan error = ${error}`);
+    }
+    
+    // Initialize QR scanner when the modal is opened
+    const qrScanButton = document.getElementById('qr-scan-button');
+    if (qrScanButton) {
+        qrScanButton.addEventListener('click', () => {
+            // Initialize scanner after a small delay to ensure the modal is visible
+            setTimeout(() => {
+                if (!html5QrScanner) {
+                    // Get container width for responsive QR box sizing
+                    const readerElement = document.getElementById('reader');
+                    const containerWidth = readerElement ? readerElement.clientWidth : 300;
+                    const qrboxSize = Math.min(containerWidth - 50, 250); // Responsive QR box size
+                    
+                    html5QrScanner = new Html5QrcodeScanner("reader", { 
+                        fps: 10, 
+                        qrbox: { width: qrboxSize, height: qrboxSize },
+                        rememberLastUsedCamera: true,
+                        aspectRatio: 1.0
+                    });
+                    html5QrScanner.render(onScanSuccess, onScanFailure);
+                }
+            }, 300);
+        });
+    }
+    
+    // Handle scanner modal close buttons
+    const qrScannerCloseBtn = document.getElementById('qrScannerCloseBtn');
+    
+    function stopScanner() {
+        if (html5QrScanner) {
+            html5QrScanner.clear();
+            html5QrScanner = null;
+        }
+    }
+    
+    if (qrScannerCloseBtn) {
+        qrScannerCloseBtn.addEventListener('click', stopScanner);
+    }
+    
+    // Also handle modal hidden event to ensure scanner is stopped
+    document.addEventListener('hidden.bs.modal', function (event) {
+        if (event.target.id === 'qrScannerModal') {
+            stopScanner();
+        }
     });
 });
