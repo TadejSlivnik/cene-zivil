@@ -221,7 +221,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // Start scanning
                             html5QrScanner.start(
-                                cameraId,
+                                {
+                                    facingMode: "environment",
+                                },
                                 {
                                     fps: 10,
                                     qrbox: qrboxSize
