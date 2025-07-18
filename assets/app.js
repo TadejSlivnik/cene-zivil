@@ -167,22 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // QR Code scanner implementation
     let html5QrScanner = null;
+    let cameraId = null;
 
     function onScanSuccess(decodedText, decodedResult) {
         // handle the scanned code - set as search term and submit the form
-        console.log(`Code matched = ${decodedText}`, decodedResult);
-        
+        // console.log(`Code matched = ${decodedText}`, decodedResult);
+
         // Close the QR scanner modal
         const qrScannerModal = document.getElementById('qrScannerModal');
         if (qrScannerModal && window.Flowbite) {
             window.Flowbite.Modal.getOrCreateInstance(document.getElementById('qrScannerModal')).hide();
         }
-        
+
         // Stop the scanner
-        if (html5QrScanner) {
-            html5QrScanner.clear();
-        }
-        
+        stopScanner();
+
         // Set the scanned text as search term and submit the form
         const searchInput = document.querySelector('input[name="q"]');
         if (searchInput) {
@@ -194,11 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function onScanFailure(error) {
-        // handle scan failure, usually better to ignore and keep scanning.
-        console.warn(`Code scan error = ${error}`);
-    }
-    
     // Initialize QR scanner when the modal is opened
     const qrScanButton = document.getElementById('qr-scan-button');
     if (qrScanButton) {
@@ -206,37 +200,82 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize scanner after a small delay to ensure the modal is visible
             setTimeout(() => {
                 if (!html5QrScanner) {
-                    // Get container width for responsive QR box sizing
+                    // Create a loading message
                     const readerElement = document.getElementById('reader');
+                    if (readerElement) {
+                        readerElement.innerHTML = '<div class="text-center p-4">Zaganjam kamero...</div>';
+                    }
+
+                    // Get container width for responsive QR box sizing
                     const containerWidth = readerElement ? readerElement.clientWidth : 300;
                     const qrboxSize = Math.min(containerWidth - 50, 250); // Responsive QR box size
-                    
-                    html5QrScanner = new Html5QrcodeScanner("reader", { 
-                        fps: 10, 
-                        qrbox: { width: qrboxSize, height: qrboxSize },
-                        rememberLastUsedCamera: true,
-                        aspectRatio: 1.0
+
+                    // Create the scanner instance
+                    html5QrScanner = new Html5Qrcode("reader");
+
+                    // Get available cameras
+                    Html5Qrcode.getCameras().then(devices => {
+                        if (devices && devices.length > 0) {
+                            // Select the first camera
+                            cameraId = devices[0].id;
+
+                            // Start scanning
+                            html5QrScanner.start(
+                                cameraId,
+                                {
+                                    fps: 10,
+                                    qrbox: qrboxSize
+                                },
+                                onScanSuccess,
+                                (error) => {
+                                    // Just log errors but don't show to user
+                                    // console.warn(`Code scan error: ${error}`);
+                                }
+                            ).catch(err => {
+                                // console.error("Error starting scanner:", err);
+                                if (readerElement) {
+                                    readerElement.innerHTML = '<div class="text-center text-red-500 p-4">Napaka pri dostopu do kamere. Preverite dovoljenja.</div>';
+                                }
+                            });
+                        } else {
+                            if (readerElement) {
+                                readerElement.innerHTML = '<div class="text-center text-red-500 p-4">Ni razpoložljivih kamer.</div>';
+                            }
+                            // console.error("No cameras found");
+                        }
+                    }).catch(err => {
+                        // console.error("Error getting cameras:", err);
+                        if (readerElement) {
+                            readerElement.innerHTML = '<div class="text-center text-red-500 p-4">Napaka pri iskanju kamer.</div>';
+                        }
                     });
-                    html5QrScanner.render(onScanSuccess, onScanFailure);
                 }
             }, 300);
         });
-    }
-    
-    // Handle scanner modal close buttons
+    }    // Handle scanner modal close buttons
     const qrScannerCloseBtn = document.getElementById('qrScannerCloseBtn');
-    
+
     function stopScanner() {
-        if (html5QrScanner) {
-            html5QrScanner.clear();
+        if (html5QrScanner && html5QrScanner.isScanning) {
+            html5QrScanner.stop()
+                // .then(() => {
+                //     console.log('QR Scanner stopped');
+                // }).catch(err => {
+                //     console.error('Error stopping QR scanner:', err);
+                // });
             html5QrScanner = null;
         }
     }
-    
+
     if (qrScannerCloseBtn) {
         qrScannerCloseBtn.addEventListener('click', stopScanner);
     }
-    
+
+    const cancelScanBtn = document.getElementById('cancelScanBtn');
+    if (cancelScanBtn) {
+        cancelScanBtn.addEventListener('click', stopScanner);
+    }
+
     // Also handle modal hidden event to ensure scanner is stopped
     document.addEventListener('hidden.bs.modal', function (event) {
         if (event.target.id === 'qrScannerModal') {
