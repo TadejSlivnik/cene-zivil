@@ -109,6 +109,12 @@ abstract class AbstractShopService
             case '1l':
                 $unit = 'l';
                 break;
+            case '100l':
+                $unitPrice /= 10;
+            case '10l':
+                $unitPrice /= 10;
+                $unit = 'l';
+                break;
             case 'g':
                 $unitPrice *= 10;
             case '10g':
