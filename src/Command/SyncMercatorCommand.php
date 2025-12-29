@@ -53,7 +53,7 @@ class SyncMercatorCommand extends AbstractSyncCommand
     protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $this->io->title('Syncing Mercator Products');
-        
+
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
             return Command::SUCCESS;
@@ -75,7 +75,13 @@ class SyncMercatorCommand extends AbstractSyncCommand
 
         $this->io->text('Processing category: ' . $this->categories[$k], "(Batch " . ($k + 1) . "/" . count($this->categories) . ")");
 
-        $items = $this->mercatorService->getProductsData($this->categories[$k]);
+        try {
+            $items = $this->mercatorService->getProductsData($this->categories[$k]);
+        } catch (\Throwable $th) {
+            $commandLog->incrementDailyRun();
+            $this->io->writeln($this->getName() . ': Error fetching products: ' . $th->getMessage());
+            return Command::FAILURE;
+        }
 
         if (empty($items)) {
             $commandLog->setCompletedAt(new \DateTime());
