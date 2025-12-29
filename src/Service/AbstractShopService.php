@@ -127,6 +127,7 @@ abstract class AbstractShopService
                 break;
             case '100list': // DM
             case '10pranj': // DM
+            case '1pranj': // DM
             case '10kos': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
             case '100kos': // DM - Namizno sladilo na osnovi stevie, v obliki tablet, 100 kos
             case '10vr': // DM - vrecke caja
