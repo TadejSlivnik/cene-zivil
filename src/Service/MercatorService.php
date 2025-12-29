@@ -36,7 +36,7 @@ class MercatorService extends AbstractShopService
                 $item = explode("\n", $item);
                 $item = array_map('trim', $item);
                 $item = array_filter($item);
-                
+
                 foreach ($item as $v) {
                     if (strpos($v, 'Koda artikla:') !== false) {
                         // $code = trim(explode(':', $v)[1]);
@@ -46,7 +46,7 @@ class MercatorService extends AbstractShopService
                         $unit = trim($unitPrice[1]);
                         $unitPrice = $this->parsePrice($unitPrice[0]);
 
-        
+
                         [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
                     }
                 }
@@ -104,7 +104,7 @@ class MercatorService extends AbstractShopService
             [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
 
             $regularPrice = (float)$item['data']['normal_price'] ?: $price;
-            
+
             $data[] = [
                 'source' => Product::SOURCE_MERCATOR,
                 'url' => 'https://mercatoronline.si/' . ltrim($item['url'], '/'),

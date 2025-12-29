@@ -54,7 +54,7 @@ abstract class AbstractShopService
     {
         $json = file_get_contents($url);
         if ($json === false) {
-            throw new \Exception('Failed to load JSON file');
+            return [];
         }
         return json_decode($json, true);
     }
@@ -85,7 +85,7 @@ abstract class AbstractShopService
         $ean = ',' . implode(',', $ean) . ',';
         return $ean;
     }
-    
+
 
     public function getDiscount(float $price, float $regularPrice): ?int
     {
