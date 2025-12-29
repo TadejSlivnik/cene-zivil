@@ -79,7 +79,7 @@ class MercatorService extends AbstractShopService
 
         $items = $this->getJson($url);
         if (!$items) {
-            throw new \Exception("No data found");
+            return [];
         }
 
         $data = [];
