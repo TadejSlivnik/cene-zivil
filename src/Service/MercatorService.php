@@ -74,7 +74,7 @@ class MercatorService extends AbstractShopService
 
     public function getProductsData(string $category): array
     {
-        $itemsPerPage = 2500;
+        $itemsPerPage = 1750;
         $url = "https://mercatoronline.si/products/browseProducts/getProducts?limit=$itemsPerPage&offset=0&filterData[categories]=$category";
 
         $items = $this->getJson($url);

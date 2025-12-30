@@ -1,0 +1,9 @@
+{
+  "name": "PHP Symfony DevContainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "composer install && npm install",
+  "forwardPorts": [8000, 8080],
+  "remoteUser": "vscode"
+}
