@@ -5,5 +5,6 @@
   },
   "postCreateCommand": "composer install && npm install",
   "forwardPorts": [8000, 8080],
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "shutdownAction": "stopContainer"
 }
