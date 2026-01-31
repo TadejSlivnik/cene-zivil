@@ -1,5 +1,7 @@
 # Cene živil
 
+Website: https://www.cene-zivil.si/
+
 A simple open-source web application for comparing grocery prices in Slovenia. Built with Symfony, Doctrine, Webpack Encore, and modern JavaScript (ES6+), it aggregates and displays product prices from major Slovenian retailers.
 
 ## Features
