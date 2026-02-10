@@ -56,6 +56,10 @@ class IndexController extends AbstractController
         $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources, $terms ? $pins : []);
         sort($terms);
 
+        $sources = Product::SOURCES;
+        unset($sources[Product::SOURCE_HOFER]);
+        unset($sources[Product::SOURCE_LIDL]);
+
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
             'metaTitle' => 'Cene živil v slovenskih trgovinah – primerjaj Mercator, Hofer, Lidl, Spar, Tuš, DM',
@@ -143,13 +147,13 @@ class IndexController extends AbstractController
         $dataFormatted = [];
         $data2Formatted = [];
         $formatter = new \NumberFormatter('sl_SI', \NumberFormatter::CURRENCY);
-        
+
         foreach ($productPrices as $priceHistory) {
             $labels[] = $priceHistory->getCreatedAt()->format('d.m.Y');
             // Store raw values for chart calculations
             $data[] = $priceHistory->getPrice();
             $data2[] = $priceHistory->getRegularPrice();
-            
+
             // Store formatted values for tooltips
             $dataFormatted[] = $formatter->formatCurrency($priceHistory->getPrice(), 'EUR');
             $data2Formatted[] = $formatter->formatCurrency($priceHistory->getRegularPrice(), 'EUR');
