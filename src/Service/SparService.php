@@ -36,7 +36,8 @@ class SparService extends AbstractShopService
 
             $data[] = [
                 'source' => Product::SOURCE_SPAR,
-                'url' => 'https://www.spar.si/online/' . ltrim($item['url'], '/'),
+                // 'url' => 'https://www.spar.si/online/' . ltrim($item['url'], '/'),
+                'url' => 'https://online.spar.si/' . $item['id'],
                 'title' => $item['title'],
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,
