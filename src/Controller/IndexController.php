@@ -56,9 +56,9 @@ class IndexController extends AbstractController
         $products = $em->getRepository(Product::class)->findByTerms($terms, $discountedOnly, $sources, $terms ? $pins : []);
         sort($terms);
 
-        $sources = Product::SOURCES;
-        unset($sources[Product::SOURCE_HOFER]);
-        unset($sources[Product::SOURCE_LIDL]);
+        $showSources = Product::SOURCES;
+        unset($showSources[Product::SOURCE_HOFER]);
+        unset($showSources[Product::SOURCE_LIDL]);
 
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
@@ -70,7 +70,7 @@ class IndexController extends AbstractController
             'terms' => $terms,
             'query' => $query,
             'discountedOnly' => $discountedOnly,
-            'sources' => Product::SOURCES,
+            'sources' => $showSources,
             'selectedSources' => $sources,
             'pins' => $pins,
         ]);
