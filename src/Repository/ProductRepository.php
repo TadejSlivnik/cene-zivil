@@ -63,4 +63,25 @@ class ProductRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Find products with their price histories in batches
+     */
+    public function findProductsWithPriceHistory(array $sources, int $limit, int $page): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.priceHistories', 'ph')
+            ->addSelect('ph')
+            ->where('p.ean IS NOT NULL')
+            ->andWhere('p.deletedAt IS NULL')
+            ->andWhere('p.source IN (:sources)')
+            ->setParameter('sources', $sources)
+            ->orderBy('p.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
