@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class JsonOutputCommand extends Command
 {
     protected static $defaultName = 'app:json-output';
-    private const BATCH_SIZE = 5500;
+    private const BATCH_SIZE = 3500;
 
     private $em;
     private $parameterBag;
