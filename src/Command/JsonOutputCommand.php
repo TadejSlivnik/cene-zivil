@@ -107,6 +107,7 @@ class JsonOutputCommand extends Command
         return [
             'id' => $product->getId(),
             'ean' => $product->getEan(),
+            'source' => $product->getSource(),
             'prices' => $prices,
         ];
     }
