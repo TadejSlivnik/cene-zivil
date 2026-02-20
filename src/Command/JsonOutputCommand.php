@@ -116,6 +116,9 @@ class JsonOutputCommand extends Command
 
         if ($prices) {
             $prices[count($prices) - 1]['verifiedAt'] = new \DateTime('2025-12-08');
+            if ($product->getPriceUpdatedAt() < $prices[count($prices) - 1]['verifiedAt']) {
+                $prices[count($prices) - 1]['verifiedAt'] = $product->getPriceUpdatedAt();
+            }
         }
 
         return [
