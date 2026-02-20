@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Product;
+use App\Entity\ProductPriceHistory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -79,6 +80,7 @@ class JsonOutputCommand extends Command
         $priceHistories = $product->getPriceHistories()->toArray();
         $priceHistories = array_reverse($priceHistories);
 
+        /** @var ProductPriceHistory $priceHistory */
         foreach ($priceHistories as $priceHistory) {
             // Skip prices from 2026 and later
             if ($priceHistory->getCreatedAt() >= $cutoffDate) {
@@ -90,6 +92,7 @@ class JsonOutputCommand extends Command
 
             // Skip if same as previous price
             if ($lastPrice == $currentPrice && $lastRegularPrice == $currentRegularPrice) {
+                $prices[count($prices) - 1]['verifiedAt'] = $priceHistory->getCreatedAt(); // Update timestamp of last entry
                 continue;
             }
 
@@ -97,6 +100,7 @@ class JsonOutputCommand extends Command
                 'id' => $priceHistory->getId(),
                 'price' => $currentPrice,
                 'regularPrice' => $currentRegularPrice,
+                'verifiedAt' => $priceHistory->getCreatedAt(),
                 'createdAt' => $priceHistory->getCreatedAt(),
             ];
 
