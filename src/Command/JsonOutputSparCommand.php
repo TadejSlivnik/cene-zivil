@@ -4,16 +4,17 @@ namespace App\Command;
 
 use App\Entity\Product;
 use App\Entity\ProductPriceHistory;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class JsonOutputCommand extends Command
+class JsonOutputSparCommand extends Command
 {
-    protected static $defaultName = 'app:json-output';
-    private const BATCH_SIZE = 3500;
+    protected static $defaultName = 'app:json-output-spar';
+    private const BATCH_SIZE = 5000;
 
     private $em;
     private $parameterBag;
@@ -40,12 +41,28 @@ class JsonOutputCommand extends Command
      */
     private function processBatch(OutputInterface $output): void
     {
+        /** @var ProductRepository $repository */
         $repository = $this->em->getRepository(Product::class);
         $page = 1;
         $batchNumber = 1;
         $sources = [Product::SOURCE_DM, Product::SOURCE_MERCATOR, Product::SOURCE_TUS];
 
+        $eans = $repository->createQueryBuilder('p')
+            ->select('p.ean')
+            ->andWhere('p.source IN (:sources)')
+            ->andWhere('p.ean IS NOT NULL')
+            ->setParameter('sources', $sources)
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        $eans = array_unique(array_merge(...array_map(function ($ean) {
+            return array_unique(array_filter(explode(',', $ean)));
+        }, $eans)));
+
+        $sparEans = [];
+        $sources = [Product::SOURCE_SPAR];
         while (true) {
+            /** @var Product[] $products */
             $products = $repository->findProductsWithPriceHistory($sources, self::BATCH_SIZE, $page);
 
             if (empty($products)) {
@@ -54,6 +71,10 @@ class JsonOutputCommand extends Command
 
             $formattedProducts = [];
             foreach ($products as $product) {
+                if (!$product->getEan() || !in_array($product->getEan(), $eans)) {
+                    continue;
+                }
+                $sparEans[] = $product->getEan();
                 $formattedProducts[] = $this->formatProduct($product);
             }
 
@@ -64,6 +85,8 @@ class JsonOutputCommand extends Command
             $page++;
             $this->em->clear();
         }
+
+        $output->writeln($sparEans);
     }
 
     /**
@@ -134,7 +157,7 @@ class JsonOutputCommand extends Command
      */
     private function writeJsonFile(array $batch, int $batchNumber): void
     {
-        $jsonPath = $this->parameterBag->get('kernel.project_dir') . '/var/dump/gtin-dump/cene_zivil_produkti_' . $batchNumber . '.json';
+        $jsonPath = $this->parameterBag->get('kernel.project_dir') . '/var/dump/spar/cene_zivil_produkti_' . $batchNumber . '.json';
         file_put_contents($jsonPath, json_encode($batch, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }
