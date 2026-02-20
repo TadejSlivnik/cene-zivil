@@ -96,6 +96,12 @@ class JsonOutputCommand extends Command
                 continue;
             }
 
+            if ($lastPrice) {
+                $verifiedDate = clone $priceHistory->getCreatedAt();
+                $verifiedDate->modify('-1 day');
+                $prices[count($prices) - 1]['verifiedAt'] = $verifiedDate; // Update timestamp of last entry
+            }
+
             $prices[] = [
                 'id' => $priceHistory->getId(),
                 'price' => $currentPrice,
@@ -106,6 +112,10 @@ class JsonOutputCommand extends Command
 
             $lastPrice = $currentPrice;
             $lastRegularPrice = $currentRegularPrice;
+        }
+
+        if ($prices) {
+            $prices[count($prices) - 1]['verifiedAt'] = new \DateTime('2025-12-08');
         }
 
         return [
