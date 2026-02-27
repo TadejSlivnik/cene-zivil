@@ -13,11 +13,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class SyncHoferCommand extends AbstractSyncCommand
 {
-    protected $urls = [
-        'https://www.hofer.si/sl/ponudba/sadje-in-zelenjava-v-akciji.html',
-        'https://www.hofer.si/sl/ponudba/trajno-znizano.html'
-    ];
-
     protected $hoferService;
 
     public function __construct(ParameterBagInterface $parameterBag, LoggerInterface $logger, EntityManagerInterface $em, HoferService $hoferService)
@@ -30,7 +25,7 @@ class SyncHoferCommand extends AbstractSyncCommand
     protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $this->io->title('Syncing Hofer Products');
-        
+
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
             return Command::SUCCESS;
@@ -38,33 +33,21 @@ class SyncHoferCommand extends AbstractSyncCommand
 
         $k = $commandLog->getDailyRun();
         $this->io->text('Daily run: ' . $k);
-        if (!array_key_exists($k, $this->urls)) {
 
-            $this->io->writeln($this->getName() . ': All urls have been processed.');
+        $items = $this->hoferService->getProductsData($k);
+
+        $commandLog->incrementDailyRun();
+        $this->updateProducts($items);
+
+        if (sizeof($items) < HoferService::ITEMS_PER_PAGE) {
+            $commandLog = $this->getCommandLog();
+            $this->io->writeln($this->getName() . ': No new products found - all products have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
 
-            // $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
-            // $this->markProductsAsDeletedIfOlderThanDays(3, Product::SOURCE_HOFER);
-
-            return Command::SUCCESS;
+            $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
+            $this->markProductsAsDeletedIfOlderThanDays(30, Product::SOURCE_HOFER);
         }
-
-        $this->io->text('Processing urls: ' . $this->urls[$k], "(Batch " . ($k + 1) . "/" . count($this->urls) . ")");
-
-        $items = $this->hoferService->getProductsData($this->urls[$k]);
-        if ($items === null) {
-            $this->io->writeln($this->getName() . ': Not OK data from AI. Will try again...');
-            return Command::SUCCESS;
-        }
-
-        if (empty($items)) {
-            $this->io->writeln($this->getName() . ': No new products found.');
-            return Command::SUCCESS;
-        }
-
-        // $commandLog->incrementDailyRun();
-        $this->updateProducts($items);
 
         $this->io->newLine();
         $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);

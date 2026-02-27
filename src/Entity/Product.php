@@ -159,12 +159,12 @@ class Product
         $this->title = $title;
         return $this;
     }
-    
+
     public function getPrice(): ?float
     {
         return $this->price;
     }
-    
+
     public function setPrice(float $price): self
     {
         $this->price = $price;
@@ -239,7 +239,7 @@ class Product
         $this->unitQuantity = $unitQuantity;
         return $this;
     }
-    
+
     public function getDiscount(): ?int
     {
         return $this->discount;

@@ -134,7 +134,13 @@ abstract class AbstractShopService
                 $unitPrice = $price;
             case '1kos': // DM
             case '1pakiranje': // lidl
+            case 'zvitek': // hofer
             case 'kos':
+                $unit = 'kos';
+                break;
+            case 'par': // DM - Par koles
+                $unitQuantity = 2;
+                $unitPrice = $price / 2;
                 $unit = 'kos';
                 break;
             case 'm':
@@ -147,6 +153,7 @@ abstract class AbstractShopService
                 $unit = 'm';
                 $unitPrice /= 10;
                 break;
+            case 'pranje':
             case 'polnovedro':
                 $unit = 'kos';
                 $unitPrice = $price;
