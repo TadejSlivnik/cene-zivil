@@ -125,19 +125,6 @@ abstract class AbstractShopService
             case '1kg':
                 $unit = 'kg';
                 break;
-            case '100list': // DM
-            case '10pranj': // DM
-            case '1pranj': // DM
-            case '10kos': // DM - Maca Vitae, prehransko dopolnilo, 90 kos
-            case '100kos': // DM - Namizno sladilo na osnovi stevie, v obliki tablet, 100 kos
-            case '10vr': // DM - vrecke caja
-                $unitPrice = $price;
-            case '1kos': // DM
-            case '1pakiranje': // lidl
-            case 'zvitek': // hofer
-            case 'kos':
-                $unit = 'kos';
-                break;
             case 'par': // DM - Par koles
                 $unitQuantity = 2;
                 $unitPrice = $price / 2;
@@ -153,13 +140,10 @@ abstract class AbstractShopService
                 $unit = 'm';
                 $unitPrice /= 10;
                 break;
-            case 'pranje':
-            case 'polnovedro':
+            default:
                 $unit = 'kos';
                 $unitPrice = $price;
                 break;
-            default:
-                throw new \Exception("Invalid unit base: $unitBase");
         }
 
         return [$unit, $unitQuantity, $unitPrice];

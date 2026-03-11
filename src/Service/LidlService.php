@@ -9,10 +9,14 @@ class LidlService extends AbstractShopService
     // Lidl API supports fetching a maximum of 100 items per request
     const ITEMS_PER_PAGE = 100;
 
-    public function getProductsData(int $offset): array
+    public function getProductsData(int $page = 1): array
     {
+        if ($page < 1) {
+            throw new \InvalidArgumentException("Page number must be greater than 0.");
+        }
+
         $itemsPerPage = self::ITEMS_PER_PAGE;
-        $offset *= $itemsPerPage;
+        $offset = ($page - 1) * $itemsPerPage;
         $url = "https://www.lidl.de/q/api/search?offset=$offset&fetchsize=$itemsPerPage&locale=sl_SI&assortment=SI&version=2.1.0";
 
         $items = $this->getJson($url);
@@ -21,17 +25,7 @@ class LidlService extends AbstractShopService
             throw new \Exception("No data found.");
         }
 
-        $items = array_map(function ($item) {
-            $item = $item['gridbox'] ?? null;
-            foreach (['ageRestriction', 'awards', 'brand', 'cutoutimage', 'dealOfDay', 'designTheme', 'disclaimers', 'image', 'image_V1', 'imageList', 'imageList_V1', 'regions', 'ribbons', 'keyfacts'] as $i) {
-                unset($item['data'][$i]);
-            }
-            foreach (['categoryPaths', 'campaignPaths', 'retailLists', 'lists', 'wonCategoryBreadcrumbs', 'worldOfNeeds', 'preview'] as $i) {
-                unset($item['meta'][$i]);
-            }
-            return $item;
-        }, $items);
-
+        $items = array_column($items, 'gridbox');
 
         $data = [];
         foreach ($items as $item) {
@@ -45,7 +39,7 @@ class LidlService extends AbstractShopService
             $title = trim($title);
 
             $url = "https://www.lidl.si/" . ltrim($item['canonicalPath'], '/');
-            
+
 
             if ($item['lidlPlus']) {
                 if (sizeof($item['lidlPlus']) > 1) {
@@ -62,8 +56,13 @@ class LidlService extends AbstractShopService
             if (isset($priceData['basePrice']['text'])) {
                 $unit = $priceData['basePrice']['text'];
                 $unit = explode('=', $unit);
-                $unitPrice = $this->parsePrice(trim($unit[1]));
-                $unit = trim($unit[0]);
+                if (sizeof($unit) == 2) {
+                    $unitPrice = $this->parsePrice(trim($unit[1]));
+                    $unit = trim($unit[0]);
+                } else {
+                    $unit = 'kos';
+                    $unitPrice = $price;
+                }
             } else {
                 $unit = 'kos';
                 $unitPrice = $price;
@@ -77,7 +76,8 @@ class LidlService extends AbstractShopService
                 throw $th;
             }
 
-            // TODO ADD PROMOTION ENDS DATE
+            $promotionEndsDate = $item['storeEndDate'] ?? null;
+            $promotionEndsDate = $promotionEndsDate ? (new \DateTime())->setTimestamp($promotionEndsDate)->setTimezone(new \DateTimeZone('Europe/Ljubljana')) : null;
 
             $data[] = [
                 'source' => Product::SOURCE_LIDL,
@@ -91,6 +91,7 @@ class LidlService extends AbstractShopService
                 'discount' => $discount,
                 'ean' => null,
                 'productId' => $productId,
+                'promotionEndsDate' => $promotionEndsDate,
             ];
         }
 

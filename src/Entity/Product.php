@@ -91,11 +91,6 @@ class Product
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $promotionEndsDate;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
     protected $check404;
 
     /**
@@ -269,17 +264,6 @@ class Product
             return false;
         }
         return $this->getPriceUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
-    }
-
-    public function getPromotionEndsDate(): ?\DateTimeInterface
-    {
-        return $this->promotionEndsDate;
-    }
-
-    public function setPromotionEndsDate(?\DateTimeInterface $promotionEndsDate): self
-    {
-        $this->promotionEndsDate = $promotionEndsDate;
-        return $this;
     }
 
     public function getCheck404(): ?\DateTimeInterface

@@ -112,7 +112,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
                 $product->setPriceUpdatedAt(new \DateTime());
 
                 if ($productPriceChanged) {
-                    $this->createProductPriceHistory($product);
+                    $this->createProductPriceHistory($product, $item['promotionEndsDate'] ?? null);
                 }
 
                 if (isset($item['ean']) && $item['ean']) {
@@ -178,7 +178,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
      * Create a new ProductPriceHistory entry for the given product.
      * This method is called when the product price changes or when a new product is created.
      */
-    protected function createProductPriceHistory(Product $product): void
+    protected function createProductPriceHistory(Product $product, ?\DateTimeInterface $promotionEndsDate = null): void
     {
         $productPriceHistory = new ProductPriceHistory();
         $productPriceHistory->setProduct($product);
@@ -189,6 +189,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
         $productPriceHistory->setUnit($product->getUnit());
         $productPriceHistory->setUnitQuantity($product->getUnitQuantity());
         $productPriceHistory->setSource($product->getSource());
+        $productPriceHistory->setPromotionEndsDate($promotionEndsDate);
 
         $this->em->persist($productPriceHistory);
     }
@@ -203,8 +204,7 @@ abstract class AbstractSyncCommand extends AbstractCommand
             $this->normalizePrice($product->getRegularPrice()) !== $this->normalizePrice($item['regularPrice']) ||
             $product->getUnit() !== $item['unit'] ||
             $this->normalizePrice($product->getUnitPrice()) !== $this->normalizePrice($item['unitPrice']) ||
-            $product->getDiscount() !== $item['discount']
-        ;
+            $product->getDiscount() !== $item['discount'];
     }
 
     public function normalizePrice($price)

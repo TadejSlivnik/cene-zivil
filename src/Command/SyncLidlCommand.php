@@ -24,7 +24,7 @@ class SyncLidlCommand extends AbstractSyncCommand
     protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $this->io->title('Syncing Lidl Products');
-        
+
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
             return Command::SUCCESS;
@@ -32,7 +32,7 @@ class SyncLidlCommand extends AbstractSyncCommand
 
         $k = $commandLog->getDailyRun();
 
-        $items = $this->lidlService->getProductsData($k);
+        $items = $this->lidlService->getProductsData($k + 1);
 
         if (sizeof($items) < LidlService::ITEMS_PER_PAGE) {
             $commandLog->setCompletedAt(new \DateTime());

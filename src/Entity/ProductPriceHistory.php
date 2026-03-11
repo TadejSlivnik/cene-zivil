@@ -55,7 +55,17 @@ class ProductPriceHistory
      * @ORM\Column(type="string", length=255)
      */
     protected $source;
-    
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $promotionEndsDate;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $promotionHandled;
+
     public function getProduct(): ?Product
     {
         return $this->product;
@@ -66,12 +76,12 @@ class ProductPriceHistory
         $this->product = $product;
         return $this;
     }
-    
+
     public function getPrice(): ?float
     {
         return $this->price;
     }
-    
+
     public function setPrice(float $price): self
     {
         $this->price = $price;
@@ -132,14 +142,37 @@ class ProductPriceHistory
         $this->unitQuantity = $unitQuantity;
         return $this;
     }
-    
+
     public function getDiscount(): ?int
     {
         return $this->discount;
     }
+
     public function setDiscount(?int $discount): self
     {
         $this->discount = $discount;
+        return $this;
+    }
+
+    public function getPromotionEndsDate(): ?\DateTimeInterface
+    {
+        return $this->promotionEndsDate;
+    }
+
+    public function setPromotionEndsDate(?\DateTimeInterface $promotionEndsDate): self
+    {
+        $this->promotionEndsDate = $promotionEndsDate;
+        return $this;
+    }
+
+    public function getPromotionHandled(): ?\DateTimeInterface
+    {
+        return $this->promotionHandled;
+    }
+
+    public function setPromotionHandled(?\DateTimeInterface $promotionHandled): self
+    {
+        $this->promotionHandled = $promotionHandled;
         return $this;
     }
 }
