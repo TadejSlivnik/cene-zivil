@@ -57,7 +57,6 @@ class IndexController extends AbstractController
         sort($terms);
 
         $showSources = Product::SOURCES;
-        unset($showSources[Product::SOURCE_LIDL]);
 
         return $this->render('index.html.twig', [
             'title' => 'Cene živil',
