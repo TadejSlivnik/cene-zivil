@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             },
                             legend: {
-                                position: 'top',
+                                display: false,
                             },
                             tooltip: {
                                 mode: 'index',
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     locale: sl
                                 },
                                 ticks: {
-                                    maxTicksLimit: 8
+                                    maxTicksLimit: 6
                                 },
                                 title: {
                                     display: true,
