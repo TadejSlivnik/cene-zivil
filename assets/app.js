@@ -17,6 +17,8 @@ import './styles/app.css';
 import 'flowbite';
 
 import Chart from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
+import { sl } from 'date-fns/locale';
 
 // https://scanapp.org/html5-qrcode-docs/docs/intro
 // To use Html5QrcodeScanner (more info below)
@@ -139,13 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const datasetIndex = context.datasetIndex;
                                         const dataIndex = context.dataIndex;
                                         const dataset = context.chart.data.datasets[datasetIndex];
+                                        const dataPoint = dataset.data[dataIndex];
+
+                                        // Get the date from the data point
+                                        const date = dataPoint.date || 'N/A';
 
                                         // Use formatted currency values if available
+                                        let priceLabel = '';
                                         if (dataset.formattedData && dataset.formattedData[dataIndex]) {
-                                            return dataset.label + ': ' + dataset.formattedData[dataIndex];
+                                            priceLabel = dataset.label + ': ' + dataset.formattedData[dataIndex];
+                                        } else {
+                                            priceLabel = dataset.label + ': ' + context.parsed.y + ' €';
                                         }
-                                        // Fallback to raw values
-                                        return dataset.label + ': ' + context.parsed.y + ' €';
+
+                                        // Include the price date
+                                        return date + ' - ' + priceLabel;
                                     }
                                 }
                             }
@@ -155,8 +165,29 @@ document.addEventListener('DOMContentLoaded', () => {
                             intersect: true
                         },
                         scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: {
+                                        day: 'dd.MM.yyyy'
+                                    },
+                                    locale: sl
+                                },
+                                ticks: {
+                                    maxTicksLimit: 8
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Datum'
+                                }
+                            },
                             y: {
-                                beginAtZero: false
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Cena (€)'
+                                }
                             }
                         }
                     }
@@ -260,11 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopScanner() {
         if (html5QrScanner && html5QrScanner.isScanning) {
             html5QrScanner.stop()
-                // .then(() => {
-                //     console.log('QR Scanner stopped');
-                // }).catch(err => {
-                //     console.error('Error stopping QR scanner:', err);
-                // });
+            // .then(() => {
+            //     console.log('QR Scanner stopped');
+            // }).catch(err => {
+            //     console.error('Error stopping QR scanner:', err);
+            // });
             html5QrScanner = null;
         }
     }

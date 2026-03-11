@@ -140,40 +140,36 @@ class IndexController extends AbstractController
             return $this->json(['error' => 'No price history found for this product.'], 404);
         }
 
-        $labels = [];
         $data = [];
-        $data2 = [];
         $dataFormatted = [];
-        $data2Formatted = [];
         $formatter = new \NumberFormatter('sl_SI', \NumberFormatter::CURRENCY);
 
         foreach ($productPrices as $priceHistory) {
-            $labels[] = $priceHistory->getCreatedAt()->format('d.m.Y');
-            // Store raw values for chart calculations
-            $data[] = $priceHistory->getPrice();
-            $data2[] = $priceHistory->getRegularPrice();
+            // Store date-price pairs for time-based chart
+            $data[] = [
+                'x' => $priceHistory->getCreatedAt()->format('c'), // ISO 8601 format
+                'y' => $priceHistory->getPrice(),
+                'date' => $priceHistory->getCreatedAt()->format('d.m.Y')
+            ];
 
             // Store formatted values for tooltips
             $dataFormatted[] = $formatter->formatCurrency($priceHistory->getPrice(), 'EUR');
-            $data2Formatted[] = $formatter->formatCurrency($priceHistory->getRegularPrice(), 'EUR');
         }
 
         // Fetch chart data based on ID
         return $this->json([
             'title' => $product->getTitle(),
             'trgovina' => $product->getTrgovina(),
-            'labels' => $labels,
-            'datasets' => [[
-                'label' => 'Redna cena',
-                'data' => $data2,
-                'stepped' => 'before',
-                'formattedData' => $data2Formatted,
-            ], [
-                'label' => 'Trenutna cena',
-                'data' => $data,
-                'stepped' => 'before',
-                'formattedData' => $dataFormatted,
-            ],]
+            'datasets' => [
+                [
+                    'label' => 'Cena',
+                    'data' => $data,
+                    'stepped' => 'before',
+                    'formattedData' => $dataFormatted,
+                    'pointRadius' => 6,
+                    'pointHoverRadius' => 8,
+                ],
+            ]
         ]);
     }
 }
