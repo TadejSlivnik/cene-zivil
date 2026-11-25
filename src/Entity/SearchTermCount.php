@@ -3,25 +3,20 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Timestampable;
+use App\Repository\SearchTermCountRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\SearchTermCountRepository")
- * @ORM\Table()
- */
+#[ORM\Entity(repositoryClass: SearchTermCountRepository::class)]
+#[ORM\Table]
 class SearchTermCount
 {
     use Timestampable;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 255)]
     protected $searchTerm;
 
-    /**
-     * @ORM\Column(type="integer", options={"default":0})
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
     protected $count = 0;
 
     public function getSearchTerm(): ?string

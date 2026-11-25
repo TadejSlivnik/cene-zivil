@@ -19,9 +19,7 @@ class IndexController extends AbstractController
     private const MAX_TERMS = 10;
     private const MAX_TERM_LENGTH = 100;
 
-    /**
-     * @Route("/", name="index", methods={"GET"}, defaults={"query"=""})
-     */
+    #[Route('/', name: 'index', methods: ['GET'], defaults: ['query' => ''])]
     public function index(Request $request, EntityManagerInterface $em, RequestStack $requestStack)
     {
         $query = $request->query->get('q', '');
@@ -82,9 +80,7 @@ class IndexController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/pravno-obvestilo", name="disclaimer", methods={"GET"})
-     */
+    #[Route('/pravno-obvestilo', name: 'disclaimer', methods: ['GET'])]
     public function disclaimer()
     {
         return $this->render('disclaimer.html.twig', [
@@ -93,9 +89,7 @@ class IndexController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/pogoji-uporabe", name="terms_of_use", methods={"GET"})
-     */
+    #[Route('/pogoji-uporabe', name: 'terms_of_use', methods: ['GET'])]
     public function termsOfUse()
     {
         return $this->render('termsOfUse.html.twig', [
@@ -104,9 +98,7 @@ class IndexController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/pin/{id}", name="pin", methods={"GET"}, requirements={"id"="\d+"})
-     */
+    #[Route('/pin/{id}', name: 'pin', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function pin($id, Request $request)
     {
         $id = (int) $id;
@@ -145,9 +137,7 @@ class IndexController extends AbstractController
         return array_slice(array_values(array_unique($ids)), 0, self::MAX_PINS);
     }
 
-    /**
-     * @Route("/chart/{productId}", name="chart", methods={"GET"})
-     */
+    #[Route('/chart/{productId}', name: 'chart', methods: ['GET'])]
     public function chart($productId)
     {
         $product = $this->getDoctrine()->getRepository(Product::class)->find($productId);

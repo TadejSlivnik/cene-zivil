@@ -7,16 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait Timestampable
 {
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $createdAt;
 
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $updatedAt;
 
     public function getCreatedAt(): ?\DateTime

@@ -4,40 +4,29 @@ namespace App\Entity;
 
 use App\Entity\Traits\Id;
 use App\Entity\Traits\Timestampable;
+use App\Repository\CommandQueueImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CommandQueueImageRepository")
- * @ORM\Table()
- */
+#[ORM\Entity(repositoryClass: CommandQueueImageRepository::class)]
+#[ORM\Table]
 class CommandQueueImage
 {
     use Id, Timestampable;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Product")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\OneToOne(targetEntity: Product::class)]
+    #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     protected $product;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $imageUrl;
 
-    /**
-     * @ORM\Column(type="integer", options={"default":0})
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
     protected $tries = 0;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $lastError;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $completedAt;
 
     public function getProduct(): ?Product

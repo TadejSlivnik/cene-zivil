@@ -5,15 +5,15 @@ namespace App\Entity;
 use App\Entity\Traits\GedmoSoftDeletable;
 use App\Entity\Traits\Id;
 use App\Entity\Traits\Timestampable;
+use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="unique_product_source", columns={"product_id", "source"})})
- * @Gedmo\SoftDeleteable()
- */
+#[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'unique_product_source', columns: ['product_id', 'source'])]
+#[Gedmo\SoftDeleteable]
 class Product
 {
     use Id, Timestampable, GedmoSoftDeletable;
@@ -33,75 +33,47 @@ class Product
         self::SOURCE_TUS => 'Tuš',
     ];
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $productId;
 
-    /**
-     * @ORM\Column(type="string", length=1024, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 1024, nullable: true)]
     protected $ean;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $title;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $price;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $regularPrice;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $discount;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $unitPrice;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $unit;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     protected $unitQuantity;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $url;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $source;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $check404;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     protected $priceUpdatedAt;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ProductPriceHistory", mappedBy="product", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"createdAt" = "DESC"})
-     */
+    #[ORM\OneToMany(targetEntity: ProductPriceHistory::class, mappedBy: 'product', cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     protected $priceHistories;
 
     public function __construct()

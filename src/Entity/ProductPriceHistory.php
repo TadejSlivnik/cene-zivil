@@ -6,64 +6,44 @@ use App\Entity\Traits\Id;
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table()
- */
+#[ORM\Entity]
+#[ORM\Table]
 class ProductPriceHistory
 {
     use Id, Timestampable;
 
     /**
      * @var Product
-     * @ORM\ManyToOne(targetEntity="App\Entity\Product", inversedBy="priceHistories")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'priceHistories')]
+    #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     protected $product;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $price;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $regularPrice;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $discount;
 
-    /**
-     * @ORM\Column(type="decimal", precision=20, scale=6)
-     */
+    #[ORM\Column(type: 'decimal', precision: 20, scale: 6)]
     protected $unitPrice;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $unit;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     protected $unitQuantity;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $source;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $promotionEndsDate;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $promotionHandled;
 
     public function getProduct(): ?Product

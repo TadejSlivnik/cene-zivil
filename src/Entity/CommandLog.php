@@ -5,38 +5,26 @@ namespace App\Entity;
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table()
- */
+#[ORM\Entity]
+#[ORM\Table]
 class CommandLog
 {
     use Timestampable;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 255)]
     protected $command;
 
-    /**
-     * @ORM\Column(type="integer", options={"default":0})
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
     protected $dailyRun = 0;
 
-    /**
-     * @ORM\Column(type="integer", options={"default":100})
-     */
+    #[ORM\Column(type: 'integer', options: ['default' => 100])]
     protected $maxDailyRuns = 100;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $lastError;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $completedAt;
 
     public function getCommand(): ?string
