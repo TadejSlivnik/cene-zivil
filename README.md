@@ -14,8 +14,8 @@ A simple open-source web application for comparing grocery prices in Slovenia. B
 
 ## Tech Stack
 
-- **Backend:** PHP, Symfony Framework, Doctrine ORM
-- **Frontend:** JavaScript (ES6), Stimulus, Chart.js, Flowbite, Tailwind CSS
+- **Backend:** PHP, Symfony 7.4 LTS, Doctrine ORM 3
+- **Frontend:** JavaScript (ES6), Chart.js, Flowbite, Tailwind CSS
 - **Build Tools:** Webpack Encore, PostCSS
 - **Database:** MySQL (configurable)
 
@@ -23,9 +23,9 @@ A simple open-source web application for comparing grocery prices in Slovenia. B
 
 ### Prerequisites
 
-- PHP 8.1+
+- PHP 8.4+
 - Composer
-- Node.js & npm
+- Node.js 22.18+ & npm (only needed to rebuild assets)
 - MySQL (or compatible database)
 
 ### Installation

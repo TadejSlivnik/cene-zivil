@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Cene živil (https://www.cene-zivil.si/) compares grocery prices across Slovenian retailers (DM, Hofer, Lidl, Mercator, Spar, Tuš). Built on Symfony 5.4 and Doctrine ORM (PHP >= 7.4), with a Webpack Encore, Tailwind 4 and Flowbite frontend. User-facing text, routes and meta content are in Slovenian.
+Cene živil (https://www.cene-zivil.si/) compares grocery prices across Slovenian retailers (DM, Hofer, Lidl, Mercator, Spar, Tuš). Built on Symfony 7.4 LTS and Doctrine ORM 3 / DBAL 4 (PHP >= 8.4; production runs 8.5), with a Webpack Encore 7, Tailwind 4 and Flowbite 4 frontend. User-facing text, routes and meta content are in Slovenian.
 
 ## Commands
 
@@ -16,7 +16,7 @@ composer install && npm install
 npm run dev | npm run watch | npm run build
 
 # Database
-php bin/console doctrine:migrations:diff        # generate a migration after changing entity annotations
+php bin/console doctrine:migrations:diff        # generate a migration after changing entity mapping attributes
 php bin/console doctrine:migrations:migrate     # deploy.sh runs `d:m:m -n`
 
 # Local server
@@ -41,18 +41,19 @@ There is no test suite (`tests/` does not exist) and no linter configured.
 
 **Commands:**
 - `AbstractCommand`: subclasses implement `executeCommand()`, not `execute()`. It adds locking through `$mode` (`MODE_SINGULAR` by default, which exits if another instance is running), timing and memory output, and logs uncaught exceptions as critical. In the `dev` environment it calls `dd()` on exceptions.
-- Command names are set with `$this->setName(...)` in the constructor, before `parent::__construct()`. A few older commands use `protected static $defaultName` instead.
+- Command names are set with `$this->setName(...)` in the constructor, before `parent::__construct()`. A few commands use `#[AsCommand(name: ...)]` instead (`protected static $defaultName` no longer works in Symfony 7).
 - `AbstractSyncCommand`: sync jobs process the catalog incrementally across many cron runs. A `CommandLog` row per command stores `dailyRun` (the category/page index for the next run), `maxDailyRuns` and `completedAt`. Each run handles one category or page and increments `dailyRun`. Once all categories are done, it sets `completedAt` (so nothing else runs that day) and soft-deletes that source's products that haven't been updated for N days (`markProductsAsDeletedIfOlderThanDays`). `dailyRun` resets on the next day.
 - `CheckProducts` finds the service dynamically with `$this->{$product->getSource().'Service'}`, so each service property name must match the source constant (`dmService`, `tusService`, …). Throwing `NotFoundHttpException` from `getProductData()` soft-deletes the product.
 
 **Entities and conventions:**
-- Doctrine mapping uses **annotations** (`@ORM\...`, `@Gedmo\...`) and routes use `@Route` annotations, not PHP attributes.
+- Doctrine mapping, Gedmo behaviours and routes use **PHP attributes** (`#[ORM\...]`, `#[Gedmo\...]`, `#[Route]` from `Symfony\Component\Routing\Attribute`). `doctrine/annotations` is no longer installed.
+- Gedmo listeners are registered in `config/services.yaml` with one `doctrine.event_listener` tag per event (DoctrineBundle 3 dropped `doctrine.event_subscriber`).
 - Shared traits are in `src/Entity/Traits` (`Id`, `Timestampable`, `GedmoSoftDeletable`). Gedmo SoftDeleteable is enabled, so deleted products are hidden from queries automatically. Products are restored by setting `deletedAt = null` during sync.
 - `Product` is unique on `(productId, source)`. Sources are the `Product::SOURCE_*` constants. `Product::SOURCES` maps them to display names and drives the source filter on the homepage.
 - `Product.ean` holds one or more EANs as a comma-wrapped string (`,123,456,`). Use `AbstractShopService::parseEan()` to build it. Search relies on this format by matching `%,term,%`.
 - Prices are `decimal(20,6)`. Compare them with `AbstractSyncCommand::normalizePrice()`.
 - Products that have an `eanImage` but no EAN are added to `CommandQueueImage` for `app:queue:image`. `GeminiApi` falls back through a list of models and caches the one currently in use.
 
-**Frontend:** there is one entry point, `assets/app.js`, which sets up Tablesort (with a Slovenian locale sort), product pinning (`/pin/{id}` toggles the `zivila-pin` cookie, and pinned products are listed first in results), Chart.js price-history modals (`/chart/{productId}` returns JSON) and the html5-qrcode barcode scanner. Stimulus is installed but not used (`import './bootstrap'` is commented out). Templates are in `templates/`, and `index.html.twig` is the main page.
+**Frontend:** there is one entry point, `assets/app.js`, which sets up Tablesort (with a Slovenian locale sort), product pinning (`/pin/{id}` toggles the `zivila-pin` cookie, and pinned products are listed first in results), Chart.js price-history modals (`/chart/{productId}` returns JSON) and the html5-qrcode barcode scanner. Stimulus is not installed. `webpack.config.js` is an ES module (`"type": "module"`), and Encore 7 only minifies CSS because `configureCssMinimizerPlugin()` sets lightningcss explicitly. Templates are in `templates/`, and `index.html.twig` is the main page.
 
 **Database:** the README says MySQL is used, but `compose.yaml` defines a Postgres service, which is Symfony's default scaffolding. Configure `DATABASE_URL` in `.env.local`. `GEMINI_API_KEY` is required for the image queue.
