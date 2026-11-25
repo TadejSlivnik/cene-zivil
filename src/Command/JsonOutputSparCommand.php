@@ -6,14 +6,15 @@ use App\Entity\Product;
 use App\Entity\ProductPriceHistory;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
+#[AsCommand(name: 'app:json-output-spar')]
 class JsonOutputSparCommand extends Command
 {
-    protected static $defaultName = 'app:json-output-spar';
     private const BATCH_SIZE = 5000;
 
     private $em;

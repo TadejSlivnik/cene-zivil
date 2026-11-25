@@ -15,12 +15,12 @@ class SearchTermCountRepository extends EntityRepository
             if (!$searchTerm) {
                 $searchTerm = new SearchTermCount();
                 $searchTerm->setSearchTerm($term);
-                $this->_em->persist($searchTerm);
+                $this->getEntityManager()->persist($searchTerm);
             }
 
             $searchTerm->incrementCount();
         }
 
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 }

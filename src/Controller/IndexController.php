@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {
@@ -24,7 +24,8 @@ class IndexController extends AbstractController
     {
         $query = $request->query->get('q', '');
         $discountedOnly = (bool)$request->query->get('d', '');
-        $sources = $request->query->get('sources', []);
+        // all() throws a 400 if "sources" is not an array; drop nested values
+        $sources = array_values(array_filter($request->query->all('sources'), 'is_string'));
 
         $terms = explode(' ', $query);
         $terms = array_map('trim', $terms);
@@ -138,14 +139,14 @@ class IndexController extends AbstractController
     }
 
     #[Route('/chart/{productId}', name: 'chart', methods: ['GET'])]
-    public function chart($productId)
+    public function chart($productId, EntityManagerInterface $em)
     {
-        $product = $this->getDoctrine()->getRepository(Product::class)->find($productId);
+        $product = $em->getRepository(Product::class)->find($productId);
         if (!$product instanceof Product) {
             return $this->json(['error' => 'Product not found.'], 404);
         }
 
-        $productPrices = $this->getDoctrine()->getRepository(ProductPriceHistory::class)->findBy(['product' => $productId], ['createdAt' => 'ASC']);
+        $productPrices = $em->getRepository(ProductPriceHistory::class)->findBy(['product' => $productId], ['createdAt' => 'ASC']);
         if (!$productPrices) {
             return $this->json(['error' => 'No price history found for this product.'], 404);
         }

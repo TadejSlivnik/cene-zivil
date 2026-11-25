@@ -4,32 +4,33 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/annotations": "^2.0",
-        "doctrine/dbal": "*",
-        "doctrine/doctrine-bundle": "*",
-        "doctrine/doctrine-migrations-bundle": "*",
-        "doctrine/orm": "*",
-        "gedmo/doctrine-extensions": "^3.20",
-        "symfony/console": "5.4.*",
-        "symfony/css-selector": "5.4.*",
-        "symfony/dom-crawler": "5.4.*",
-        "symfony/dotenv": "5.4.*",
-        "symfony/flex": "^1.17|^2",
-        "symfony/framework-bundle": "5.4.*",
-        "symfony/lock": "5.4.*",
-        "symfony/monolog-bundle": "^3.10",
-        "symfony/runtime": "5.4.*",
-        "symfony/webpack-encore-bundle": "^1.17",
-        "symfony/yaml": "5.4.*",
-        "twig/extra-bundle": "^3.11",
-        "twig/intl-extra": "^3.11"
+        "ext-intl": "*",
+        "doctrine/dbal": "^4.4",
+        "doctrine/doctrine-bundle": "^3.0",
+        "doctrine/doctrine-migrations-bundle": "^4.0",
+        "doctrine/orm": "^3.5",
+        "gedmo/doctrine-extensions": "^3.22",
+        "symfony/console": "7.4.*",
+        "symfony/css-selector": "7.4.*",
+        "symfony/dom-crawler": "7.4.*",
+        "symfony/dotenv": "7.4.*",
+        "symfony/flex": "^2.12",
+        "symfony/framework-bundle": "7.4.*",
+        "symfony/lock": "7.4.*",
+        "symfony/monolog-bundle": "^3.11 || ^4.0",
+        "symfony/runtime": "7.4.*",
+        "symfony/twig-bundle": "7.4.*",
+        "symfony/var-dumper": "7.4.*",
+        "symfony/webpack-encore-bundle": "^2.4",
+        "symfony/yaml": "7.4.*",
+        "twig/extra-bundle": "^3.31",
+        "twig/intl-extra": "^3.31"
     },
     "config": {
         "allow-plugins": {
-            "composer/package-versions-deprecated": true,
             "php-http/discovery": true,
             "symfony/flex": true,
             "symfony/runtime": true
@@ -53,7 +54,14 @@
     "replace": {
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
-        "symfony/polyfill-php72": "*"
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*",
+        "symfony/polyfill-php82": "*",
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*"
     },
     "scripts": {
         "auto-scripts": {
@@ -73,7 +81,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "5.4.*"
+            "require": "7.4.*"
         }
     }
 }
