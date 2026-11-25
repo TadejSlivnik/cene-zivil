@@ -7,26 +7,8 @@ parameters:
 			path: src/Command/AbstractCommand.php
 
 		-
-			message: '#^Argument of an invalid type App\\Entity\\Product supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Command/CheckProducts.php
-
-		-
 			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Command/CheckProducts.php
-
-		-
-			message: '#^PHPDoc tag @var above foreach loop does not specify variable name\.$#'
-			identifier: varTag.noVariable
-			count: 1
-			path: src/Command/CheckProducts.php
-
-		-
-			message: '#^Parameter \#1 \$value of function sizeof expects array\|Countable, App\\Entity\\Product given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/Command/CheckProducts.php
 
@@ -43,7 +25,7 @@ parameters:
 			path: src/Command/QueueImageCommand.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
+			message: '#^Strict comparison using \=\=\= between false and string will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Command/QueueImageCommand.php

@@ -7,12 +7,12 @@ use App\Entity\Product;
 class LidlService extends AbstractShopService
 {
     // Lidl API supports fetching a maximum of 100 items per request
-    const ITEMS_PER_PAGE = 100;
+    public const ITEMS_PER_PAGE = 100;
 
     public function getProductsData(int $page = 1): array
     {
         if ($page < 1) {
-            throw new \InvalidArgumentException("Page number must be greater than 0.");
+            throw new \InvalidArgumentException('Page number must be greater than 0.');
         }
 
         $itemsPerPage = self::ITEMS_PER_PAGE;
@@ -22,14 +22,13 @@ class LidlService extends AbstractShopService
         $items = $this->getJson($url);
         $items = $items['items'] ?? [];
         if (!$items) {
-            throw new \Exception("No data found.");
+            throw new \Exception('No data found.');
         }
 
         $items = array_column($items, 'gridbox');
 
         $data = [];
         foreach ($items as $item) {
-
             $productId = $item['id'] ?? null;
             $title = $item['meta']['fullTitle'] ?? null;
             $item = $item['data'] ?? null;
@@ -38,8 +37,7 @@ class LidlService extends AbstractShopService
             }
             $title = trim($title);
 
-            $url = "https://www.lidl.si/" . ltrim($item['canonicalPath'], '/');
-
+            $url = 'https://www.lidl.si/'.ltrim($item['canonicalPath'], '/');
 
             if ($item['lidlPlus']) {
                 if (sizeof($item['lidlPlus']) > 1) {
@@ -56,7 +54,7 @@ class LidlService extends AbstractShopService
             if (isset($priceData['basePrice']['text'])) {
                 $unit = $priceData['basePrice']['text'];
                 $unit = explode('=', $unit);
-                if (sizeof($unit) == 2) {
+                if (2 == sizeof($unit)) {
                     $unitPrice = $this->parsePrice(trim($unit[1]));
                     $unit = trim($unit[0]);
                 } else {
@@ -101,30 +99,31 @@ class LidlService extends AbstractShopService
     public function getProductLinks(): array
     {
         $sitemap = file_get_contents('https://www.lidl.si/p/export/SI/sl/product_sitemap.xml.gz');
-        if ($sitemap === false) {
+        if (false === $sitemap) {
             throw new \Exception('Failed to load sitemap');
         }
         $sitemap = gzdecode($sitemap);
-        if ($sitemap === false) {
+        if (false === $sitemap) {
             throw new \Exception('Failed to decode gzipped sitemap');
         }
         $xml = simplexml_load_string($sitemap);
-        if ($xml === false) {
+        if (false === $xml) {
             throw new \Exception('Failed to load XML file');
         }
         $links = [];
         foreach ($xml->url as $url) {
-            $loc = (string)$url->loc;
-            if (strpos($loc, '/p/') !== false) {
+            $loc = (string) $url->loc;
+            if (false !== strpos($loc, '/p/')) {
                 $links[] = $loc;
             }
         }
+
         return $links;
     }
 
     public function getProductData(string $url): array
     {
-        dd("TODO");
+        dd('TODO');
         $html = $this->getHtml($url);
         $dom = new \DOMDocument();
         @$dom->loadHTML($html);
@@ -156,7 +155,7 @@ class LidlService extends AbstractShopService
             if ($unitPrice = $unitPrice->textContent) {
                 $unitPrice = array_map('trim', explode('=', $unitPrice));
                 $unit = $unitPrice[0];
-                $unitPrice = (float)$unitPrice[1];
+                $unitPrice = (float) $unitPrice[1];
                 [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
             }
         }

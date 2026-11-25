@@ -43,7 +43,8 @@ class QueueImageCommand extends AbstractCommand
 
         $queueItems = $this->em->getRepository(CommandQueueImage::class)->getNextInQueue($limit);
         if (!$queueItems) {
-            $this->io->writeln($this->getName() . ': No items in the queue.');
+            $this->io->writeln($this->getName().': No items in the queue.');
+
             return Command::SUCCESS;
         }
 
@@ -55,7 +56,7 @@ class QueueImageCommand extends AbstractCommand
                 $this->io->warning($th->getMessage());
                 break;
             } catch (\Throwable $th) {
-                $this->io->error('Error processing queue item: ' . $th->getMessage());
+                $this->io->error('Error processing queue item: '.$th->getMessage());
                 $queueItem->setLastError($th->getMessage());
                 $success = false;
             }
@@ -82,27 +83,27 @@ class QueueImageCommand extends AbstractCommand
 
         $product = $queueItem->getProduct();
         if (!$product instanceof Product) {
-            throw new \Exception('Product not set for queue item: ' . $queueItem->getId());
+            throw new \Exception('Product not set for queue item: '.$queueItem->getId());
         }
 
         switch ($product->getSource()) {
             case Product::SOURCE_SPAR:
                 $jsonStructure = [
-                    "type" => "OBJECT",
-                    "properties" => ['ean' => ["type" => "string"]],
-                    "required" => ['ean']
+                    'type' => 'OBJECT',
+                    'properties' => ['ean' => ['type' => 'string']],
+                    'required' => ['ean'],
                 ];
 
                 $eanNumbers = [];
 
                 $lastImageBase64 = null;
-                for ($i = 0; $i <= 10; $i++) {
+                for ($i = 0; $i <= 10; ++$i) {
                     try {
-                        $imageUrl = str_ireplace('dt_main.jpg', "dt_sub" . ($i == 0 ? '' : $i) . ".jpg", $queueItem->getImageUrl());
-                        $this->io->writeln('Processing image URL: ' . $imageUrl);
+                        $imageUrl = str_ireplace('dt_main.jpg', 'dt_sub'.(0 == $i ? '' : $i).'.jpg', $queueItem->getImageUrl());
+                        $this->io->writeln('Processing image URL: '.$imageUrl);
 
                         $imageBase64 = base64_encode(file_get_contents($imageUrl));
-                        if ($imageBase64 === false) {
+                        if (false === $imageBase64) {
                             throw new \Exception('Failed to read image file');
                         }
 
@@ -132,17 +133,17 @@ class QueueImageCommand extends AbstractCommand
                 $eanNumbers = array_unique($eanNumbers);
 
                 $eanSize = sizeof($eanNumbers);
-                if ($eanSize == 1) {
+                if (1 == $eanSize) {
                     $ean = array_shift($eanNumbers);
                     $product->setEan($ean);
                     $queueItem->setCompletedAt(new \DateTime());
                 } else {
-                    throw new \Exception(($eanSize > 1 ? 'Multiple EANs' : 'No EAN') . ' found for product: ' . $product->getId());
+                    throw new \Exception(($eanSize > 1 ? 'Multiple EANs' : 'No EAN').' found for product: '.$product->getId());
                 }
 
                 break;
             default:
-                $this->io->writeln('Processing product from unknown source: ' . $product->getSource());
+                $this->io->writeln('Processing product from unknown source: '.$product->getSource());
                 break;
         }
     }

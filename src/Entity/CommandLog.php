@@ -35,6 +35,7 @@ class CommandLog
     public function setCommand(string $command): self
     {
         $this->command = $command;
+
         return $this;
     }
 
@@ -46,6 +47,7 @@ class CommandLog
     public function setDailyRun(int $dailyRun): self
     {
         $this->dailyRun = $dailyRun;
+
         return $this;
     }
 
@@ -57,6 +59,7 @@ class CommandLog
     public function setMaxDailyRuns(int $maxDailyRuns): self
     {
         $this->maxDailyRuns = $maxDailyRuns;
+
         return $this;
     }
 
@@ -68,18 +71,21 @@ class CommandLog
     public function setLastError(?string $lastError): self
     {
         $this->lastError = $lastError;
+
         return $this;
     }
 
     public function incrementDailyRun(): self
     {
-        $this->dailyRun++;
+        ++$this->dailyRun;
+
         return $this;
     }
 
     public function resetDailyRun(): self
     {
         $this->dailyRun = 0;
+
         return $this;
     }
 
@@ -92,10 +98,11 @@ class CommandLog
     {
         return $this->completedAt;
     }
-    
+
     public function setCompletedAt(?\DateTimeInterface $completedAt): self
     {
         $this->completedAt = $completedAt;
+
         return $this;
     }
 }

@@ -36,7 +36,7 @@ class CheckProducts extends AbstractSyncCommand
         SparService $sparService,
         HoferService $hoferService,
         LidlService $lidlService,
-        DmService $dmService
+        DmService $dmService,
     ) {
         $this->setName('app:check:products');
         parent::__construct($parameterBag, $logger, $em);
@@ -65,7 +65,7 @@ class CheckProducts extends AbstractSyncCommand
 
         $deleted = 0;
         $progressBar = $this->getProgressBar(sizeof($products));
-        /** @var Product */
+        /* @var Product */
         foreach ($products as $product) {
             $product->setCheck404(new \DateTime());
             try {
@@ -77,9 +77,9 @@ class CheckProducts extends AbstractSyncCommand
                 }
             } catch (NotFoundHttpException $e) {
                 $product->setDeletedAt(new \DateTime());
-                $deleted++;
+                ++$deleted;
             } catch (\Throwable $th) {
-                if ($this->parameterBag->get('kernel.environment') === 'dev') {
+                if ('dev' === $this->parameterBag->get('kernel.environment')) {
                     $this->io->error(sprintf('Error checking product %s: %s, line %d', $product->getId(), $th->getMessage(), $th->getLine()));
                 }
                 $this->logger->error(sprintf('Error checking product %s: %s, line %d', $product->getId(), $th->getMessage(), $th->getLine()));

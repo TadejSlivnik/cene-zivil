@@ -37,7 +37,7 @@ class SyncDmCommand extends AbstractSyncCommand
     protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $this->io->title('Syncing Dm Products');
-        
+
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
             return Command::SUCCESS;
@@ -45,8 +45,7 @@ class SyncDmCommand extends AbstractSyncCommand
 
         $k = $commandLog->getDailyRun();
         if (!array_key_exists($k, $this->categories)) {
-
-            $this->io->writeln($this->getName() . ': All categories have been processed.');
+            $this->io->writeln($this->getName().': All categories have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
 
@@ -57,14 +56,15 @@ class SyncDmCommand extends AbstractSyncCommand
             return Command::SUCCESS;
         }
 
-        $this->io->text('Processing category: ' . $this->categories[$k], "(Batch " . ($k + 1) . "/" . count($this->categories) . ")");
+        $this->io->text('Processing category: '.$this->categories[$k], '(Batch '.($k + 1).'/'.count($this->categories).')');
 
         $items = $this->dmService->getProductsData($this->categories[$k]);
 
         if (empty($items)) {
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
-            $this->io->writeln($this->getName() . ': No new products found.');
+            $this->io->writeln($this->getName().': No new products found.');
+
             return Command::SUCCESS;
         }
 
@@ -74,7 +74,7 @@ class SyncDmCommand extends AbstractSyncCommand
         $this->em->flush();
 
         $this->io->newLine();
-        $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
+        $this->io->writeln($this->getName().': '.count($items).' products updated. Daily run: '.$k);
 
         return Command::SUCCESS;
     }

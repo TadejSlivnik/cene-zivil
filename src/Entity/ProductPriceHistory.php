@@ -10,7 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table]
 class ProductPriceHistory
 {
-    use Id, Timestampable;
+    use Id;
+    use Timestampable;
 
     /**
      * @var Product
@@ -54,6 +55,7 @@ class ProductPriceHistory
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
+
         return $this;
     }
 
@@ -65,6 +67,7 @@ class ProductPriceHistory
     public function setPrice(float $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -76,6 +79,7 @@ class ProductPriceHistory
     public function setSource(string $source): self
     {
         $this->source = $source;
+
         return $this;
     }
 
@@ -87,6 +91,7 @@ class ProductPriceHistory
     public function setRegularPrice(float $regularPrice): self
     {
         $this->regularPrice = $regularPrice;
+
         return $this;
     }
 
@@ -98,6 +103,7 @@ class ProductPriceHistory
     public function setUnitPrice(float $unitPrice): self
     {
         $this->unitPrice = $unitPrice;
+
         return $this;
     }
 
@@ -109,6 +115,7 @@ class ProductPriceHistory
     public function setUnit(string $unit): self
     {
         $this->unit = $unit;
+
         return $this;
     }
 
@@ -120,6 +127,7 @@ class ProductPriceHistory
     public function setUnitQuantity(int $unitQuantity): self
     {
         $this->unitQuantity = $unitQuantity;
+
         return $this;
     }
 
@@ -131,6 +139,7 @@ class ProductPriceHistory
     public function setDiscount(?int $discount): self
     {
         $this->discount = $discount;
+
         return $this;
     }
 
@@ -142,6 +151,7 @@ class ProductPriceHistory
     public function setPromotionEndsDate(?\DateTimeInterface $promotionEndsDate): self
     {
         $this->promotionEndsDate = $promotionEndsDate;
+
         return $this;
     }
 
@@ -153,6 +163,7 @@ class ProductPriceHistory
     public function setPromotionHandled(?\DateTimeInterface $promotionHandled): self
     {
         $this->promotionHandled = $promotionHandled;
+
         return $this;
     }
 }

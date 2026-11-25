@@ -23,7 +23,7 @@ class IndexController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, RequestStack $requestStack)
     {
         $query = $request->query->get('q', '');
-        $discountedOnly = (bool)$request->query->get('d', '');
+        $discountedOnly = (bool) $request->query->get('d', '');
         // all() throws a 400 if "sources" is not an array; drop nested values
         $sources = array_values(array_filter($request->query->all('sources'), 'is_string'));
 
@@ -33,7 +33,7 @@ class IndexController extends AbstractController
         $terms = array_unique($terms);
         // Each term adds two LIKE clauses and may be stored in SearchTermCount (varchar 255).
         $terms = array_slice(array_values(array_filter($terms, function ($term) {
-            return $term !== '' && mb_strlen($term) <= self::MAX_TERM_LENGTH;
+            return '' !== $term && mb_strlen($term) <= self::MAX_TERM_LENGTH;
         })), 0, self::MAX_TERMS);
 
         if (strlen(implode(' ', $terms)) <= 2) {
@@ -113,6 +113,7 @@ class IndexController extends AbstractController
 
         $response = new Response();
         $response->headers->setCookie(new Cookie('zivila-pin', json_encode($pins), time() + 3600 * 24 * 30));
+
         return $response;
     }
 
@@ -160,7 +161,7 @@ class IndexController extends AbstractController
             $data[] = [
                 'x' => $priceHistory->getCreatedAt()->format('c'), // ISO 8601 format
                 'y' => $priceHistory->getPrice(),
-                'date' => $priceHistory->getCreatedAt()->format('d.m.Y')
+                'date' => $priceHistory->getCreatedAt()->format('d.m.Y'),
             ];
 
             // Store formatted values for tooltips
@@ -180,7 +181,7 @@ class IndexController extends AbstractController
                     'pointRadius' => 6,
                     'pointHoverRadius' => 8,
                 ],
-            ]
+            ],
         ]);
     }
 }

@@ -57,7 +57,8 @@ class SparService extends AbstractShopService
 
     public function getProductData(string $url): array
     {
-        dd("TODO");
+        dd('TODO');
+
         return [];
     }
 }

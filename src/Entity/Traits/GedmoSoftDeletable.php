@@ -17,6 +17,7 @@ trait GedmoSoftDeletable
     public function setDeletedAt(?\DateTime $deletedAt): self
     {
         $this->deletedAt = $deletedAt;
+
         return $this;
     }
 }

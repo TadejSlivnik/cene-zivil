@@ -32,7 +32,7 @@ class SyncHoferCommand extends AbstractSyncCommand
         }
 
         $k = $commandLog->getDailyRun();
-        $this->io->text('Daily run: ' . $k);
+        $this->io->text('Daily run: '.$k);
 
         $items = $this->hoferService->getProductsData($k);
 
@@ -41,16 +41,16 @@ class SyncHoferCommand extends AbstractSyncCommand
 
         if (sizeof($items) < HoferService::ITEMS_PER_PAGE) {
             $commandLog = $this->getCommandLog();
-            $this->io->writeln($this->getName() . ': No new products found - all products have been processed.');
+            $this->io->writeln($this->getName().': No new products found - all products have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
 
-            $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
+            $this->io->writeln($this->getName().': Marking products as deleted if older than 3 days.');
             $this->markProductsAsDeletedIfOlderThanDays(30, Product::SOURCE_HOFER);
         }
 
         $this->io->newLine();
-        $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
+        $this->io->writeln($this->getName().': '.count($items).' products updated. Daily run: '.$k);
 
         return Command::SUCCESS;
     }

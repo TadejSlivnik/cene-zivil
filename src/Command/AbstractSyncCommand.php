@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 abstract class AbstractSyncCommand extends AbstractCommand
 {
-    const DB_BATCH = 100;
+    public const DB_BATCH = 100;
 
     protected $em;
 
@@ -28,18 +28,20 @@ abstract class AbstractSyncCommand extends AbstractCommand
         if (!$commandLog instanceof CommandLog) {
             $commandLog = new CommandLog();
             $commandLog->setCommand($this->getName());
-            if ($this->getName() === 'app:sync:tus') {
+            if ('app:sync:tus' === $this->getName()) {
                 $commandLog->setMaxDailyRuns(200);
             }
             $this->em->persist($commandLog);
         }
+
         return $commandLog;
     }
 
     protected function shouldCommandRun(CommandLog $commandLog): bool
     {
         if ($commandLog->getCompletedAt() && $commandLog->getCompletedAt()->format('Y-m-d') == (new \DateTime())->format('Y-m-d')) {
-            $this->io->writeln($this->getName() . ': Command already completed today.');
+            $this->io->writeln($this->getName().': Command already completed today.');
+
             return false;
         }
 
@@ -48,7 +50,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
         }
 
         if ($commandLog->getDailyRun() >= $commandLog->getMaxDailyRuns()) {
-            $this->io->writeln($this->getName() . ': Daily run limit reached. Max daily runs: ' . $commandLog->getMaxDailyRuns());
+            $this->io->writeln($this->getName().': Daily run limit reached. Max daily runs: '.$commandLog->getMaxDailyRuns());
+
             return false;
         }
 
@@ -59,8 +62,8 @@ abstract class AbstractSyncCommand extends AbstractCommand
     {
         $date = new \DateTime('midnight');
         $date->setTimezone(new \DateTimeZone('Europe/Ljubljana'));
-        $date->modify('-' . $days . ' days');
-        $this->io->writeln('Marking products as deleted if older than ' . $days . ' days. Date: ' . $date->format('Y-m-d H:i:s'));
+        $date->modify('-'.$days.' days');
+        $this->io->writeln('Marking products as deleted if older than '.$days.' days. Date: '.$date->format('Y-m-d H:i:s'));
 
         $this->em->createQueryBuilder()
             ->update(Product::class, 'p')
@@ -78,7 +81,6 @@ abstract class AbstractSyncCommand extends AbstractCommand
         $k = 0;
         $handled = [];
         foreach ($items as $item) {
-
             try {
                 if (in_array($item['productId'], $handled)) {
                     continue;
@@ -135,14 +137,14 @@ abstract class AbstractSyncCommand extends AbstractCommand
                     $k = 0;
                 }
 
-                if (++$k % static::DB_BATCH === 0) {
+                if (0 === ++$k % static::DB_BATCH) {
                     $this->em->flush();
                     $this->em->clear();
                 }
 
                 $progressBar->advance();
             } catch (\Throwable $th) {
-                if ($this->parameterBag->get('kernel.environment') === 'dev') {
+                if ('dev' === $this->parameterBag->get('kernel.environment')) {
                     dump($item);
                     throw $th;
                 }
@@ -199,25 +201,26 @@ abstract class AbstractSyncCommand extends AbstractCommand
      */
     protected function productPriceChanged(?Product $product, array $item): bool
     {
-        return !$product instanceof Product ||
-            $this->normalizePrice($product->getPrice()) !== $this->normalizePrice($item['price']) ||
-            $this->normalizePrice($product->getRegularPrice()) !== $this->normalizePrice($item['regularPrice']) ||
-            $product->getUnit() !== $item['unit'] ||
-            $this->normalizePrice($product->getUnitPrice()) !== $this->normalizePrice($item['unitPrice']) ||
-            $product->getDiscount() !== $item['discount'];
+        return !$product instanceof Product
+            || $this->normalizePrice($product->getPrice()) !== $this->normalizePrice($item['price'])
+            || $this->normalizePrice($product->getRegularPrice()) !== $this->normalizePrice($item['regularPrice'])
+            || $product->getUnit() !== $item['unit']
+            || $this->normalizePrice($product->getUnitPrice()) !== $this->normalizePrice($item['unitPrice'])
+            || $product->getDiscount() !== $item['discount'];
     }
 
     public function normalizePrice($price)
     {
-        # 6 decimal places for price
+        // 6 decimal places for price
         if (is_numeric($price)) {
-            $price = number_format((float)$price, 6, '.', '');
+            $price = number_format((float) $price, 6, '.', '');
         } elseif (is_string($price)) {
             $price = str_replace(',', '.', $price);
-            $price = number_format((float)$price, 6, '.', '');
+            $price = number_format((float) $price, 6, '.', '');
         } else {
             throw new \InvalidArgumentException('Price must be a numeric value or a string representing a number.');
         }
+
         return $price;
     }
 }

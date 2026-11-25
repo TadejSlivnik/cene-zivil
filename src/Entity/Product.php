@@ -16,15 +16,17 @@ use Gedmo\Mapping\Annotation as Gedmo;
 #[Gedmo\SoftDeleteable]
 class Product
 {
-    use Id, Timestampable, GedmoSoftDeletable;
+    use Id;
+    use Timestampable;
+    use GedmoSoftDeletable;
 
-    const SOURCE_HOFER = 'hofer';
-    const SOURCE_LIDL = 'lidl';
-    const SOURCE_MERCATOR = 'mercator';
-    const SOURCE_SPAR = 'spar';
-    const SOURCE_DM = 'dm';
-    const SOURCE_TUS = 'tus';
-    const SOURCES = [
+    public const SOURCE_HOFER = 'hofer';
+    public const SOURCE_LIDL = 'lidl';
+    public const SOURCE_MERCATOR = 'mercator';
+    public const SOURCE_SPAR = 'spar';
+    public const SOURCE_DM = 'dm';
+    public const SOURCE_TUS = 'tus';
+    public const SOURCES = [
         self::SOURCE_DM => 'dm',
         self::SOURCE_HOFER => 'HOFER',
         self::SOURCE_LIDL => 'Lidl',
@@ -94,6 +96,7 @@ class Product
     public function setProductId(string $productId): self
     {
         $this->productId = $productId;
+
         return $this;
     }
 
@@ -102,6 +105,7 @@ class Product
         if (!$this->ean) {
             return [];
         }
+
         return array_filter(explode(',', $this->ean));
     }
 
@@ -113,6 +117,7 @@ class Product
     public function setEan(?string $ean): self
     {
         $this->ean = $ean;
+
         return $this;
     }
 
@@ -124,6 +129,7 @@ class Product
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -135,6 +141,7 @@ class Product
     public function setPrice(float $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -146,6 +153,7 @@ class Product
     public function setUrl(?string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -157,9 +165,10 @@ class Product
     public function setSource(string $source): self
     {
         if (!array_key_exists($source, self::SOURCES)) {
-            throw new \InvalidArgumentException("Invalid source: $source. Valid sources are: " . implode(', ', array_keys(self::SOURCES)));
+            throw new \InvalidArgumentException("Invalid source: $source. Valid sources are: ".implode(', ', array_keys(self::SOURCES)));
         }
         $this->source = $source;
+
         return $this;
     }
 
@@ -171,6 +180,7 @@ class Product
     public function setRegularPrice(float $regularPrice): self
     {
         $this->regularPrice = $regularPrice;
+
         return $this;
     }
 
@@ -182,6 +192,7 @@ class Product
     public function setUnitPrice(float $unitPrice): self
     {
         $this->unitPrice = $unitPrice;
+
         return $this;
     }
 
@@ -193,6 +204,7 @@ class Product
     public function setUnit(string $unit): self
     {
         $this->unit = $unit;
+
         return $this;
     }
 
@@ -204,6 +216,7 @@ class Product
     public function setUnitQuantity(int $unitQuantity): self
     {
         $this->unitQuantity = $unitQuantity;
+
         return $this;
     }
 
@@ -211,9 +224,11 @@ class Product
     {
         return $this->discount;
     }
+
     public function setDiscount(?int $discount): self
     {
         $this->discount = $discount;
+
         return $this;
     }
 
@@ -225,17 +240,19 @@ class Product
 
     public function isUpToDate(): bool
     {
-        if ($this->getPriceUpdatedAt() === null) {
+        if (null === $this->getPriceUpdatedAt()) {
             return false;
         }
+
         return $this->getPriceUpdatedAt()->diff(new \DateTime())->days < 7;
     }
 
     public function updatedToday(): bool
     {
-        if ($this->getPriceUpdatedAt() === null) {
+        if (null === $this->getPriceUpdatedAt()) {
             return false;
         }
+
         return $this->getPriceUpdatedAt()->format('Y-m-d') === (new \DateTime())->format('Y-m-d');
     }
 
@@ -247,6 +264,7 @@ class Product
     public function setCheck404(?\DateTimeInterface $check404): self
     {
         $this->check404 = $check404;
+
         return $this;
     }
 
@@ -258,6 +276,7 @@ class Product
     public function setPriceUpdatedAt(?\DateTimeInterface $priceUpdatedAt): self
     {
         $this->priceUpdatedAt = $priceUpdatedAt;
+
         return $this;
     }
 
@@ -277,6 +296,7 @@ class Product
             $this->priceHistories[] = $priceHistory;
             $priceHistory->setProduct($this);
         }
+
         return $this;
     }
 
@@ -289,6 +309,7 @@ class Product
                 $priceHistory->setProduct(null);
             }
         }
+
         return $this;
     }
 }

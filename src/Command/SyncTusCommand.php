@@ -36,7 +36,7 @@ class SyncTusCommand extends AbstractSyncCommand
         if ($run >= 6) {
             return;
         }
-        
+
         $this->em->clear();
         $commandLog = $this->getCommandLog();
         if (!$this->shouldCommandRun($commandLog)) {
@@ -44,16 +44,16 @@ class SyncTusCommand extends AbstractSyncCommand
         }
 
         $k = $commandLog->getDailyRun();
-        $this->io->text('Daily run: ' . $k);
+        $this->io->text('Daily run: '.$k);
 
         [$category, $subCategory] = $this->tusService->getCategoryAndSubcategoryInOrder($k);
 
         if (!$category || !$subCategory) {
-            $this->io->writeln($this->getName() . ': All categories have been processed.');
+            $this->io->writeln($this->getName().': All categories have been processed.');
             $commandLog->setCompletedAt(new \DateTime());
             $this->em->flush();
 
-            $this->io->writeln($this->getName() . ': Marking products as deleted if older than 3 days.');
+            $this->io->writeln($this->getName().': Marking products as deleted if older than 3 days.');
             $this->markProductsAsDeletedIfOlderThanDays(10, Product::SOURCE_TUS);
 
             return;
@@ -71,7 +71,7 @@ class SyncTusCommand extends AbstractSyncCommand
         if (isset($items)) {
             $this->updateProducts($items);
             $this->io->newLine();
-            $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
+            $this->io->writeln($this->getName().': '.count($items).' products updated. Daily run: '.$k);
 
             if (sizeof($items) < 100) {
                 $this->syncProductData($run + 1);

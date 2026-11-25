@@ -66,7 +66,7 @@ class ProductRepository extends EntityRepository
     }
 
     /**
-     * Find products with their price histories in batches
+     * Find products with their price histories in batches.
      */
     public function findProductsWithPriceHistory(array $sources, int $limit, int $page): array
     {

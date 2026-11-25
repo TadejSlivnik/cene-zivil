@@ -7,9 +7,9 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class GeminiApi
 {
-    const MODEL_CACHE_KEY = 'gemini_model';
+    public const MODEL_CACHE_KEY = 'gemini_model';
 
-    const MODELS = [
+    public const MODELS = [
         'gemini-2.5-flash',
         'gemini-2.5-flash-lite-preview-06-17',
         'gemini-2.0-flash',
@@ -19,7 +19,7 @@ class GeminiApi
     ];
 
     protected $apiKey;
-    protected $model = null;
+    protected $model;
 
     protected CacheItemPoolInterface $cache;
 
@@ -38,10 +38,11 @@ class GeminiApi
         $item = $this->cache->getItem(self::MODEL_CACHE_KEY);
         if ($item->isHit()) {
             $this->model = $item->get();
+
             return $this->model;
         }
 
-        return $this->model === null ? self::MODELS[0] : $this->model;
+        return null === $this->model ? self::MODELS[0] : $this->model;
     }
 
     protected function incrementModel()
@@ -50,7 +51,7 @@ class GeminiApi
         if ($item->isHit()) {
             $currentModel = $item->get();
             $currentIndex = array_search($currentModel, self::MODELS);
-            $currentIndex = $currentIndex !== false ? $currentIndex : -1;
+            $currentIndex = false !== $currentIndex ? $currentIndex : -1;
             $this->model = self::MODELS[($currentIndex + 1) % count(self::MODELS)];
         } else {
             $this->model = self::MODELS[0];
@@ -65,7 +66,7 @@ class GeminiApi
 
     public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageBase64 = null, int $tries = 0)
     {
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->getModel() . ':generateContent?key=' . $this->apiKey;
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/'.$this->getModel().':generateContent?key='.$this->apiKey;
         $headers = [
             'Content-Type: application/json',
         ];
@@ -78,17 +79,17 @@ class GeminiApi
                 'inline_data' => [
                     'mime_type' => 'image/jpeg',
                     'data' => $imageBase64,
-                ]
+                ],
             ];
         }
 
         if ($jsonResponseStructure) {
-            $data["generationConfig"] = [
-                "responseMimeType" => "application/json",
-                "responseSchema" => [
-                    "type" => "ARRAY",
-                    "items" => $jsonResponseStructure,
-                ]
+            $data['generationConfig'] = [
+                'responseMimeType' => 'application/json',
+                'responseSchema' => [
+                    'type' => 'ARRAY',
+                    'items' => $jsonResponseStructure,
+                ],
             ];
         }
 
@@ -109,6 +110,7 @@ class GeminiApi
                 throw new ServiceUnavailableHttpException(null, $response['error']['message'], null, $response['error']['code'] ?? 0);
             }
             $this->incrementModel();
+
             // Retry the request with the next model
             return $this->apiRequest($query, $jsonResponseStructure, $imageBase64, $tries + 1);
         }
@@ -117,6 +119,7 @@ class GeminiApi
         if ($jsonResponseStructure) {
             $response = json_decode($response, true);
         }
+
         return $response;
     }
 }

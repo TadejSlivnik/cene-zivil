@@ -27,6 +27,7 @@ class SearchTermCount
     public function setSearchTerm(string $searchTerm): self
     {
         $this->searchTerm = $searchTerm;
+
         return $this;
     }
 
@@ -38,12 +39,14 @@ class SearchTermCount
     public function setCount(int $count): self
     {
         $this->count = $count;
+
         return $this;
     }
 
     public function incrementCount(): self
     {
-        $this->count++;
+        ++$this->count;
+
         return $this;
     }
 }

@@ -4,7 +4,7 @@ namespace App\Service;
 
 abstract class AbstractShopService
 {
-    public abstract function getProductData(string $url): array;
+    abstract public function getProductData(string $url): array;
 
     public function curlRequest(string $url, array $data = [], array $headers = []): ?array
     {
@@ -20,13 +20,13 @@ abstract class AbstractShopService
             $jsonData = json_encode($data);
             $jsonData = str_replace('"variables":[]', '"variables":{}', $jsonData); // Fix empty variables array -> convert to object
             curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-            $headers[] = 'content-length: ' . strlen($jsonData);
+            $headers[] = 'content-length: '.strlen($jsonData);
         }
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $response = curl_exec($ch);
-        if ($response === false) {
+        if (false === $response) {
             $error = curl_error($ch);
             curl_close($ch);
             throw new \Exception("Curl error: $error");
@@ -42,25 +42,28 @@ abstract class AbstractShopService
     public function getHtml(string $url): string
     {
         $html = file_get_contents($url);
-        if ($html === false) {
+        if (false === $html) {
             throw new \Exception('Failed to load HTML file');
         }
+
         return $html;
     }
 
     public function getJson(string $url): array
     {
         $json = file_get_contents($url);
-        if ($json === false) {
+        if (false === $json) {
             return [];
         }
+
         return json_decode($json, true);
     }
 
     public function parsePrice(string $price): float
     {
         $price = str_replace(['€', ' ', 'prej'], '', $price);
-        $price = (float)str_replace([','], '.', trim($price));
+        $price = (float) str_replace([','], '.', trim($price));
+
         return $price;
     }
 
@@ -80,14 +83,14 @@ abstract class AbstractShopService
             return null;
         }
 
-        $ean = ',' . implode(',', $ean) . ',';
+        $ean = ','.implode(',', $ean).',';
+
         return $ean;
     }
 
-
     public function getDiscount(float $price, float $regularPrice): ?int
     {
-        return $regularPrice > $price ? (int)round(100 - ($price * 100 / $regularPrice)) : null;
+        return $regularPrice > $price ? (int) round(100 - ($price * 100 / $regularPrice)) : null;
     }
 
     public function unitPriceCalculation(string $unitBase, float $unitPrice, float $price): array
@@ -99,26 +102,33 @@ abstract class AbstractShopService
             case '1ml':
             case 'ml':
                 $unitPrice *= 10;
+                // no break
             case '10ml':
                 $unitPrice *= 10;
+                // no break
             case '100ml':
                 $unitPrice *= 10;
+                // no break
             case 'l':
             case '1l':
                 $unit = 'l';
                 break;
             case '100l':
                 $unitPrice /= 10;
+                // no break
             case '10l':
                 $unitPrice /= 10;
                 $unit = 'l';
                 break;
             case 'g':
                 $unitPrice *= 10;
+                // no break
             case '10g':
                 $unitPrice *= 10;
+                // no break
             case '100g':
                 $unitPrice *= 10;
+                // no break
             case 'kg':
             case '1kg':
                 $unit = 'kg';
@@ -134,6 +144,7 @@ abstract class AbstractShopService
                 break;
             case '100m':
                 $unitPrice /= 10;
+                // no break
             case '10m':
                 $unit = 'm';
                 $unitPrice /= 10;

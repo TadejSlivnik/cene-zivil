@@ -6,7 +6,7 @@ use App\Entity\Product;
 
 class HoferService extends AbstractShopService
 {
-    const ITEMS_PER_PAGE = 60; // Max allowed by the API
+    public const ITEMS_PER_PAGE = 60; // Max allowed by the API
 
     public function getProductsData(int $page): array
     {
@@ -16,7 +16,7 @@ class HoferService extends AbstractShopService
 
         $items = $this->getJson($url);
         if (!$items) {
-            throw new \Exception("No data found");
+            throw new \Exception('No data found');
         }
 
         $data = [];
@@ -24,14 +24,14 @@ class HoferService extends AbstractShopService
         foreach ($items as $item) {
             $title = implode(', ', array_filter([$item['brandName'], $item['name']]));
 
-            $price = (float)($item['price']['amount'] / 100.0);
+            $price = (float) ($item['price']['amount'] / 100.0);
             $regularPrice = $price;
 
             $unit = $item['price']['comparisonDisplay'] ?: null;
             $unit = $this->parseUnit($unit);
-            $unitPrice = $item['price']['comparison'] ? (float)($item['price']['comparison'] / 100.0) : null;
-            if (!$unitPrice && $unit == 'kos') {
-                $unitPrice = (float)($item['price']['amount'] / 100.0);
+            $unitPrice = $item['price']['comparison'] ? (float) ($item['price']['comparison'] / 100.0) : null;
+            if (!$unitPrice && 'kos' == $unit) {
+                $unitPrice = (float) ($item['price']['amount'] / 100.0);
             }
 
             $unitQuantity = null;
@@ -45,7 +45,7 @@ class HoferService extends AbstractShopService
 
             $data[] = [
                 'source' => Product::SOURCE_HOFER,
-                'url' => 'https://hofer.si/izdelek/' . $item['urlSlugText'] . "-" . $item['sku'],
+                'url' => 'https://hofer.si/izdelek/'.$item['urlSlugText'].'-'.$item['sku'],
                 'title' => $title,
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,
@@ -63,13 +63,14 @@ class HoferService extends AbstractShopService
 
     public function getProductData(string $url): array
     {
-        dd("TODO");
+        dd('TODO');
+
         return [];
     }
 
     private function parseUnit(?string $unit): string
     {
-        # example: "11,20 €/1 kg"
+        // example: "11,20 €/1 kg"
         if (!$unit) {
             return 'kos';
         }
@@ -80,6 +81,7 @@ class HoferService extends AbstractShopService
                 $unitPart = explode(' ', $unitPart);
                 $unitPart = end($unitPart);
             }
+
             return $unitPart;
         }
 

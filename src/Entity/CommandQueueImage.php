@@ -11,7 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table]
 class CommandQueueImage
 {
-    use Id, Timestampable;
+    use Id;
+    use Timestampable;
 
     #[ORM\OneToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
@@ -37,6 +38,7 @@ class CommandQueueImage
     public function setProduct(Product $product): self
     {
         $this->product = $product;
+
         return $this;
     }
 
@@ -48,6 +50,7 @@ class CommandQueueImage
     public function setImageUrl(string $imageUrl): self
     {
         $this->imageUrl = $imageUrl;
+
         return $this;
     }
 
@@ -59,12 +62,14 @@ class CommandQueueImage
     public function setTries(int $tries): self
     {
         $this->tries = $tries;
+
         return $this;
     }
 
     public function incrementTries(): self
     {
-        $this->tries++;
+        ++$this->tries;
+
         return $this;
     }
 
@@ -76,6 +81,7 @@ class CommandQueueImage
     public function setLastError(?string $lastError): self
     {
         $this->lastError = $lastError;
+
         return $this;
     }
 
@@ -87,6 +93,7 @@ class CommandQueueImage
     public function setCompletedAt(?\DateTimeInterface $completedAt): self
     {
         $this->completedAt = $completedAt;
+
         return $this;
     }
 }

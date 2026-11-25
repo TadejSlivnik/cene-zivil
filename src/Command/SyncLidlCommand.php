@@ -44,7 +44,7 @@ class SyncLidlCommand extends AbstractSyncCommand
         $this->em->flush();
 
         $this->io->newLine();
-        $this->io->writeln($this->getName() . ': ' . count($items) . ' products updated. Daily run: ' . $k);
+        $this->io->writeln($this->getName().': '.count($items).' products updated. Daily run: '.$k);
 
         return Command::SUCCESS;
     }

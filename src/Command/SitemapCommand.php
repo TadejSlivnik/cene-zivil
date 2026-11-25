@@ -47,13 +47,14 @@ class SitemapCommand extends AbstractCommand
 </urlset>
 XML;
 
-        $sitemapPath = $this->parameterBag->get('kernel.project_dir') . '/public/sitemap.xml';
+        $sitemapPath = $this->parameterBag->get('kernel.project_dir').'/public/sitemap.xml';
         file_put_contents($sitemapPath, $xml);
         if (!file_exists($sitemapPath)) {
             $this->io->error('Failed to write sitemap file.');
+
             return Command::FAILURE;
         }
-        
+
         $this->io->success('Sitemap updated successfully!');
         $this->io->note('You can find the updated sitemap at: /sitemap.xml');
 

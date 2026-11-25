@@ -15,7 +15,7 @@ class HandlePromotionCommand extends AbstractSyncCommand
     public function __construct(
         EntityManagerInterface $em,
         ParameterBagInterface $parameterBag,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->setName('app:handle:promotions');
         parent::__construct($parameterBag, $logger, $em);
@@ -39,7 +39,7 @@ class HandlePromotionCommand extends AbstractSyncCommand
                 continue;
             }
 
-            $this->io->writeln("Promotion ended for product: " . $product->getTitle() . " (ID: " . $product->getId() . ")");
+            $this->io->writeln('Promotion ended for product: '.$product->getTitle().' (ID: '.$product->getId().')');
 
             $ph->setPromotionHandled(new \DateTime());
             $product->setPrice($ph->getRegularPrice());

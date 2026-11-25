@@ -38,14 +38,13 @@ class MercatorService extends AbstractShopService
                 $item = array_filter($item);
 
                 foreach ($item as $v) {
-                    if (strpos($v, 'Koda artikla:') !== false) {
+                    if (false !== strpos($v, 'Koda artikla:')) {
                         // $code = trim(explode(':', $v)[1]);
-                    } else if (strpos($v, 'Cena na enoto:') !== false) {
+                    } elseif (false !== strpos($v, 'Cena na enoto:')) {
                         $unitPrice = trim(explode(':', $v)[1]);
                         $unitPrice = explode('/', $unitPrice);
                         $unit = trim($unitPrice[1]);
                         $unitPrice = $this->parsePrice($unitPrice[0]);
-
 
                         [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
                     }
@@ -79,7 +78,7 @@ class MercatorService extends AbstractShopService
 
         $items = $this->getJson($url);
         if (!$items) {
-            throw new \Exception("No data found");
+            throw new \Exception('No data found');
         }
 
         $data = [];
@@ -93,21 +92,21 @@ class MercatorService extends AbstractShopService
             $unitPrice = $item['data']['price_per_unit'];
 
             if (!$unit || !$unitPrice) {
-                if (strtolower($item['data']['invoice_unit']) == 'kos') {
+                if ('kos' == strtolower($item['data']['invoice_unit'])) {
                     $unit = 'kos';
                     $unitPrice = $item['data']['current_price'];
                 }
             }
 
-            $price = (float)$item['data']['current_price'];
+            $price = (float) $item['data']['current_price'];
 
             [$unit, $unitQuantity, $unitPrice] = $this->unitPriceCalculation($unit, $unitPrice, $price);
 
-            $regularPrice = (float)$item['data']['normal_price'] ?: $price;
+            $regularPrice = (float) $item['data']['normal_price'] ?: $price;
 
             $data[] = [
                 'source' => Product::SOURCE_MERCATOR,
-                'url' => 'https://mercatoronline.si/' . ltrim($item['url'], '/'),
+                'url' => 'https://mercatoronline.si/'.ltrim($item['url'], '/'),
                 'title' => $item['data']['name'],
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,

@@ -31,13 +31,13 @@ class JsonOutputCommand extends Command
         $output->writeln('Processing products...');
 
         $this->processBatch($output);
-        $output->writeln("Done!");
+        $output->writeln('Done!');
 
         return Command::SUCCESS;
     }
 
     /**
-     * Process products in batches and write to JSON files
+     * Process products in batches and write to JSON files.
      */
     private function processBatch(OutputInterface $output): void
     {
@@ -59,16 +59,16 @@ class JsonOutputCommand extends Command
             }
 
             $this->writeJsonFile($formattedProducts, $batchNumber);
-            $output->writeln("Written batch $batchNumber with " . count($formattedProducts) . " products");
+            $output->writeln("Written batch $batchNumber with ".count($formattedProducts).' products');
 
-            $batchNumber++;
-            $page++;
+            ++$batchNumber;
+            ++$page;
             $this->em->clear();
         }
     }
 
     /**
-     * Format a Product entity with all its price histories
+     * Format a Product entity with all its price histories.
      */
     private function formatProduct(Product $product): array
     {
@@ -131,11 +131,11 @@ class JsonOutputCommand extends Command
     }
 
     /**
-     * Write a single JSON batch file
+     * Write a single JSON batch file.
      */
     private function writeJsonFile(array $batch, int $batchNumber): void
     {
-        $jsonPath = $this->parameterBag->get('kernel.project_dir') . '/var/dump/gtin-dump/cene_zivil_produkti_' . $batchNumber . '.json';
+        $jsonPath = $this->parameterBag->get('kernel.project_dir').'/var/dump/gtin-dump/cene_zivil_produkti_'.$batchNumber.'.json';
         file_put_contents($jsonPath, json_encode($batch, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }

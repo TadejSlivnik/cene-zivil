@@ -8,11 +8,11 @@ use Psr\Cache\CacheItemPoolInterface;
 
 class TusService extends AbstractShopService
 {
-    const URL = 'https://hitrinakup.com/graphql';
-    const STORE_ID = '5861';
+    public const URL = 'https://hitrinakup.com/graphql';
+    public const STORE_ID = '5861';
 
-    protected $apiVersion = null;
-    protected $sessionId = null;
+    protected $apiVersion;
+    protected $sessionId;
 
     protected CacheItemPoolInterface $cache;
     protected GeminiApi $geminiApi;
@@ -28,21 +28,21 @@ class TusService extends AbstractShopService
         $data = [
             'operationName' => 'getItemsForSelectedSubCategory',
             'variables' => [
-                "categoriesLimit" => 3000,
-                "categoriesSkip" => 0,
-                "categoryName" => $category,
-                "cypherQuery" => "123a17d4-b159-4976-ac50-8590059b48c0",
-                "date" => (new \DateTime())->format('D M d Y'),
-                "filterProperties" => [],
-                "storeId" => self::STORE_ID,
-                "subcategoryName" => $subCategory,
+                'categoriesLimit' => 3000,
+                'categoriesSkip' => 0,
+                'categoryName' => $category,
+                'cypherQuery' => '123a17d4-b159-4976-ac50-8590059b48c0',
+                'date' => (new \DateTime())->format('D M d Y'),
+                'filterProperties' => [],
+                'storeId' => self::STORE_ID,
+                'subcategoryName' => $subCategory,
             ],
             'query' => 'query getItemsForSelectedSubCategory($categoriesLimit: Int, $categoriesSkip: Int, $categoryName: String, $cypherQuery: String, $date: String, $filterProperties: [FilterCategoryDataInput], $storeId: String, $subcategoryName: String) { getItemsForSelectedSubCategory( categoriesLimit: $categoriesLimit categoriesSkip: $categoriesSkip categoryName: $categoryName cypherQuery: $cypherQuery date: $date filterProperties: $filterProperties storeId: $storeId subcategoryName: $subcategoryName ) { items { weight EAN name price discountedPrice group quantity inStock priceEm em discountEan id brand category percDiscount } name } } ',
         ];
 
         $headers = [
-            'apiversion: ' . $this->getApiVersion(),
-            'sessionid: ' . $this->getSessionId(),
+            'apiversion: '.$this->getApiVersion(),
+            'sessionid: '.$this->getSessionId(),
         ];
 
         $items = $this->curlRequest(self::URL, $data, $headers);
@@ -63,11 +63,11 @@ class TusService extends AbstractShopService
 
             if (!$unitPrice) {
                 $res = $this->geminiApi->apiRequest(
-                    "Calculate unit price (priceEm) from data, if you can. Data: " . json_encode($item),
+                    'Calculate unit price (priceEm) from data, if you can. Data: '.json_encode($item),
                     [
-                        "type" => "OBJECT",
-                        "properties" => ['priceEm' => ["type" => "number", "format" => 'double']],
-                        "required" => ['priceEm']
+                        'type' => 'OBJECT',
+                        'properties' => ['priceEm' => ['type' => 'number', 'format' => 'double']],
+                        'required' => ['priceEm'],
                     ]
                 );
                 $res = $res[0]['priceEm'] ?? null;
@@ -76,11 +76,11 @@ class TusService extends AbstractShopService
 
             if (!$unit) {
                 $res = $this->geminiApi->apiRequest(
-                    "Return the unit base (em) from data, if you can. Data: " . json_encode($item),
+                    'Return the unit base (em) from data, if you can. Data: '.json_encode($item),
                     [
-                        "type" => "OBJECT",
-                        "properties" => ['em' => ["type" => "string"]],
-                        "required" => ['em']
+                        'type' => 'OBJECT',
+                        'properties' => ['em' => ['type' => 'string']],
+                        'required' => ['em'],
                     ]
                 );
                 $res = $res[0]['em'] ?? null;
@@ -93,7 +93,7 @@ class TusService extends AbstractShopService
 
             $data[] = [
                 'source' => Product::SOURCE_TUS,
-                'url' => 'https://hitrinakup.com/izdelki/' . $item['id'],
+                'url' => 'https://hitrinakup.com/izdelki/'.$item['id'],
                 'title' => trim($item['name']),
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,
@@ -111,8 +111,7 @@ class TusService extends AbstractShopService
 
     protected function getApiVersion(): string
     {
-        if ($this->apiVersion === null) {
-
+        if (null === $this->apiVersion) {
             $cacheKey = 'tus_api_version';
             $item = $this->cache->getItem($cacheKey);
 
@@ -134,34 +133,33 @@ class TusService extends AbstractShopService
                 }
             }
         }
+
         return $this->apiVersion;
     }
 
     protected function getSessionId(): string
     {
-        if ($this->sessionId === null) {
-
+        if (null === $this->sessionId) {
             $cacheKey = 'tus_session_id';
             $item = $this->cache->getItem($cacheKey);
 
             if ($item->isHit()) {
                 $this->sessionId = $item->get();
             } else {
-
                 $res = $this->curlRequest(self::URL, [
                     'operationName' => 'createSession',
                     'variables' => [
-                        "userId" => "8e558917-c00c-48b5-be43-80477c61ba09",
-                        "uri" => "hitrinakup.com",
-                        "agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0",
-                        "url" => "https://hitrinakup.com",
-                        "prevSessionId" => null,
-                        "code" => null,
+                        'userId' => '8e558917-c00c-48b5-be43-80477c61ba09',
+                        'uri' => 'hitrinakup.com',
+                        'agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0',
+                        'url' => 'https://hitrinakup.com',
+                        'prevSessionId' => null,
+                        'code' => null,
                         // "version" => "0.4.30"
                     ],
                     'query' => 'mutation createSession($userId: String!, $uri: String!, $agent: String!, $url: String, $prevSessionId: String, $code: String, $version: String) { createSession( userId: $userId uri: $uri agent: $agent url: $url prevSessionId: $prevSessionId code: $code version: $version ) { id date agent __typename } }',
                 ], [
-                    'apiversion: ' . $this->getApiVersion(),
+                    'apiversion: '.$this->getApiVersion(),
                 ]);
 
                 $this->sessionId = $res['data']['createSession']['id'] ?? false;
@@ -173,6 +171,7 @@ class TusService extends AbstractShopService
                 }
             }
         }
+
         return $this->sessionId;
     }
 
@@ -188,24 +187,24 @@ class TusService extends AbstractShopService
         $data = [
             'operationName' => 'getCategories',
             'variables' => [
-                "userId" => "",
-                "storeId" => self::STORE_ID,
-                "limit" => 0,
-                "cypherQuery" => "2d078df3-117a-4b05-be35-cfb99105fb77",
+                'userId' => '',
+                'storeId' => self::STORE_ID,
+                'limit' => 0,
+                'cypherQuery' => '2d078df3-117a-4b05-be35-cfb99105fb77',
             ],
             // 'query' => 'query getCategories($userId: String, $limit: Int, $cypherQuery: String) { getCategories(userId: $userId, limit: $limit, cypherQuery: $cypherQuery) { name key children { name key children { name key } } } }',
             'query' => 'query getCategories($userId: String, $limit: Int, $cypherQuery: String) { getCategories(userId: $userId, limit: $limit, cypherQuery: $cypherQuery) { name children { name } } }',
         ];
 
         $headers = [
-            'apiversion: ' . $this->getApiVersion(),
-            'sessionid: ' . $this->getSessionId(),
+            'apiversion: '.$this->getApiVersion(),
+            'sessionid: '.$this->getSessionId(),
         ];
 
         $items = $this->curlRequest(self::URL, $data, $headers);
         $items = $items['data']['getCategories'] ?? false;
         if (!$items) {
-            throw new \Exception("No categories found");
+            throw new \Exception('No categories found');
         }
 
         $items = array_map(function ($item) {
@@ -244,7 +243,8 @@ class TusService extends AbstractShopService
 
     public function getProductData(string $url): array
     {
-        dd("TODO");
+        dd('TODO');
+
         return [];
     }
 }

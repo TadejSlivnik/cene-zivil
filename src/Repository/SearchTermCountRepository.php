@@ -10,7 +10,6 @@ class SearchTermCountRepository extends EntityRepository
     public function addSearchTerms(array $terms): void
     {
         foreach ($terms as $term) {
-
             $searchTerm = $this->find($term);
             if (!$searchTerm) {
                 $searchTerm = new SearchTermCount();

@@ -24,9 +24,9 @@ class DmService extends AbstractShopService
             unset($item['variants']);
             unset($item['rating']);
             unset($item['images']);
-            
-            $price = $item['trackingData']['price']["previous"] ?? $item['trackingData']['price']['current'] ?? $item['trackingData']['price'];
-            $unit = trim($item['price']['tileInfos'][0], " )");
+
+            $price = $item['trackingData']['price']['previous'] ?? $item['trackingData']['price']['current'] ?? $item['trackingData']['price'];
+            $unit = trim($item['price']['tileInfos'][0], ' )');
             $unit = explode(' | ', $unit)[0]; // Remove everything after |
             $unit = explode('(', $unit)[1];
             $unit = array_map('trim', explode('za', $unit));
@@ -40,12 +40,12 @@ class DmService extends AbstractShopService
                 throw $th;
             }
 
-            $regularPrice = $item['trackingData']['price']["current"] ?? $item['trackingData']['price'];
-            
+            $regularPrice = $item['trackingData']['price']['current'] ?? $item['trackingData']['price'];
+
             $data[] = [
                 'source' => Product::SOURCE_DM,
-                'url' => 'https://www.dm.si/' . ltrim($item['self'], '/'),
-                'title' => implode(', ', array_filter([($item['title']['preheadline'] ?? ''), $item['title']['tileHeadline']])),
+                'url' => 'https://www.dm.si/'.ltrim($item['self'], '/'),
+                'title' => implode(', ', array_filter([$item['title']['preheadline'] ?? '', $item['title']['tileHeadline']])),
                 'unit' => $unit,
                 'unitQuantity' => $unitQuantity,
                 'unitPrice' => $unitPrice,
@@ -62,7 +62,8 @@ class DmService extends AbstractShopService
 
     public function getProductData(string $url): array
     {
-        dd("TODO");
+        dd('TODO');
+
         return [];
     }
 }
