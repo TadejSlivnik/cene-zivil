@@ -31,7 +31,14 @@ php bin/console app:sitemap
 php bin/console app:json-output | app:json-output-spar   # export to var/dump/gtin-dump/
 ```
 
-There is no test suite (`tests/` does not exist) and no linter configured.
+```sh
+composer test      # PHPUnit (needs MariaDB; DATABASE_URL in .env.test, override in .env.test.local)
+composer phpstan   # level 5, existing issues in phpstan-baseline.neon
+composer cs-fix    # PHP-CS-Fixer @Symfony
+composer ci        # validate + lint + cs + phpstan + test, as CI runs them
+```
+
+Test layout: `tests/Unit` (helpers, entities, shop parsing against `tests/Fixtures/shops/*`, never the network), `tests/Functional` (controller via WebTestCase), `tests/Integration` (sync commands with shop services replaced in the test container). DAMADoctrineTestBundle rolls back each test's transaction. `tests/Support/ProductFactory` creates products; use `backdate()` for `created_at`/`updated_at`, since Gedmo overwrites them on flush. A service can only be replaced in the test container before it is first used, so tests that run a command twice use one stub with consecutive return values. CI (`.github/workflows/ci.yml`) also checks that the committed `public/build` matches a fresh `npm run build`.
 
 ## Architecture
 
@@ -48,12 +55,12 @@ There is no test suite (`tests/` does not exist) and no linter configured.
 **Entities and conventions:**
 - Doctrine mapping, Gedmo behaviours and routes use **PHP attributes** (`#[ORM\...]`, `#[Gedmo\...]`, `#[Route]` from `Symfony\Component\Routing\Attribute`). `doctrine/annotations` is no longer installed.
 - Gedmo listeners are registered in `config/services.yaml` with one `doctrine.event_listener` tag per event (DoctrineBundle 3 dropped `doctrine.event_subscriber`).
-- Shared traits are in `src/Entity/Traits` (`Id`, `Timestampable`, `GedmoSoftDeletable`). Gedmo SoftDeleteable is enabled, so deleted products are hidden from queries automatically. Products are restored by setting `deletedAt = null` during sync.
+- Shared traits are in `src/Entity/Traits` (`Id`, `Timestampable`, `GedmoSoftDeletable`). The Gedmo SoftDeleteable listener turns `remove()` into setting `deletedAt`, but no soft-delete filter is configured, so queries exclude deleted products explicitly (`p.deletedAt IS NULL`). Products are restored by setting `deletedAt = null` during sync.
 - `Product` is unique on `(productId, source)`. Sources are the `Product::SOURCE_*` constants. `Product::SOURCES` maps them to display names and drives the source filter on the homepage.
 - `Product.ean` holds one or more EANs as a comma-wrapped string (`,123,456,`). Use `AbstractShopService::parseEan()` to build it. Search relies on this format by matching `%,term,%`.
 - Prices are `decimal(20,6)`. Compare them with `AbstractSyncCommand::normalizePrice()`.
 - Products that have an `eanImage` but no EAN are added to `CommandQueueImage` for `app:queue:image`. `GeminiApi` falls back through a list of models and caches the one currently in use.
 
-**Frontend:** there is one entry point, `assets/app.js`, which sets up Tablesort (with a Slovenian locale sort), product pinning (`/pin/{id}` toggles the `zivila-pin` cookie, and pinned products are listed first in results), Chart.js price-history modals (`/chart/{productId}` returns JSON) and the html5-qrcode barcode scanner. Stimulus is not installed. `webpack.config.js` is an ES module (`"type": "module"`), and Encore 7 only minifies CSS because `configureCssMinimizerPlugin()` sets lightningcss explicitly. Templates are in `templates/`, and `index.html.twig` is the main page.
+**Frontend:** there is one entry point, `assets/app.js`, which sets up Tablesort (with a Slovenian locale sort), product pinning (`/pin/{id}` toggles the `zivila-pin` cookie, and pinned products are listed first in results), Chart.js price-history modals (`/chart/{productId}` returns JSON) and the html5-qrcode barcode scanner. Tailwind only scans `templates/`, `assets/app.js` and Flowbite's JS (`@source` in `assets/styles/app.css`), which keeps the CSS build deterministic. Add an `@source` if classes come from somewhere else. Stimulus is not installed. `webpack.config.js` is an ES module (`"type": "module"`), and Encore 7 only minifies CSS because `configureCssMinimizerPlugin()` sets lightningcss explicitly. Templates are in `templates/`, and `index.html.twig` is the main page.
 
 **Database:** the README says MySQL is used, but `compose.yaml` defines a Postgres service, which is Symfony's default scaffolding. Configure `DATABASE_URL` in `.env.local`. `GEMINI_API_KEY` is required for the image queue.

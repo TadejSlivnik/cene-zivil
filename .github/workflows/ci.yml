@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    name: PHP (tests, static analysis, code style)
+    runs-on: ubuntu-latest
+
+    services:
+      database:
+        image: mariadb:11.3 # same engine as production
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      APP_ENV: dev
+      # Matches the default in .env.test; also used by the dev kernel that PHPStan boots
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/app?serverVersion=mariadb-11.3.0&charset=utf8mb4
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5' # production runs PHP 8.5
+          extensions: ctype, iconv, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict --no-check-publish
+
+      - uses: ramsey/composer-install@v3
+
+      - name: Check for known vulnerabilities in PHP dependencies
+        run: composer audit
+
+      - name: Lint container, YAML and Twig
+        run: composer lint
+
+      - name: Code style
+        run: composer cs
+
+      - name: Static analysis
+        run: |
+          php bin/console cache:warmup --env=dev
+          composer phpstan -- --no-progress --error-format=github
+
+      - name: Create the test database from the migrations
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          php bin/console doctrine:schema:validate --env=test
+
+      - name: Tests
+        run: composer test
+
+  frontend:
+    name: Frontend (build and audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check for known vulnerabilities in npm dependencies
+        run: npm audit --audit-level=moderate
+
+      - name: Build assets
+        run: npm run build
+
+      # deploy.sh does not build assets, so the committed public/build must match the sources
+      - name: Committed public/build is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- public/build)" ]; then
+            git status --short -- public/build
+            echo "::error::public/build is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi

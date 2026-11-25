@@ -26,7 +26,7 @@ A simple open-source web application for comparing grocery prices in Slovenia. B
 - PHP 8.4+
 - Composer
 - Node.js 22.18+ & npm (only needed to rebuild assets)
-- MySQL (or compatible database)
+- MariaDB / MySQL (production and tests use MariaDB 11.3)
 
 ### Installation
 
@@ -57,9 +57,43 @@ A simple open-source web application for comparing grocery prices in Slovenia. B
 
 ## Development
 
-- **Frontend:** Edit files in `assets/` (JS, CSS)
+- **Frontend:** Edit files in `assets/` (JS, CSS). The built assets in `public/build/` are committed and the server does not build them, so run `npm run build` and commit the result. CI fails if `public/build/` is out of date.
 - **Backend:** Symfony code in `src/`
 - **Templates:** Twig files in `templates/`
+
+### Tests and checks
+
+The tests need a MariaDB server (the production engine). One way to get one:
+
+```sh
+docker run -d --name cene-zivil-test-db -e MARIADB_ROOT_PASSWORD=root -p 127.0.0.1:3306:3306 mariadb:11.3
+```
+
+`.env.test` expects `root:root@127.0.0.1:3306`. If your server differs, put your own `DATABASE_URL` in `.env.test.local` (not committed). Then create the test database once (`_test` is appended to the name):
+
+```sh
+php bin/console doctrine:database:create --env=test
+php bin/console doctrine:migrations:migrate --env=test -n
+```
+
+| Command | What it does |
+|---|---|
+| `composer test` | PHPUnit. Each test runs in a transaction that is rolled back, so the database stays empty |
+| `composer phpstan` | PHPStan level 5. Existing issues are listed in `phpstan-baseline.neon`; new code must be clean |
+| `composer cs` / `composer cs-fix` | Check / fix code style (PHP-CS-Fixer, `@Symfony` rules) |
+| `composer lint` | Lint the service container, YAML config and Twig templates |
+| `composer ci` | Everything above, as CI runs it |
+
+Shop services are tested against small fixtures in `tests/Fixtures/shops/` that copy the real API response structure; the tests never call the shops.
+
+### CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `master`:
+
+- **PHP** (PHP 8.5, MariaDB 11.3): `composer validate`, `composer audit`, lint, code style, PHPStan, migrations from an empty database plus `doctrine:schema:validate`, PHPUnit
+- **Frontend** (Node from `.nvmrc`): `npm ci`, `npm audit`, `npm run build`, and a check that the committed `public/build/` matches
+
+Dependabot (`.github/dependabot.yml`) opens weekly grouped update PRs for Composer, npm and GitHub Actions. Symfony major versions are ignored (the app stays on the 7.4 LTS line). npm PRs need `npm run build` committed on the PR branch before CI passes.
 
 ## License
 

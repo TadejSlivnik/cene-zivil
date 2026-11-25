@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by `git blame` (GitHub does this automatically;
+# locally: git config blame.ignoreRevsFile .git-blame-ignore-revs)
+
+# style: Apply PHP-CS-Fixer @Symfony rules
+ae13ff222840611b2afe76881014849af1f1f37f

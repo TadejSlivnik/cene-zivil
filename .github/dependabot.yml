@@ -1,0 +1,45 @@
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      # Stay on the Symfony 7.4 LTS line (composer.json extra.symfony.require); upgrade majors by hand
+      - dependency-name: symfony/*
+        update-types: [version-update:semver-major]
+    groups:
+      symfony:
+        patterns: [symfony/*]
+      doctrine:
+        patterns: [doctrine/*, gedmo/*]
+      dev-tools:
+        dependency-type: development
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # npm PRs change the build output: run `npm run build` on the PR branch and commit public/build,
+    # otherwise the "Committed public/build is up to date" CI step fails.
+    groups:
+      build-tools:
+        dependency-type: development
+        update-types: [minor, patch]
+      frontend:
+        dependency-type: production
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns: ['*']
