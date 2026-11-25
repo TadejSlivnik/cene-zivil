@@ -70,4 +70,28 @@ final class SparServiceTest extends TestCase
 
         $this->service([])->getProductsData('s1');
     }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('imageUrls')]
+    public function testOnlyHttpsSparImageUrlsAreAllowed(string $url, bool $allowed): void
+    {
+        self::assertSame($allowed, $this->service([])->isImageUrlAllowed($url));
+    }
+
+    public static function imageUrls(): iterable
+    {
+        yield 'cdn image' => ['https://cdn.spar.si/images/504441.jpg', true];
+        yield 'apex domain with query' => ['https://spar.si/img/dt_main.jpg?v=2', true];
+        yield 'plain http' => ['http://cdn.spar.si/images/1.jpg', false];
+        yield 'local file' => ['file:///etc/passwd', false];
+        yield 'php wrapper' => ['php://filter/convert.base64-encode/resource=/app/.env.local', false];
+        yield 'other host' => ['https://example.com/1.jpg', false];
+        yield 'lookalike suffix' => ['https://evilspar.si/1.jpg', false];
+        yield 'spar as subdomain' => ['https://cdn.spar.si.example.com/1.jpg', false];
+        yield 'userinfo' => ['https://cdn.spar.si@127.0.0.1/1.jpg', false];
+        yield 'userinfo after path' => ['https://cdn.spar.si/x@127.0.0.1/1.jpg', false];
+        yield 'port' => ['https://cdn.spar.si:8080/1.jpg', false];
+        yield 'fragment host trick' => ['https://127.0.0.1#.spar.si/1.jpg', false];
+        yield 'backslash' => ['https://cdn.spar.si\\@127.0.0.1/1.jpg', false];
+        yield 'no path' => ['https://cdn.spar.si', false];
+    }
 }

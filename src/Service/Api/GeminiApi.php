@@ -66,9 +66,11 @@ class GeminiApi
 
     public function apiRequest(string $query, array $jsonResponseStructure = [], ?string $imageBase64 = null, int $tries = 0)
     {
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/'.$this->getModel().':generateContent?key='.$this->apiKey;
+        // The key goes in a header rather than ?key=, so it stays out of URLs in logs and error messages.
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/'.$this->getModel().':generateContent';
         $headers = [
             'Content-Type: application/json',
+            'x-goog-api-key: '.$this->apiKey,
         ];
 
         $data = ['contents' => [['parts' => [['text' => $query]]]]];

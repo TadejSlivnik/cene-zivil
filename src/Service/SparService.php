@@ -6,6 +6,17 @@ use App\Entity\Product;
 
 class SparService extends AbstractShopService
 {
+    /**
+     * `eanImage` comes from Spar's API and app:queue:image downloads it and sends it to Gemini, so only
+     * plain https URLs on Spar's own domain are allowed: no file:// or php:// wrappers, ports,
+     * credentials or other hosts. A regex rather than parse_url(), which can disagree with the
+     * http wrapper about which host a malformed URL points at.
+     */
+    public function isImageUrlAllowed(string $url): bool
+    {
+        return 1 === preg_match('#^https://(?:[a-z0-9-]+\.)*spar\.si/[^\s\\\\@]*$#i', $url);
+    }
+
     public function getProductsData(string $category): array
     {
         $itemsPerPage = 6000;

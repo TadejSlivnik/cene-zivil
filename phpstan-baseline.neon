@@ -13,20 +13,8 @@ parameters:
 			path: src/Command/CheckProducts.php
 
 		-
-			message: '#^Parameter \#1 \$array \(list\<mixed\>\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
-			identifier: arrayFilter.same
-			count: 1
-			path: src/Command/QueueImageCommand.php
-
-		-
 			message: '#^Parameter \#4 \$default of method Symfony\\Component\\Console\\Command\\Command\:\:addArgument\(\) expects string\|null, false given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Command/QueueImageCommand.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between false and string will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Command/QueueImageCommand.php
 

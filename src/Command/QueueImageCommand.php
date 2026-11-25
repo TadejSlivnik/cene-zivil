@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\CommandQueueImage;
 use App\Entity\Product;
 use App\Service\Api\GeminiApi;
+use App\Service\SparService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -15,15 +16,19 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class QueueImageCommand extends AbstractCommand
 {
+    private const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
     protected $em;
     protected $geminiApi;
+    protected SparService $sparService;
 
-    public function __construct(ParameterBagInterface $parameterBag, LoggerInterface $logger, EntityManagerInterface $em, GeminiApi $geminiApi)
+    public function __construct(ParameterBagInterface $parameterBag, LoggerInterface $logger, EntityManagerInterface $em, GeminiApi $geminiApi, SparService $sparService)
     {
         $this->setName('app:queue:image');
         parent::__construct($parameterBag, $logger);
         $this->em = $em;
         $this->geminiApi = $geminiApi;
+        $this->sparService = $sparService;
     }
 
     protected function configure(): void
@@ -94,7 +99,12 @@ class QueueImageCommand extends AbstractCommand
                     'required' => ['ean'],
                 ];
 
+                if (!$this->sparService->isImageUrlAllowed((string) $queueItem->getImageUrl())) {
+                    throw new \Exception('Image URL is not an https URL on spar.si: '.$queueItem->getImageUrl());
+                }
+
                 $eanNumbers = [];
+                $context = stream_context_create(['http' => ['timeout' => 30]]);
 
                 $lastImageBase64 = null;
                 for ($i = 0; $i <= 10; ++$i) {
@@ -102,10 +112,11 @@ class QueueImageCommand extends AbstractCommand
                         $imageUrl = str_ireplace('dt_main.jpg', 'dt_sub'.(0 == $i ? '' : $i).'.jpg', $queueItem->getImageUrl());
                         $this->io->writeln('Processing image URL: '.$imageUrl);
 
-                        $imageBase64 = base64_encode(file_get_contents($imageUrl));
-                        if (false === $imageBase64) {
+                        $image = file_get_contents($imageUrl, false, $context, 0, self::MAX_IMAGE_BYTES);
+                        if (false === $image) {
                             throw new \Exception('Failed to read image file');
                         }
+                        $imageBase64 = base64_encode($image);
 
                         if ($lastImageBase64 == $imageBase64) {
                             throw new \Exception('Image has not changed since last request... throwing exception to stop loop');
@@ -116,8 +127,11 @@ class QueueImageCommand extends AbstractCommand
                         $response = 'Extract the EAN code from the image of the product if it exists, otherwise return an empty string.';
                         $response = $this->geminiApi->apiRequest($response, $jsonStructure, $imageBase64);
                         $response = $response ? current($response) : null;
-                        if (isset($response['ean']) && $response['ean']) {
-                            $eanNumbers[] = $response['ean'];
+                        // Model output is untrusted (the image itself can carry text): keep only
+                        // well-formed EANs, in the comma-wrapped format search matches on.
+                        if (isset($response['ean']) && is_string($response['ean'])
+                            && $ean = $this->sparService->parseEan(preg_replace('/[\s-]+/', '', $response['ean']))) {
+                            $eanNumbers[] = $ean;
                         }
                     } catch (ServiceUnavailableHttpException $th) {
                         throw $th;
@@ -129,7 +143,6 @@ class QueueImageCommand extends AbstractCommand
                     }
                 }
 
-                $eanNumbers = array_filter($eanNumbers);
                 $eanNumbers = array_unique($eanNumbers);
 
                 $eanSize = sizeof($eanNumbers);

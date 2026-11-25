@@ -18,6 +18,7 @@ class IndexController extends AbstractController
     private const MAX_PINS = 100;
     private const MAX_TERMS = 10;
     private const MAX_TERM_LENGTH = 100;
+    private const MAX_SESSION_TERMS = 200;
 
     #[Route('/', name: 'index', methods: ['GET'], defaults: ['query' => ''])]
     public function index(Request $request, EntityManagerInterface $em, RequestStack $requestStack)
@@ -44,7 +45,8 @@ class IndexController extends AbstractController
         if ($terms) {
             if ($session = $requestStack->getSession()) {
                 $previousTerms = $session->get('search_terms', []);
-                $allTerms = array_unique(array_merge($previousTerms, $terms));
+                // Keep only the most recent terms so a long-lived session can't grow without bound.
+                $allTerms = array_slice(array_values(array_unique(array_merge($previousTerms, $terms))), -self::MAX_SESSION_TERMS);
                 $session->set('search_terms', $allTerms);
 
                 $searchTerms = array_diff($terms, $previousTerms);
