@@ -30,15 +30,6 @@ A simple open-source web application for comparing grocery prices in Slovenia. B
 
 ### Installation
 
-#### Option 1: Dev Container (Recommended)
-
-1. Open the project in VS Code.
-2. Reopen in container when prompted, or use Command Palette: "Dev Containers: Reopen in Container".
-3. The container will build using `.devcontainer/Dockerfile` and install all dependencies automatically.
-4. Access Symfony via `localhost:8000` (or configured port).
-
-#### Option 2: Manual Setup
-
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/TadejSlivnik/cene-zivil.git
