@@ -1,0 +1,19 @@
+{
+    "meta": {"pagination": {"offset": 0, "limit": 60, "totalCount": 2}},
+    "data": [
+        {
+            "brandName": "HAPPY HARVEST",
+            "name": "Toast",
+            "sku": "000000000000100778",
+            "urlSlugText": "happy-harvest-toast",
+            "price": {"amount": 89, "comparison": 178, "comparisonDisplay": "1,78 €/1 kg", "currencyCode": "EUR"}
+        },
+        {
+            "brandName": null,
+            "name": "Vžigalnik",
+            "sku": "000000000000200001",
+            "urlSlugText": "vzigalnik",
+            "price": {"amount": 149, "comparison": null, "comparisonDisplay": null, "currencyCode": "EUR"}
+        }
+    ]
+}

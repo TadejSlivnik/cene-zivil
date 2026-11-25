@@ -219,7 +219,8 @@ class Product
 
     public function getTrgovina(): ?string
     {
-        return self::SOURCES[$this->source] ?? null;
+        // A null array offset is deprecated as of PHP 8.5
+        return null !== $this->source ? (self::SOURCES[$this->source] ?? null) : null;
     }
 
     public function isUpToDate(): bool

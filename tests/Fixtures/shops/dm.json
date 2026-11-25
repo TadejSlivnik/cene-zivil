@@ -1,0 +1,49 @@
+{
+    "products": [
+        {
+            "tileData": {
+                "dan": 1517804,
+                "gtin": 4066447521153,
+                "self": "/p/d/1517804/dmbio-bio-drobni-ovseni-kosmici-brez-glutena",
+                "title": {"tileHeadline": "Bio drobni ovseni kosmiči brez glutena, 500 g"},
+                "price": {
+                    "price": {"current": {"value": "2,65 €"}},
+                    "prefix": "Cena na kos",
+                    "tileInfos": ["500 g (0,53 € za 100 g)"]
+                },
+                "trackingData": {"brand": "dmBio", "price": 2.65, "currency": "EUR"},
+                "variants": [],
+                "images": []
+            }
+        },
+        {
+            "tileData": {
+                "dan": 2001,
+                "gtin": 4058172000001,
+                "self": "/p/d/2001/balea-sampon",
+                "title": {"preheadline": "Balea", "tileHeadline": "Šampon za lase, 300 ml"},
+                "price": {
+                    "price": {"current": {"value": "2,45 €"}, "previous": {"value": "3,65 €"}},
+                    "prefix": "Cena na kos",
+                    "tileInfos": ["300 ml (0,82 € za 100 ml | <lineThrough>1,22 € za 100 ml</lineThrough>)"]
+                },
+                "trackingData": {"brand": "Balea", "price": 2.45, "currency": "EUR"}
+            }
+        },
+        {
+            "tileData": {
+                "dan": 3001,
+                "gtin": 4058172000002,
+                "self": "/p/d/3001/kolesa",
+                "title": {"tileHeadline": "Pomožna kolesa"},
+                "price": {
+                    "price": {"current": {"value": "10,00 €"}},
+                    "prefix": "Cena na kos",
+                    "tileInfos": ["1 par (10,00 € za par)"]
+                },
+                "trackingData": {"brand": "dm", "price": 10.0, "currency": "EUR"}
+            }
+        }
+    ],
+    "count": 3
+}

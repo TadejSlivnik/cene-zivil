@@ -1,0 +1,12 @@
+{
+    "data": {
+        "getItemsForSelectedSubCategory": {
+            "items": [
+                {"id": "a1", "name": " Kava mleta 500 g ", "EAN": "3838600000011", "price": 6.99, "discountedPrice": 5.99, "priceEm": 11.98, "em": "kg", "percDiscount": 14},
+                {"id": "a2", "name": "Voda 1,5 l", "EAN": "3838600000028", "price": 0.59, "discountedPrice": null, "priceEm": null, "em": null, "percDiscount": null},
+                {"id": "a3", "name": "Brez EAN", "EAN": null, "price": 1.0},
+                {"id": "a4", "name": "Brez cene", "EAN": "3838600000035", "price": null}
+            ]
+        }
+    }
+}

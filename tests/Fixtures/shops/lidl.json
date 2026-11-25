@@ -1,0 +1,46 @@
+{
+    "numFound": 4,
+    "items": [
+        {
+            "gridbox": {
+                "id": "11000033",
+                "meta": {"fullTitle": "  FAVORINA Praznična skodelica s čokolado "},
+                "data": {
+                    "canonicalPath": "/p/favorina-praznicna-skodelica-s-cokolado/p11000033",
+                    "lidlPlus": [],
+                    "price": {"price": 4.99, "basePrice": {"text": "1 kg = 45,36"}},
+                    "storeEndDate": 1798325999
+                }
+            }
+        },
+        {
+            "gridbox": {
+                "id": "11000044",
+                "meta": {"fullTitle": "Mleko 3,5 %"},
+                "data": {
+                    "canonicalPath": "/p/mleko/p11000044",
+                    "lidlPlus": [{"price": {"price": 0.89, "oldPrice": 1.19, "discount": {"percentageDiscount": 25}, "basePrice": {"text": "1 l = 0,89"}}}],
+                    "price": {"price": 1.19}
+                }
+            }
+        },
+        {
+            "gridbox": {
+                "id": "11000055",
+                "meta": {"fullTitle": "Žar ponev"},
+                "data": {
+                    "canonicalPath": "/p/zar-ponev/p11000055",
+                    "lidlPlus": [],
+                    "price": {"price": 12.99, "oldPrice": 15.99}
+                }
+            }
+        },
+        {
+            "gridbox": {
+                "id": "11000066",
+                "meta": {},
+                "data": {"canonicalPath": "/p/brez-naslova/p11000066", "lidlPlus": [], "price": {"price": 1}}
+            }
+        }
+    ]
+}

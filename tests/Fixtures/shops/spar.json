@@ -1,0 +1,32 @@
+{
+    "hits": [
+        {
+            "id": "504441",
+            "masterValues": {
+                "title": "Jogurt navadni 3,2 %, 180 g",
+                "product-number": "504441",
+                "price": 0.69,
+                "best-price": 0.55,
+                "regular-price": 0.69,
+                "price-per-unit": "3,06 € / 1 kg",
+                "price-per-unit-number": 3.06,
+                "image-url": "https://cdn.spar.si/images/504441.jpg"
+            }
+        },
+        {
+            "id": "504442",
+            "masterValues": {
+                "title": "Sok jabolko 1 l",
+                "product-number": "504442",
+                "price": 1.29,
+                "regular-price": null,
+                "price-per-unit": "1,29 € / 1 l",
+                "price-per-unit-number": 1.29
+            }
+        },
+        {
+            "id": "504443",
+            "masterValues": {"title": "Brez cene", "product-number": "504443"}
+        }
+    ]
+}

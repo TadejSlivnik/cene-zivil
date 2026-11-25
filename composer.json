@@ -32,6 +32,7 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
+            "phpstan/extension-installer": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },
@@ -73,6 +74,22 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": "phpunit",
+        "phpstan": "phpstan analyse --memory-limit=1G",
+        "cs": "php-cs-fixer check --diff",
+        "cs-fix": "php-cs-fixer fix",
+        "lint": [
+            "@php bin/console lint:container",
+            "@php bin/console lint:yaml config --parse-tags",
+            "@php bin/console lint:twig templates"
+        ],
+        "ci": [
+            "@composer validate --strict --no-check-publish",
+            "@lint",
+            "@cs",
+            "@phpstan",
+            "@test"
         ]
     },
     "conflict": {
@@ -83,5 +100,24 @@
             "allow-contrib": false,
             "require": "7.4.*"
         }
+    },
+    "require-dev": {
+        "dama/doctrine-test-bundle": "^8.8",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-doctrine": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.1",
+        "phpstan/phpstan-symfony": "^2.1",
+        "phpunit/phpunit": "^13.4",
+        "symfony/browser-kit": "7.4.*"
+    },
+    "scripts-descriptions": {
+        "test": "Run the PHPUnit suite (needs the test database, see README)",
+        "phpstan": "Static analysis (level 5, existing issues in phpstan-baseline.neon)",
+        "cs": "Check code style without changing files",
+        "cs-fix": "Fix code style",
+        "lint": "Lint the container, YAML config and Twig templates",
+        "ci": "Run every check CI runs, except the frontend build"
     }
 }
