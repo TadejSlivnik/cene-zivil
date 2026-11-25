@@ -1,3 +1,9 @@
-@import "tailwindcss";
+/* Only scan files that actually use classes; the default scans the whole repository,
+   so unrelated files (tests, docs) would change the built CSS. */
+@import "tailwindcss" source(none);
+@source "../../templates";
+@source "../app.js";
+/* Flowbite's JavaScript adds classes at runtime (e.g. the modal backdrop) */
+@source "../../node_modules/flowbite/lib/esm";
 
 @import "flowbite/src/themes/default";
