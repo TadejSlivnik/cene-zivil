@@ -12,7 +12,10 @@
 
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
-# /public/build/
+# Built by `npm run build` (deploy.sh builds on the server); build-next/build-prev are deploy.sh staging dirs
+/public/build/
+/public/build-next/
+/public/build-prev/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###

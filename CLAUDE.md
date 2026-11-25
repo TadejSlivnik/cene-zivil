@@ -11,8 +11,8 @@ Cene živil (https://www.cene-zivil.si/) compares grocery prices across Slovenia
 ```sh
 composer install && npm install
 
-# Frontend assets (Webpack Encore). Built output in public/build/ is committed,
-# and deploy.sh does not build assets, so run `npm run build` before committing frontend changes.
+# Frontend assets (Webpack Encore). public/build/ is not committed: deploy.sh builds it on the server
+# (Node 22.18+) into public/build-next and swaps it in. The page tests need a build too.
 npm run dev | npm run watch | npm run build
 
 # Database
@@ -38,7 +38,7 @@ composer cs-fix    # PHP-CS-Fixer @Symfony
 composer ci        # validate + lint + cs + phpstan + test, as CI runs them
 ```
 
-Test layout: `tests/Unit` (helpers, entities, shop parsing against `tests/Fixtures/shops/*`, never the network), `tests/Functional` (controller via WebTestCase), `tests/Integration` (sync commands with shop services replaced in the test container). DAMADoctrineTestBundle rolls back each test's transaction. `tests/Support/ProductFactory` creates products; use `backdate()` for `created_at`/`updated_at`, since Gedmo overwrites them on flush. A service can only be replaced in the test container before it is first used, so tests that run a command twice use one stub with consecutive return values. CI (`.github/workflows/ci.yml`) also checks that the committed `public/build` matches a fresh `npm run build`.
+Test layout: `tests/Unit` (helpers, entities, shop parsing against `tests/Fixtures/shops/*`, never the network), `tests/Functional` (controller via WebTestCase), `tests/Integration` (sync commands with shop services replaced in the test container). DAMADoctrineTestBundle rolls back each test's transaction. `tests/Support/ProductFactory` creates products; use `backdate()` for `created_at`/`updated_at`, since Gedmo overwrites them on flush. A service can only be replaced in the test container before it is first used, so tests that run a command twice use one stub with consecutive return values. Functional tests need `public/build` (run `npm run build` first); in CI the frontend job builds it and the PHP job downloads it as an artifact.
 
 ## Architecture
 

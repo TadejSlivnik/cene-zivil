@@ -8,7 +8,8 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     // directory where compiled assets will be stored
-    .setOutputPath('public/build/')
+    // deploy.sh builds into a staging directory (ENCORE_OUTPUT_PATH) and swaps it in when done
+    .setOutputPath(process.env.ENCORE_OUTPUT_PATH || 'public/build/')
     // public path used by the web server to access the output path
     .setPublicPath('/build')
     // only needed for CDN's or subdirectory deploy
