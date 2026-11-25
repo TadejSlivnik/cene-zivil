@@ -15,6 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
+    private const MAX_PINS = 100;
+    private const MAX_TERMS = 10;
+    private const MAX_TERM_LENGTH = 100;
+
     /**
      * @Route("/", name="index", methods={"GET"}, defaults={"query"=""})
      */
@@ -28,6 +32,10 @@ class IndexController extends AbstractController
         $terms = array_map('trim', $terms);
         $terms = array_map('strtolower', $terms);
         $terms = array_unique($terms);
+        // Each term adds two LIKE clauses and may be stored in SearchTermCount (varchar 255).
+        $terms = array_slice(array_values(array_filter($terms, function ($term) {
+            return $term !== '' && mb_strlen($term) <= self::MAX_TERM_LENGTH;
+        })), 0, self::MAX_TERMS);
 
         if (strlen(implode(' ', $terms)) <= 2) {
             $terms = [];
@@ -97,15 +105,16 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route("/pin/{id}", name="pin", methods={"GET"})
+     * @Route("/pin/{id}", name="pin", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function pin($id, Request $request)
     {
+        $id = (int) $id;
         $pins = $this->getPinsValue($request);
 
-        if (in_array($id, $pins)) {
-            unset($pins[array_search($id, $pins)]);
-        } else {
+        if (in_array($id, $pins, true)) {
+            $pins = array_values(array_diff($pins, [$id]));
+        } elseif (count($pins) < self::MAX_PINS) {
             $pins[] = $id;
         }
 
@@ -114,14 +123,26 @@ class IndexController extends AbstractController
         return $response;
     }
 
-    private function getPinsValue(Request $request)
+    /**
+     * The cookie is client-controlled: only keep positive integer IDs, as a plain list.
+     *
+     * @return int[]
+     */
+    private function getPinsValue(Request $request): array
     {
-        $pins = $request->cookies->get('zivila-pin', '');
-        $pins = json_decode($pins, true);
+        $pins = json_decode((string) $request->cookies->get('zivila-pin', ''), true);
         if (!is_array($pins)) {
-            $pins = [];
+            return [];
         }
-        return $pins;
+
+        $ids = [];
+        foreach ($pins as $pin) {
+            if ((is_int($pin) || (is_string($pin) && ctype_digit($pin))) && (int) $pin > 0) {
+                $ids[] = (int) $pin;
+            }
+        }
+
+        return array_slice(array_values(array_unique($ids)), 0, self::MAX_PINS);
     }
 
     /**

@@ -19,9 +19,10 @@ class ProductRepository extends EntityRepository
             $or->add($qb->expr()->in('p.id', ':pins'));
             $qb->setParameter('pins', $pins);
 
+            // Both values are interpolated into DQL, so both must be integers.
             $caseExpr = 'CASE';
-            foreach ($pins as $i => $id) {
-                $id = (int)$id; // Ensure safety
+            foreach (array_values($pins) as $i => $id) {
+                $id = (int) $id;
                 $caseExpr .= " WHEN p.id = $id THEN $i";
             }
             $caseExpr .= ' ELSE 1000 END';
