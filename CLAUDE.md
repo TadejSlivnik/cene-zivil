@@ -22,7 +22,11 @@ php bin/console doctrine:migrations:migrate     # deploy.sh runs `d:m:m -n`
 # Local server
 symfony server:start
 
-# Data sync (run by cron in production)
+# Scheduler (replaces cron in production; systemd unit in deploy/cene-zivil-scheduler.service)
+php bin/console debug:scheduler                      # list scheduled commands and their next run
+php bin/console messenger:consume scheduler_default  # run the scheduler worker
+
+# Data sync (scheduled by src/Scheduler/Schedule.php)
 php bin/console app:sync:{dm|hofer|lidl|mercator|spar|tus}
 php bin/console app:check:products        # re-checks 10 stale products per run for 404s or price changes
 php bin/console app:handle:promotions     # resets price to regularPrice after promotionEndsDate passes
@@ -50,6 +54,8 @@ Test layout: `tests/Unit` (helpers, entities, shop parsing against `tests/Fixtur
 - `AbstractCommand`: subclasses implement `executeCommand()`, not `execute()`. It adds locking through `$mode` (`MODE_SINGULAR` by default, which exits if another instance is running), timing and memory output, and logs uncaught exceptions as critical. In the `dev` environment it calls `dd()` on exceptions.
 - Command names are set with `$this->setName(...)` in the constructor, before `parent::__construct()`. A few commands use `#[AsCommand(name: ...)]` instead (`protected static $defaultName` no longer works in Symfony 7).
 - `AbstractSyncCommand`: sync jobs process the catalog incrementally across many cron runs. A `CommandLog` row per command stores `dailyRun` (the category/page index for the next run), `maxDailyRuns` and `completedAt`. Each run handles one category or page and increments `dailyRun`. Once all categories are done, it sets `completedAt` (so nothing else runs that day) and soft-deletes that source's products that haven't been updated for N days (`markProductsAsDeletedIfOlderThanDays`). `dailyRun` resets on the next day.
+- **Scheduling:** `src/Scheduler/Schedule.php` (Symfony Scheduler) holds the production schedule as cron expressions. Each entry is a `RunScheduledCommand` message, which `RunScheduledCommandHandler` runs as a fresh `php bin/console <command>` process (never in-process: `AbstractCommand` doesn't release its lock after an exception, and the worker is long-lived). One systemd worker runs the commands one after another; `deploy.sh` restarts it with `messenger:stop-workers`. A failed or timed-out run is logged as an error.
+- **Error alerts:** in prod, log records at error level and above go to Discord (`DISCORD_WEBHOOK_URL` in `.env.local`) through `filter` → `deduplication` (1 hour) → `App\Logger\DiscordWebhookHandler` in `config/packages/monolog.yaml`. The handler sends one message per request or command and skips 4xx HTTP exceptions. Deduplication compares only a message's first line, so put variable detail on later lines.
 - `CheckProducts` finds the service dynamically with `$this->{$product->getSource().'Service'}`, so each service property name must match the source constant (`dmService`, `tusService`, …). Throwing `NotFoundHttpException` from `getProductData()` soft-deletes the product.
 
 **Entities and conventions:**

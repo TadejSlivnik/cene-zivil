@@ -41,3 +41,7 @@ services:
     App\Service\Api\GeminiApi:
         arguments:
             $apiKey: '%env(GEMINI_API_KEY)%'
+
+    App\Logger\DiscordWebhookHandler:
+        arguments:
+            $webhookUrl: '%env(DISCORD_WEBHOOK_URL)%'

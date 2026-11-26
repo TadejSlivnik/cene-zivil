@@ -1,0 +1,24 @@
+# Runs the Symfony Scheduler (src/Scheduler/Schedule.php), which replaced the production crontab.
+#
+# Install:
+#   sudo cp deploy/cene-zivil-scheduler.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now cene-zivil-scheduler
+# Logs:  journalctl -u cene-zivil-scheduler -f
+#
+# The worker exits after an hour, past 128 MB, or when deploy.sh runs messenger:stop-workers; systemd then starts it
+# again. Each scheduled command runs in its own process (src/Scheduler/RunScheduledCommandHandler.php).
+
+[Unit]
+Description=cene-zivil scheduler (messenger:consume scheduler_default)
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+User=thedarkfable
+WorkingDirectory=/home/thedarkfable/www.zivila.tadejslivnik.com
+ExecStart=/usr/local/bin/php bin/console messenger:consume scheduler_default --env=prod --time-limit=3600 --memory-limit=128M
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

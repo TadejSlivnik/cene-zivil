@@ -66,3 +66,19 @@ when@prod:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine"]
+
+            # Errors to Discord (DISCORD_WEBHOOK_URL). The filter keeps the deduplication buffer to errors only;
+            # deduplication sends one message per request or command and skips errors already sent in the last hour.
+            discord:
+                type: filter
+                min_level: error
+                # interpolate "{placeholders}" before deduplication compares messages (off by default for wrapper handlers)
+                process_psr_3_messages: true
+                handler: discord_deduplicated
+            discord_deduplicated:
+                type: deduplication
+                time: 3600
+                handler: discord_webhook
+            discord_webhook:
+                type: service
+                id: App\Logger\DiscordWebhookHandler

@@ -1,0 +1,18 @@
+<?php
+
+// Stands in for bin/console in RunScheduledCommandHandlerTest. The "command" says what to do: "exit:3" prints its
+// arguments and exits with code 3, "stderr:1" also writes to stderr, "sleep:2" sleeps for 2 seconds.
+
+[$action, $value] = explode(':', $argv[1]);
+
+echo 'args: '.implode(' ', array_slice($argv, 1))."\n";
+
+if ('sleep' === $action) {
+    sleep((int) $value);
+}
+
+if ('stderr' === $action) {
+    fwrite(\STDERR, "PHP Fatal error: boom\n");
+}
+
+exit('sleep' === $action ? 0 : (int) $value);

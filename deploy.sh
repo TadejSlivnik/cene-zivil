@@ -25,3 +25,7 @@ mv public/build-next public/build
 rm -rf public/build-prev
 
 php bin/console d:m:m -n
+
+# The scheduler worker (deploy/cene-zivil-scheduler.service) keeps the old code loaded: ask it to exit after the
+# command it is running, and systemd starts it again on the new code.
+php bin/console messenger:stop-workers
